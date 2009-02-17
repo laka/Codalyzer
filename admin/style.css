@@ -1,0 +1,15 @@
+body {
+    font-family: Arial, Trebuchet MS, sans-serif;
+}
+ul {
+    float: left;
+    width: 100%;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #000000;
+    padding-top: 20px;
+    border-top: 1px solid #000000;    
+}
+li {
+    float: left;
+    width: 200px;
+}
