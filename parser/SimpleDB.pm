@@ -48,7 +48,7 @@ sub insertRow {
     $dbh->do(
         "INSERT INTO $table (".join(', ', keys %insert).")
         VALUES ($placeholders)", undef, (values(%insert)))
-        or croak "OcSP (error): Couldn't insert row: " . DBI->errstr;
+        or croak "CA (error): Couldn't insert row: " . DBI->errstr;
 }
 
 # subroutine: updateRow ({table => foo, 

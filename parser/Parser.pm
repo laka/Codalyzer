@@ -1,19 +1,19 @@
-package OcSP::Parser;
+package CA::Parser;
 
-# OpenCodStats
+# Codalyzer
 # - Parser
 # The main parser for the application
 
 use strict;
 use warnings;
 use File::Slurp;
-use lib '/home/homer/ju/jussimik/OCS-Parser/';
-use OcSP::SimpleDB;
-use OcSP::Common;
-use OcSP::Toolbox;
-use OcSP::Regex;
+use lib '/home/homer/ju/jussimik/CA-Parser/';
+use CA::SimpleDB;
+use CA::Common;
+use CA::Toolbox;
+use CA::Regex;
 
-my $dbh = OcSP::SimpleDB::getDbh();
+my $dbh = CA::SimpleDB::getDbh();
 
 # subroutine: parser
 # -------------------------------------------------------------
@@ -41,19 +41,19 @@ sub parser {
 	my @to_parse = read_file("pam4.log");
 	
 	LINE: for (@to_parse) {
-		my $gid = OcSP::Common::lastGid();
+		my $gid = CA::Common::lastGid();
 		
 		# Check if line matches regex..					# ..and if so - do this (the sub name speaks for itself)
-		/$OcSP::Regex::Parser{InitGame}{all}/			&& do { OcSP::Toolbox::addNewGame({ 
-																	ts => $1,
-																	mod => $2,
-																	gametype => $3,
-																	codversion => $4,
-																	mapname => $5});
+		/$CA::Regex::Parser{InitGame}{all}/			&& do { CA::Toolbox::addNewGame({ 
+																	start => $1,
+																	mods => $2,
+																	type => $3,
+																	version => $4,
+																	map => $5});
 																	next LINE; 
 															};
 																	
-		/$OcSP::Regex::Parser{Join}{$version}/			&& do { OcSP::Toolbox::addNewPlayer({
+		/$CA::Regex::Parser{Join}{$version}/			&& do { CA::Toolbox::addNewPlayer({
 																	ts => $1,
 																	hash => $2,
 																	pid => $3,
@@ -61,7 +61,7 @@ sub parser {
 																	next LINE;
 															};
 		
-		/$OcSP::Regex::Parser{Damage}{$version}/		&& do { OcSP::Toolbox::addDamageHit({
+		/$CA::Regex::Parser{Damage}{$version}/		&& do { CA::Toolbox::addDamageHit({
 																	ts => $1,
 																	w_hash => $2,
 																	w_pid => $3,
@@ -77,7 +77,7 @@ sub parser {
 																	next LINE; 
 															};
 		
-		/$OcSP::Regex::Parser{Kills}{$version}/			&& do { OcSP::Toolbox::addKill({
+		/$CA::Regex::Parser{Kills}{$version}/			&& do { CA::Toolbox::addKill({
 																	ts => $1,
 																	c_hash => $2,
 																	c_pid => $3,
@@ -94,7 +94,7 @@ sub parser {
 																	next LINE; 
 															};
 		
-		/$OcSP::Regex::Parser{Quotes}{$version}/		&& do { OcSP::Toolbox::addQuote({
+		/$CA::Regex::Parser{Quotes}{$version}/		&& do { CA::Toolbox::addQuote({
 																	ts => $1,
 																	hash => $2,
 																	pid => $3,
@@ -103,7 +103,7 @@ sub parser {
 																	next LINE; 		
 															};
 		
-		/$OcSP::Regex::Parser{Action}{$version}/		&& do { OcSP::Toolbox::addAction({
+		/$CA::Regex::Parser{Action}{$version}/		&& do { CA::Toolbox::addAction({
 																	ts => $1,
 																	action => $2,
 																	player => $3,
@@ -111,7 +111,7 @@ sub parser {
 																	next LINE; 
 															};
 																	
-		/$OcSP::Regex::Parser{Result}{$version}/		&& do { OcSP::Toolbox::addGameResult({
+		/$CA::Regex::Parser{Result}{$version}/		&& do { CA::Toolbox::addGameResult({
 																	ts => $1,
 																	winner => $2,
 																	score1 => $3,
@@ -119,19 +119,19 @@ sub parser {
 																	next LINE;
 															};
 																	
-		/$OcSP::Regex::Parser{Finish}{$version}/		&& do { OcSP::Toolbox::addFinished({
+		/$CA::Regex::Parser{Finish}{$version}/		&& do { CA::Toolbox::addFinished({
 																	ts => $1,
 																	string => $2}); 
 																	next LINE; 
 															};
 																	
-		/$OcSP::Regex::Parser{Exitlev}{$version}/		&& do { OcSP::Toolbox::addExitLevel({
+		/$CA::Regex::Parser{Exitlev}{$version}/		&& do { CA::Toolbox::addExitLevel({
 																	ts => $1,
 																	string => $2}); 
 																	next LINE; 
 															};
 																	
-		/$OcSP::Regex::Parser{Jointeam}{$version}/		&& do { OcSP::Toolbox::addJoinTeam({
+		/$CA::Regex::Parser{Jointeam}{$version}/		&& do { CA::Toolbox::addJoinTeam({
 																	ts => $1,
 																	hash => $2,
 																	team => $3,
@@ -139,39 +139,39 @@ sub parser {
 																	next LINE; 
 															};
 		
-		/$OcSP::Regex::Parser{Roundstart}{$version}/	&& do { OcSP::Toolbox::addRoundStart({
+		/$CA::Regex::Parser{Roundstart}{$version}/	&& do { CA::Toolbox::addRoundStart({
 																	ts => $1,
 																	nr => $2}); 
 																	next LINE; 
 															};
 																	
-		/$OcSP::Regex::Parser{Roundwin}{$version}/		&& do { OcSP::Toolbox::addRoundWin({
+		/$CA::Regex::Parser{Roundwin}{$version}/		&& do { CA::Toolbox::addRoundWin({
 																	ts => $1,
 																	winner => $2}); 
 																	next LINE; 
 															};
 		
 		
-		/$OcSP::Regex::Parser{Timeout}{$version}/		&& do { OcSP::Toolbox::addTimeOut({
+		/$CA::Regex::Parser{Timeout}{$version}/		&& do { CA::Toolbox::addTimeOut({
 																	ts => $1,
 																	team => $2,
 																	who => $3}); 
 																	next LINE; 
 															};
 		
-		/$OcSP::Regex::Parser{Sidechange}{$version}/	&& do { OcSP::Toolbox::addSideChange({
+		/$CA::Regex::Parser{Sidechange}{$version}/	&& do { CA::Toolbox::addSideChange({
 																	ts => $1,
 																	string => $2}); 
 																	next LINE; 
 															};
 																	
-		/$OcSP::Regex::Parser{Winners}{$version}/		&& do { OcSP::Toolbox::addGameWinners({
+		/$CA::Regex::Parser{Winners}{$version}/		&& do { CA::Toolbox::addGameWinners({
 																	foo => $1,
 																	bar => $2});
 																	next LINE; 
 															};
 		
-		/$OcSP::Regex::Parser{Loosers}{$version}/		&& do { OcSP::Toolbox::addGameLoosers({
+		/$CA::Regex::Parser{Loosers}{$version}/		&& do { CA::Toolbox::addGameLoosers({
 																	foo => $1,
 																	bar => $2});
 																	next LINE; 

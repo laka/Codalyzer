@@ -1,22 +1,20 @@
-package OcSP::Common;
+package CA::Common;
 
-# OpenCodStats
+# Codalyzer
 # - Common Functions
 # A gathering of functions used frequently throughout the application
 
 use strict;
 use warnings;
-use lib '/home/homer/ju/jussimik/OCS-Parser/';
-use OcSP::SimpleDB;
+use lib '/home/homer/ju/jussimik/CA-Parser/';
+use CA::SimpleDB;
 
-my $dbh = OcSP::SimpleDB::getDbh();
+my $dbh = CA::SimpleDB::getDbh();
 
-# subroutine: interactiveCmd
+# subroutine: interactiveCmd ($command)
 # -------------------------------------------------------------
 # Dropping the user to an interactive shell where he has
 # full access to the entire application (through commands)
-# Arguments:
-#   1) command (the command to execute)
 
 sub interactiveCmd {
     print "Command: ";
@@ -38,8 +36,6 @@ sub interactiveCmd {
 # subroutine: lastGid
 # -------------------------------------------------------------
 # Returns the last game id found in the games table
-# Arguments:
-# 	None
 
 sub lastGid {
 	my $row = $dbh->selectrow_hashref("
@@ -48,7 +44,34 @@ sub lastGid {
 	return $row->{id};
 }
 
-sub analyzeLogFile {
+# subroutine: gameData ($what, $gid)
+# -------------------------------------------------------------
+# Lookup function for the games table
+
+sub gameData {
+    my ($what, $gid) = @_;
+    my $sth = $dbh->prepare(
+        qq/SELECT $what FROM games WHERE id=?/
+    );
+    $sth->execute($gid);
+    return $sth->fetchrow() 
+		or return "CA (warn): Couldn't find data on GID $gid";
+}
+
+# subroutine: name2version ($version)
+# -------------------------------------------------------------
+# Translates the Call of Duty name to a number
+# Like CoD:MW is number 4 in the serie
+
+sub name2version {
+	my($version) = @_;
+	my %map = (
+		'call of duty' => 1,
+		'cod:united offensive' => 1.5,
+		'call of duty 4' => 4,
+		'Call of Duty: World at War' => 5,
+	);
+	return $map{lc $version} || 'unknown';
 }
 
 1;

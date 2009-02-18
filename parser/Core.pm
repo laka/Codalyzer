@@ -1,14 +1,14 @@
-package OcSP::Core;
+package CA::Core;
 
-# OpenCodStats
+# Codalyzer
 # - Core Operations
 # The main functions are placed here (ELO-rating, Awards etc.)
 
 use strict;
 use warnings;
-use lib '/home/homer/ju/jussimik/OCS-Parser/';
-use OcSP::SimpleDB;
+use lib '/home/homer/ju/jussimik/CA-Parser/';
+use CA::SimpleDB;
 
-my $dbh = OcSP::SimpleDB::getDbh();
+my $dbh = CA::SimpleDB::getDbh();
 
 1;

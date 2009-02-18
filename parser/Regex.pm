@@ -1,12 +1,12 @@
-package OcSP::Regex;
+package CA::Regex;
 
-# OpenCodStats
+# Codalyzer
 # - Regexes
-# Gathering of all regexes used by OcSP::Parser
+# Gathering of all regexes used by CA::Parser
 
 use strict;
 use warnings;
-use lib '/home/homer/ju/jussimik/OCS-Parser/';
+use lib '/home/homer/ju/jussimik/CA-Parser/';
 
 our %Parser = (
 	InitGame => {

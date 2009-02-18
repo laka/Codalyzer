@@ -1,12 +1,12 @@
-package OcSP::Config;
+package CA::Config;
 
-# OpenCodStats
+# Codalyzer
 # - Main Config File
 # Reading and writing all the config files, so it may be used across packages
 
 use strict;
 use warnings;
-use lib '/home/homer/ju/jussimik/OCS-Parser/';
+use lib '/home/homer/ju/jussimik/CA-Parser/';
 
 # subroutine: readConfig
 # -------------------------------------------------------------
