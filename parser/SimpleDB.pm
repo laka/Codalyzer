@@ -51,6 +51,26 @@ sub insertRow {
         or croak "OcSP (error): Couldn't insert row: " . DBI->errstr;
 }
 
+# subroutine: updateRow ({table => foo, 
+# 	updates => { col => value } where => id=1})
+# -------------------------------------------------------------
+# Updates rows accordingly to the hash (of hashes) argument.
+# NOTE: Looking into an ORM so commented out for now
+
+sub updateRow {
+	my ($args) = @_;
+	my $table = $args->{table};
+	my $updates = $args->{updates};
+	my @cols = keys %$updates;
+	
+	my $query = "UPDATE $table SET ";
+	#$query .= (join(', ', map { '$_ = ?' } @cols)
+		#($args->{where} ? ' WHERE '. $args->{where} : '');
+
+	my $sth = $dbh->prepare($query);
+	$sth->execute(map { $updates->{$_} } @cols);
+}
+
 END {
 	our $dbh;
     $dbh->disconnect;
