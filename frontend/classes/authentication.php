@@ -10,8 +10,7 @@ class authentication {
     private $connection;
     
     function __construct($loginurl){
-        $this->connection = mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD);
-		mysql_select_db(MYSQL_DATABASE, $this->connection);
+        $this->db = database::getInstance();
     
         if(!$this->isAuthorized()){
             if($_POST['password'] && $_POST['username'] && !$this->isBanned()){
@@ -22,7 +21,7 @@ class authentication {
 
                 // check if the user exists
                 $sql = "SELECT * FROM users WHERE username='" . $username . "' AND password = MD5('" . $password . "')";
-                $result = mysql_query($sql);
+                $result = $this->db->sqlResult($sql);
                 if(mysql_num_rows($result) == 1){
                     $this->authorize ();
                     header("Location: ".$loginurl);

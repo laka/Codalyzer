@@ -6,9 +6,11 @@
 	**************************************************************
 */
 
-$start = microtime();
+$start = (float) microtime();
 
-include_once '../config.php';
+include 'classes/config.php';
+$config = new config('../config.ini');
+
 include_once 'inc/header.php';
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -21,10 +23,9 @@ include_once 'inc/header.php';
 	</head>
 	<body>
 		<div id="box">
-        
             <!-- QUOTE START-->
 			<div id="sitat">
-				<?php include PATH.'/inc/quote.php'; ?>
+				<?php include FRONTEND_PATH.'/inc/quote.php'; ?>
 			</div>	
             <!-- QUOTE END-->
             
@@ -37,7 +38,7 @@ include_once 'inc/header.php';
             <!-- HEADER START-->
 			<div id="header">
 				<div id="menu">
-					<?php include PATH.'/inc/navigation.php'; ?>
+					<?php include FRONTEND_PATH.'/inc/navigation.php'; ?>
 				</div>
 			</div>
             <!-- HEADER END-->
@@ -45,7 +46,7 @@ include_once 'inc/header.php';
             <!-- MAIN CONTENTS START-->
             <div id="left">
                 <div class="twentymargin">          
-                    <?php include PATH.'/inc/contents.php'; ?>		
+                    <?php include FRONTEND_PATH.'/inc/contents.php'; ?>		
                 </div>
             </div>
             <!-- MAIN CONTENTS END-->
@@ -54,7 +55,7 @@ include_once 'inc/header.php';
             <div id="right">
                 <div class="tenmargin">
                     <?php	
-                        include PATH.'/inc/right.php'; 
+                        include FRONTEND_PATH.'/inc/right.php'; 
                     ?>
                 </div>
             </div>        
@@ -68,13 +69,12 @@ include_once 'inc/header.php';
 				<div class="footertext">
 					<div align="right">
 						<?php
-						echo "GENERATED IN ".round(microtime()-$start,5)." SEC";
+						echo "GENERATED IN ".round((float)microtime()-$start,5)." SEC";
 						?>
 					</div>
 				</div>					
 			</div>	
             <!-- FOOTER END -->
-
 		</div>
 	</body>
 </html>

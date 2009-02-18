@@ -6,7 +6,9 @@
 	**************************************************************
 */
 
-include '../config.php';
+include '../classes/config.php';
+$config = new config('../../config.ini');
+
 include '../inc/header.php';
 include '../classes/graph.php';
 

@@ -8,8 +8,13 @@
 
 session_start();
 
-include '../config.php';
-include 'inc/login.php';
+include '../classes/config.php';
+$config = new config('../../config.ini');
+
+include '../classes/database.php';
+include '../classes/authentication.php';
+
+$db = database::getInstance();
 ?>
 
 <html>

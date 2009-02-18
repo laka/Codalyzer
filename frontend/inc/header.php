@@ -6,9 +6,9 @@
 	**************************************************************
 */
 
-include PATH . '/classes/database.php';	
-include PATH . '/classes/orderedtable.php';
-include PATH . '/lang/lang_' . strtolower(LANGUAGE) . '.php';
+include FRONTEND_PATH . '/classes/database.php';	
+include FRONTEND_PATH . '/classes/orderedtable.php';
+include FRONTEND_PATH . '/lang/lang_' . strtolower(LANGUAGE) . '.php';
 $db = database::getInstance();
 
 ?>

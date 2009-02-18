@@ -6,7 +6,7 @@
 	**************************************************************
 */
 
-	include PATH . '/classes/resultlist.php';
+	include FRONTEND_PATH . '/classes/resultlist.php';
 
 	// validates game id from url
 	if(is_numeric($_GET['gid'])){

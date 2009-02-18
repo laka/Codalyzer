@@ -6,7 +6,7 @@
 	**************************************************************
 */
 
-$dir = PATH . '/modes/';
+$dir = FRONTEND_PATH . '/modes/';
 switch ($_GET['mode']) {
     case 'profile':
         include_once $dir.'profile.php';
