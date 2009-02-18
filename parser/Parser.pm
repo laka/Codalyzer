@@ -37,6 +37,7 @@ sub parser {
 	#my @to_parse = @rawfile[$linestart..$#rawfile];
 	
 	# ONLY FOR TESTING
+	CA::Common::flushTable();
 	my $version = "cod40";
 	my @to_parse = read_file("pam4.log");
 	
@@ -45,7 +46,7 @@ sub parser {
 		
 		# Check if line matches regex..					# ..and if so - do this (the sub name speaks for itself)
 		/$CA::Regex::Parser{InitGame}{all}/			&& do { CA::Toolbox::addNewGame({ 
-																	start => $1,
+																	start => CA::Common::ts2seconds($1),
 																	mods => $2,
 																	type => $3,
 																	version => $4,
@@ -55,42 +56,41 @@ sub parser {
 																	
 		/$CA::Regex::Parser{Join}{$version}/			&& do { CA::Toolbox::addNewPlayer({
 																	gid => $gid,
-																	ts => $1,
-																	hash => $2,
+																	ts => CA::Common::ts2seconds($1),
+																	hash => substr($2, -8),
 																	handle => $3}); 
 																	next LINE;
 															};
 		
 		/$CA::Regex::Parser{Damage}{$version}/		&& do { CA::Toolbox::addDamageHit({
 																	ts => CA::Common::ts2seconds($1),
-																	w_hash => $2,
-																	w_pid => $3,
-																	w_team => $4,
-																	wounded => $5,
-																	h_hash => $6,
-																	h_pid => $7,
-																	h_team => $8,
-																	hitman => $9,
-																	weapon => $10,
-																	damage => $11,
-																	location => $12}); 
+																	w_hash => substr($2, -8),
+																	w_team => $3,
+																	wounded => $4,
+																	h_hash => substr($5, -8),
+																	h_team => $6,
+																	hitman => $7,
+																	weapon => $8,
+																	damage => $9,
+																	mods => $10,
+																	location => $11,
+																	gid => $gid}); 
 																	next LINE; 
 															};
 		
 		/$CA::Regex::Parser{Kills}{$version}/			&& do { CA::Toolbox::addKill({
 																	ts => CA::Common::ts2seconds($1),
-																	c_hash => $2,
-																	c_pid => $3,
-																	c_team => $4,
-																	corpse => $5,
-																	k_hash => $6,
-																	k_pid => $7,
-																	k_team => $8,
-																	killer => $9,
-																	weapon => $10,
-																	damage => $11,
-																	mod => $12,
-																	location => $13}); 
+																	c_hash => substr($2, -8),
+																	c_team => $3,
+																	corpse => $4,
+																	k_hash => substr($5, -8),
+																	k_team => $6,
+																	killer => $7,
+																	weapon => $8,
+																	damage => $9,
+																	mods => $10,
+																	location => $11,
+																	gid => $gid}); 
 																	next LINE; 
 															};
 		

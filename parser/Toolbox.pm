@@ -73,11 +73,21 @@ sub addNewPlayer {
 }
 
 sub addDamageHit {
-
+	my($args) = @_;
+	
+	my($sth, @bind) = $orm->insert('hits', \%$args);
+	
+	$dbh->do($sth, undef, @bind)
+		or croak "CA (error): Couldn't add new player: " . DBI->errstr;
 }
 
 sub addKill {
-
+	my($args) = @_;
+	
+	my($sth, @bind) = $orm->insert('kills', \%$args);
+	
+	$dbh->do($sth, undef, @bind)
+		or croak "CA (error): Couldn't add new player: " . DBI->errstr;
 }
 
 sub addQuote {

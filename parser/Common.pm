@@ -83,4 +83,15 @@ sub ts2seconds {
     return $t[0]*60 + $t[1];
 }
 
+# subroutine: flushTable
+# -------------------------------------------------------------
+# Flushes (truncates) tables
+
+sub flushTable {
+	$dbh->do('TRUNCATE TABLE games');
+	$dbh->do('TRUNCATE TABLE players');
+	$dbh->do('TRUNCATE TABLE kills');
+	$dbh->do('TRUNCATE TABLE hits');
+}
+
 1;
