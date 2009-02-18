@@ -15,6 +15,7 @@ include '../classes/database.php';
 include '../classes/authentication.php';
 
 $db = database::getInstance();
+$login = new authentication('index.php');
 ?>
 
 <html>
@@ -28,7 +29,6 @@ $db = database::getInstance();
     <body>
         <h1>codalyzer Admin</h1>
         <?php
-            $login = new authentication('index.php');
             if($login->isAuthorized()){
                 include 'inc/nav.php';
                 switch ($_GET['p']){
@@ -43,15 +43,14 @@ $db = database::getInstance();
                         break;                        
                     case 'users':
                         include 'modes/users.php';    
-                        break;                               
-                    case 'logout':
-                        include 'modes/logout.php';   
-                        break;                               
+                        break;                                                           
                     case 'main':
                     default:
                         include 'modes/main.php';        
                         break;                               
                 }
+            } else {
+                $login->printForm('index.php');
             }
         ?>
     </body>

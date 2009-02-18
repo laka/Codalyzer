@@ -28,13 +28,7 @@ class authentication {
                 } else {
                     $this->wrongInput ();
                 }
-            }
-            if(!$this->isAuthorized() && !$this->isBanned()){
-                $this->printForm ($loginurl);
-            }
-            if($this->isBanned()){
-               // do something with banned people
-            }            
+            }          
         }
     }
     
@@ -62,12 +56,14 @@ class authentication {
        header("Location: index.php");
 	}
     
-    private function printForm ($action){
-        echo '<form method="post" action="' . $action . '">';
-        echo '<strong>Username</strong><br /><input type="text" size="30" name="username"><br />';
-        echo '<strong>Password</strong><br /><input type="password" size="30" name="password"><br />';
-        echo '<input type="submit" name="login" value="Login">';
-        echo '</form>';
+    public function printForm ($action){
+            if(!$this->isAuthorized() && !$this->isBanned()){
+            echo '<form method="post" action="' . $action . '">';
+            echo '<strong>Username</strong><br /><input type="text" size="30" name="username"><br />';
+            echo '<strong>Password</strong><br /><input type="password" size="30" name="password"><br />';
+            echo '<input type="submit" name="login" value="Login">';
+            echo '</form>';
+        }
     }
 
 }
