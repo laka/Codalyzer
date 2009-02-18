@@ -12,8 +12,6 @@ use lib '/home/homer/ju/jussimik/CA-Parser/';
 # -------------------------------------------------------------
 # Reads the user-created (via the chosen interface) config-file
 # and saves it in the hash "%config".
-# Arguments:
-#   None
 
 sub readConfig {
     my %config;

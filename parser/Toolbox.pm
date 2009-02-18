@@ -14,6 +14,10 @@ use CA::SimpleDB;
 my $dbh = CA::SimpleDB::getDbh();
 my $orm = SQL::Abstract->new();
 
+# subroutine: addNewGame (%hash)
+# -------------------------------------------------------------
+# Adds a new game
+
 sub addNewGame {
 	my ($args) = @_;
 	# Global game id 
@@ -54,8 +58,18 @@ sub addNewGame {
 		or croak "CA (error): Couldn't add new game: " . DBI->errstr;
 }
 
+# subroutine: addNewPlayer (%hash)
+# -------------------------------------------------------------
+# You can figure this out
+
 sub addNewPlayer {
+	my($args) = @_;
+	$args->{handle} =~ s/\s+$//;
 	
+	my($sth, @bind) = $orm->insert('players', \%$args);
+	
+	$dbh->do($sth, undef, @bind) 
+		or croak "CA (error): Couldn't add new player: " . DBI->errstr;
 }
 
 sub addDamageHit {

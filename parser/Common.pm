@@ -74,4 +74,13 @@ sub name2version {
 	return $map{lc $version} || 'unknown';
 }
 
+# subroutine: ts2seconds ($ts)
+# -------------------------------------------------------------
+# Converts timestamps in the log to seconds
+
+sub ts2seconds {
+    my @t = split(':', $_[0]);
+    return $t[0]*60 + $t[1];
+}
+
 1;

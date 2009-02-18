@@ -54,15 +54,15 @@ sub parser {
 															};
 																	
 		/$CA::Regex::Parser{Join}{$version}/			&& do { CA::Toolbox::addNewPlayer({
+																	gid => $gid,
 																	ts => $1,
 																	hash => $2,
-																	pid => $3,
-																	player => $4}); 
+																	handle => $3}); 
 																	next LINE;
 															};
 		
 		/$CA::Regex::Parser{Damage}{$version}/		&& do { CA::Toolbox::addDamageHit({
-																	ts => $1,
+																	ts => CA::Common::ts2seconds($1),
 																	w_hash => $2,
 																	w_pid => $3,
 																	w_team => $4,
@@ -78,7 +78,7 @@ sub parser {
 															};
 		
 		/$CA::Regex::Parser{Kills}{$version}/			&& do { CA::Toolbox::addKill({
-																	ts => $1,
+																	ts => CA::Common::ts2seconds($1),
 																	c_hash => $2,
 																	c_pid => $3,
 																	c_team => $4,
@@ -95,7 +95,7 @@ sub parser {
 															};
 		
 		/$CA::Regex::Parser{Quotes}{$version}/		&& do { CA::Toolbox::addQuote({
-																	ts => $1,
+																	ts => CA::Common::ts2seconds($1),
 																	hash => $2,
 																	pid => $3,
 																	player => $4,
@@ -104,7 +104,7 @@ sub parser {
 															};
 		
 		/$CA::Regex::Parser{Action}{$version}/		&& do { CA::Toolbox::addAction({
-																	ts => $1,
+																	ts => CA::Common::ts2seconds($1),
 																	action => $2,
 																	player => $3,
 																	team => $4}); 
@@ -112,7 +112,7 @@ sub parser {
 															};
 																	
 		/$CA::Regex::Parser{Result}{$version}/		&& do { CA::Toolbox::addGameResult({
-																	ts => $1,
+																	ts => CA::Common::ts2seconds($1),
 																	winner => $2,
 																	score1 => $3,
 																	score2 => $4}); 
@@ -120,19 +120,19 @@ sub parser {
 															};
 																	
 		/$CA::Regex::Parser{Finish}{$version}/		&& do { CA::Toolbox::addFinished({
-																	ts => $1,
+																	ts => CA::Common::ts2seconds($1),
 																	string => $2}); 
 																	next LINE; 
 															};
 																	
 		/$CA::Regex::Parser{Exitlev}{$version}/		&& do { CA::Toolbox::addExitLevel({
-																	ts => $1,
+																	ts => CA::Common::ts2seconds($1),
 																	string => $2}); 
 																	next LINE; 
 															};
 																	
 		/$CA::Regex::Parser{Jointeam}{$version}/		&& do { CA::Toolbox::addJoinTeam({
-																	ts => $1,
+																	ts => CA::Common::ts2seconds($1),
 																	hash => $2,
 																	team => $3,
 																	handle => $4}); 
@@ -140,39 +140,39 @@ sub parser {
 															};
 		
 		/$CA::Regex::Parser{Roundstart}{$version}/	&& do { CA::Toolbox::addRoundStart({
-																	ts => $1,
+																	ts => CA::Common::ts2seconds($1),
 																	nr => $2}); 
 																	next LINE; 
 															};
 																	
 		/$CA::Regex::Parser{Roundwin}{$version}/		&& do { CA::Toolbox::addRoundWin({
-																	ts => $1,
+																	ts => CA::Common::ts2seconds($1),
 																	winner => $2}); 
 																	next LINE; 
 															};
 		
 		
 		/$CA::Regex::Parser{Timeout}{$version}/		&& do { CA::Toolbox::addTimeOut({
-																	ts => $1,
+																	ts => CA::Common::ts2seconds($1),
 																	team => $2,
 																	who => $3}); 
 																	next LINE; 
 															};
 		
 		/$CA::Regex::Parser{Sidechange}{$version}/	&& do { CA::Toolbox::addSideChange({
-																	ts => $1,
+																	ts => CA::Common::ts2seconds($1),
 																	string => $2}); 
 																	next LINE; 
 															};
 																	
 		/$CA::Regex::Parser{Winners}{$version}/		&& do { CA::Toolbox::addGameWinners({
-																	foo => $1,
+																	foo => CA::Common::ts2seconds($1),
 																	bar => $2});
 																	next LINE; 
 															};
 		
 		/$CA::Regex::Parser{Loosers}{$version}/		&& do { CA::Toolbox::addGameLoosers({
-																	foo => $1,
+																	foo => CA::Common::ts2seconds($1),
 																	bar => $2});
 																	next LINE; 
 															};
