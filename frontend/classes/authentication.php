@@ -7,11 +7,12 @@
 */
 
 class authentication {
-    private $connection;
+    private $connection, $loginurl;
     
     function __construct($loginurl){
         $this->db = database::getInstance();
-    
+        $this->loginurl = $loginurl;
+        
         if(!$this->isAuthorized()){
             if($_POST['password'] && $_POST['username'] && !$this->isBanned()){
                 
@@ -24,7 +25,7 @@ class authentication {
                 $result = $this->db->sqlResult($sql);
                 if(mysql_num_rows($result) == 1){
                     $this->authorize ();
-                    header("Location: ".$loginurl);
+                    header("Location: ".$this->loginurl);
                 } else {
                     $this->wrongInput ();
                 }
@@ -53,7 +54,8 @@ class authentication {
 		if($this->isAuthorized ()){
 			unset($_SESSION['authorized']);
 		}
-       header("Location: index.php");
+        
+       header("Location: ". $this->loginurl);
 	}
     
     public function printForm ($action){
