@@ -87,9 +87,13 @@ sub addDamageHit {
 	
 	# In CoD and Cod:MW teams are not specified with kills, only hits
 	# (NOTE: But mods like pam4 and promod supports this)
-	if(not(CA::Common::usingMod($args->{gid}))) {
-		CA::Common::assignTeam($args->{hitman}, $args->{h_team}, $args->{gid});
-		CA::Common::assignTeam($args->{wounded}, $args->{w_team}, $args->{gid});
+	if(not(CA::Common::usingMod($args->{gid}))
+		&& (CA::Common::missingTeam($args->{hitman}, $args->{gid}))) {
+			CA::Common::assignTeam($args->{hitman}, $args->{h_team}, $args->{gid});
+	}
+	if(not(CA::Common::usingMod($args->{gid}))
+		&& (CA::Common::missingTeam($args->{wounded}, $args->{gid}))) {
+			CA::Common::assignTeam($args->{wounded}, $args->{w_team}, $args->{gid});
 	}
 	
 	# Nick changes are not logged, so we have to double check
@@ -139,7 +143,13 @@ sub addKill {
 }
 
 sub addQuote {
-
+	my($args) = @_;
+	$args->{quote} =~ s/^U//;
+	
+	my($sth, @bind) = $orm->insert('quotes', \%$args);
+	
+	$dbh->do($sth, undef, @bind)
+		or croak "CA (error): Couldn't add qoute: " . DBI->errstr;
 }
 
 sub addAction {
@@ -155,7 +165,10 @@ sub addFinished {
 }
 
 sub addExitLevel {
-
+	my($args) = @_;
+	$dbh->do('UPDATE games SET finish=? WHERE id=?',
+		undef, 1, $args->{gid})
+		or croak "CA (error): Couldn't finish game: " . DBI->errstr;
 }
 
 sub addJoinTeam {

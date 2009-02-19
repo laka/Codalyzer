@@ -80,6 +80,7 @@ sub flushTable {
 	$dbh->do('TRUNCATE TABLE players');
 	$dbh->do('TRUNCATE TABLE kills');
 	$dbh->do('TRUNCATE TABLE hits');
+	$dbh->do('TRUNCATE TABLE quotes');
 }
 
 END {

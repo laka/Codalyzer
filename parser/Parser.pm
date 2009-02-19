@@ -96,10 +96,9 @@ sub parser {
 		
 		/$CA::Regex::Parser{Quotes}{$version}/		&& do { CA::Toolbox::addQuote({
 																	ts => CA::Common::ts2seconds($1),
-																	hash => $2,
-																	pid => $3,
-																	player => $4,
-																	qoute => $5}); 
+																	handle => $2,
+																	quote => $3,
+																	gid => $gid}); 
 																	next LINE; 		
 															};
 		
@@ -127,7 +126,7 @@ sub parser {
 																	
 		/$CA::Regex::Parser{Exitlev}{$version}/		&& do { CA::Toolbox::addExitLevel({
 																	ts => CA::Common::ts2seconds($1),
-																	string => $2}); 
+																	gid => $gid}); 
 																	next LINE; 
 															};
 																	

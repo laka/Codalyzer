@@ -116,10 +116,8 @@ sub playerExist {
 
 	my $sth = $dbh->prepare("SELECT id FROM players WHERE handle=? AND gid=?");
     $sth->execute($player, $gid);
-		
-	if($sth->rows() == 0) {
-		return;
-	} else { return 1; }
+	
+	($sth->rows() == 0) ? return : return 1;
 }
 
 # subroutine: round ($gid, $decimal)
@@ -137,7 +135,15 @@ sub round {
 # Check if the player is missing team membership
 
 sub missingTeam {
-
+	my($player, $gid) = @_;
+	
+	my $row = $dbh->selectrow_hashref(
+		'SELECT team FROM players WHERE handle=? AND gid=?',
+		undef, $player, $gid);
+	
+	if(defined($row->{team})) {
+		($row->{team} eq '') ? return 1 : return;
+	}
 }
 
 # subroutine: changeHandle ($handle, $hash, $gid)
@@ -184,6 +190,19 @@ sub changeHandle {
 
 sub try2findTeam {
 	my($need, $has, $gid) = @_;
+	my $team;
+	
+	my $row = $dbh->selectrow_hashref(
+		'SELECT team AS opposite_team FROM players WHERE handle=? AND gid=? AND team=(team="allies" OR team="axis")',
+		undef, $has, $gid);
+		
+	if($row->{opposite_team}) {
+		$team = (($row->{opposite_team} eq 'allies') ? 'axis' : 'allies');		
+	}
+	
+	$dbh->do('UPDATE players SET team=? WHERE handle=? AND gid=?',
+		undef, $team, $need, $gid)
+		or croak "CA (error): Couldn't update opposite team: " . DBI->errstr;
 }
 		
 1;
