@@ -6,6 +6,7 @@ package CA::Common;
 
 use strict;
 use warnings;
+use Carp;
 use lib '/home/homer/ju/jussimik/CA-Parser/';
 use CA::SimpleDB;
 
@@ -50,9 +51,7 @@ sub lastGid {
 
 sub gameData {
     my ($what, $gid) = @_;
-    my $sth = $dbh->prepare(
-        qq/SELECT $what FROM games WHERE id=?/
-    );
+    my $sth = $dbh->prepare("SELECT $what FROM games WHERE id=?");
     $sth->execute($gid);
     return $sth->fetchrow() 
 		or return "CA (warn): Couldn't find data on GID $gid";
@@ -83,15 +82,91 @@ sub ts2seconds {
     return $t[0]*60 + $t[1];
 }
 
-# subroutine: flushTable
+# subroutine: usingMod ($gid)
 # -------------------------------------------------------------
-# Flushes (truncates) tables
+# Checks to see if the game is running any mod (like pam4)
 
-sub flushTable {
-	$dbh->do('TRUNCATE TABLE games');
-	$dbh->do('TRUNCATE TABLE players');
-	$dbh->do('TRUNCATE TABLE kills');
-	$dbh->do('TRUNCATE TABLE hits');
+sub usingMod {
+	my($gid) = @_;
+	my $row = $dbh->selectrow_hashref('SELECT mods FROM games WHERE id=?',
+		undef, $gid);
+		
+	if($row->{mods} eq 'none') {
+		return;
+	} else { return 1; } 
 }
 
+# subroutine: assignTeam ($player, $team, $gid)
+# -------------------------------------------------------------
+# Put the player on the team parsed from damage hits
+
+sub assignTeam {
+	my($player, $team, $gid) = @_;
+	$dbh->do('UPDATE players SET team=? WHERE handle=? AND gid=?',
+		undef, $team, $player, $gid)
+		or croak "CA (error): Couldn't assign team: " . DBI->errstr;
+}
+
+# subroutine: playerExist ($player, $gid)
+# -------------------------------------------------------------
+# Checks the existens of a player (so we don't add him twice)
+
+sub playerExist {
+	my($player, $gid) = @_;
+
+	my $sth = $dbh->prepare("SELECT id FROM players WHERE handle=? AND gid=?");
+    $sth->execute($player, $gid);
+		
+	if($sth->rows() == 0) {
+		return;
+	} else { return 1; }
+}
+
+# subroutine: round ($gid, $decimal)
+# -------------------------------------------------------------
+# Round function used in the elo-rating
+
+sub round {
+	my $number = shift || 0;
+	my $dec = 10 ** (shift || 0);
+	return int( $dec * $number + .5 * ($number <=> 0)) / $dec;
+}
+
+# subroutine: changeHandle ($handle, $hash, $gid)
+# -------------------------------------------------------------
+# Change the players nick
+
+sub changeHandle {
+	my($handle, $hash, $gid) = @_;
+	
+	# Old handle
+	my $row = $dbh->selectrow_hashref(
+		'SELECT handle AS old_handle FROM players WHERE hash=? AND gid=?',
+		undef, $hash, $gid);
+		
+	$dbh->do('UPDATE players SET handle=? WHERE hash=? AND gid=?',
+		undef, $handle, $hash, $gid);
+		
+	$dbh->do('UPDATE kills SET killer=? WHERE killer=? AND gid=?',
+		undef, $handle, $row->{old_handle}, $gid);
+		
+	$dbh->do('UPDATE kills SET corpse=? WHERE corpse=? AND gid=?',
+		undef, $handle, $row->{old_handle}, $gid);
+		
+	$dbh->do('UPDATE hits SET hitman=? WHERE hitman=? AND gid=?',
+		undef, $handle, $row->{old_handle}, $gid);
+		
+	$dbh->do('UPDATE hits SET wounded=? WHERE wounded=? AND gid=?',
+		undef, $handle, $row->{old_handle}, $gid);
+		
+	$dbh->do('UPDATE hits SET hitman=? WHERE hitman=? AND gid=?',
+		undef, $handle, $row->{old_handle}, $gid);
+	
+	# Don't know what to do with profiles yet, so..
+	eval {
+		$dbh->do('UPDATE profiles SET handle=? WHERE handle=?',
+			undef, $handle, $row->{old_handle}, $gid);
+	};
+}
+		
 1;

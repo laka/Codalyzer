@@ -66,28 +66,67 @@ sub addNewPlayer {
 	my($args) = @_;
 	$args->{handle} =~ s/\s+$//;
 	
-	my($sth, @bind) = $orm->insert('players', \%$args);
-	
-	$dbh->do($sth, undef, @bind) 
-		or croak "CA (error): Couldn't add new player: " . DBI->errstr;
+	if(CA::Common::playerExist($args->{handle}, $args->{gid})) {
+		return;
+	} 
+	else {
+		my($sth, @bind) = $orm->insert('players', \%$args);
+		$dbh->do($sth, undef, @bind) 
+			or croak "CA (error): Couldn't add new player: " . DBI->errstr;
+	}
 }
 
 sub addDamageHit {
 	my($args) = @_;
+	$args->{mods} =~ s/MOD_//;
 	
 	my($sth, @bind) = $orm->insert('hits', \%$args);
 	
 	$dbh->do($sth, undef, @bind)
-		or croak "CA (error): Couldn't add new player: " . DBI->errstr;
+		or croak "CA (error): Couldn't add damage hit: " . DBI->errstr;
+	
+	# In CoD and Cod:MW teams are not specified with kills, only hits
+	# (NOTE: But mods like pam4 and promod supports this)
+	if(not(CA::Common::usingMod($args->{gid}))) {
+		CA::Common::assignTeam($args->{hitman}, $args->{h_team}, $args->{gid});
+		CA::Common::assignTeam($args->{wounded}, $args->{w_team}, $args->{gid});
+	}
+	
+	# Nick changes are not logged, so we have to double check
+	if(not(CA::Common::playerExist($args->{hitman}, $args->{gid}))) {
+		CA::Common::changeHandle($args->{killer}, $args->{h_hash}, $args->{gid});
+	}
+	if(not(CA::Common::playerExist($args->{wounded}, $args->{gid}))) {
+		CA::Common::changeHandle($args->{corpse}, $args->{w_hash}, $args->{gid});
+	}
 }
 
 sub addKill {
 	my($args) = @_;
+	$args->{mods} =~ s/MOD_//;
+	
+	# Convert mods to weapons (MELEE == Knife)
+	if(exists($CA::Config::Mods{$args->{mods}})) {
+		$args->{weapon} = $CA::Config::Mods{$args->{mods}};
+	}
+	
+	# Silly
+	if($args->{weapon} eq 'deserteaglegold_mp') {
+		$args->{weapon} = 'deserteagle_mp';
+	}
 	
 	my($sth, @bind) = $orm->insert('kills', \%$args);
 	
 	$dbh->do($sth, undef, @bind)
-		or croak "CA (error): Couldn't add new player: " . DBI->errstr;
+		or croak "CA (error): Couldn't add kill: " . DBI->errstr;
+
+	# Nick changes are not logged, so we have to double check
+	if(not(CA::Common::playerExist($args->{killer}, $args->{gid}))) {
+		CA::Common::changeHandle($args->{killer}, $args->{k_hash}, $args->{gid});
+	}
+	if(not(CA::Common::playerExist($args->{corpse}, $args->{gid}))) {
+		CA::Common::changeHandle($args->{corpse}, $args->{c_hash}, $args->{gid});
+	}
 }
 
 sub addQuote {

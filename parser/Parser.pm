@@ -37,7 +37,7 @@ sub parser {
 	#my @to_parse = @rawfile[$linestart..$#rawfile];
 	
 	# ONLY FOR TESTING
-	CA::Common::flushTable();
+	CA::SimpleDB::flushTable();
 	my $version = "cod40";
 	my @to_parse = read_file("pam4.log");
 	

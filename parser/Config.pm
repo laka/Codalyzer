@@ -29,4 +29,11 @@ sub readConfig {
     return %config;
 }
 
+# Weapon modification map
+our %Mods = (
+    'GRENADE_SPLASH EXPLOSIVE' => 'grenade_dh',
+    'MELEE' => 'knife',
+    'EXPLOSIVE' => 'bomb',
+);
+
 1;

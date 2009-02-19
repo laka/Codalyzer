@@ -71,6 +71,17 @@ sub updateRow {
 	$sth->execute(map { $updates->{$_} } @cols);
 }
 
+# subroutine: flushTable
+# -------------------------------------------------------------
+# Flushes (truncates) tables
+
+sub flushTable {
+	$dbh->do('TRUNCATE TABLE games');
+	$dbh->do('TRUNCATE TABLE players');
+	$dbh->do('TRUNCATE TABLE kills');
+	$dbh->do('TRUNCATE TABLE hits');
+}
+
 END {
 	our $dbh;
     $dbh->disconnect;
