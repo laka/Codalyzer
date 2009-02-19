@@ -1,4 +1,4 @@
-    <ul>
+    <ul id="navigation">
         <li><a href="?p=parser">Parser settings</a></li>
         <li><a href="?p=frontend">Frontend settings</a></li>
         <li><a href="?p=database">Database settings</a></li>

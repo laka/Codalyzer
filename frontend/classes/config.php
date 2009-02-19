@@ -37,7 +37,7 @@ class config {
                     $configfile[$line] = "$key=$value\n";
                 }
             }
-            $this->iniWrite ($configfile);
+            return $this->iniWrite ($configfile);
         }
     }
     
@@ -48,8 +48,11 @@ class config {
             fwrite($handle, $line) 
                 or die('<strong>Error:</strong> Could not write to config file.');
         }
-        copy($temp_file, $this->file);
-        fclose($handle);
+        if(copy($temp_file, $this->file)){
+            fclose($handle);         
+            return true;
+        }
+        return false;
     }
 }
 ?>

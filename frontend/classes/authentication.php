@@ -10,7 +10,11 @@ class authentication {
     private $connection, $loginurl;
     
     function __construct($loginurl){
-        $this->db = database::getInstance();
+        $this->connection = @mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS)
+            or die ('<strong>Error:</strong> Could not connect to the database, unable to log in. Refer to the documentation for support.');
+		@mysql_select_db(MYSQL_DB, $this->connection)
+            or die ('<strong>Error:</strong> Could not connect to the database, unable to log in. Refer to the documentation for support.');
+            
         $this->loginurl = $loginurl;
         
         if(!$this->isAuthorized()){
@@ -22,7 +26,7 @@ class authentication {
 
                 // check if the user exists
                 $sql = "SELECT * FROM users WHERE username='" . $username . "' AND password = MD5('" . $password . "')";
-                $result = $this->db->sqlResult($sql);
+                $result = mysql_query($sql);
                 if(mysql_num_rows($result) == 1){
                     $this->authorize ();
                     header("Location: ".$this->loginurl);
