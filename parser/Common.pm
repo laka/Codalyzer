@@ -132,6 +132,14 @@ sub round {
 	return int( $dec * $number + .5 * ($number <=> 0)) / $dec;
 }
 
+# subroutine: missingTeam ($player, $gid)
+# -------------------------------------------------------------
+# Check if the player is missing team membership
+
+sub missingTeam {
+
+}
+
 # subroutine: changeHandle ($handle, $hash, $gid)
 # -------------------------------------------------------------
 # Change the players nick
@@ -167,6 +175,15 @@ sub changeHandle {
 		$dbh->do('UPDATE profiles SET handle=? WHERE handle=?',
 			undef, $handle, $row->{old_handle}, $gid);
 	};
+}
+
+# subroutine: try2findTeam ($need_team, $has_team, $gid)
+# -------------------------------------------------------------
+# Setting the oppsite team of the killer/corpse, if they
+# have any
+
+sub try2findTeam {
+	my($need, $has, $gid) = @_;
 }
 		
 1;

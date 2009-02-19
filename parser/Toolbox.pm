@@ -127,6 +127,15 @@ sub addKill {
 	if(not(CA::Common::playerExist($args->{corpse}, $args->{gid}))) {
 		CA::Common::changeHandle($args->{corpse}, $args->{c_hash}, $args->{gid});
 	}
+	
+	# If we still not haven't found a team for the player, we try the set
+	# the oppsite team of the killer/corpse (if they have any)
+	if(CA::Common::missingTeam($args->{killer}, $args->{gid})) {
+		CA::Common::try2findTeam($args->{killer}, $args->{corpse}, $args->{gid});
+	}
+	if(CA::Common::missingTeam($args->{corpse}, $args->{gid})) {
+		CA::Common::try2findTeam($args->{corpse}, $args->{killer}, $args->{gid});
+	}
 }
 
 sub addQuote {
