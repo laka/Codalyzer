@@ -87,13 +87,13 @@ sub addDamageHit {
 	
 	# In CoD and Cod:MW teams are not specified with kills, only hits
 	# (NOTE: But mods like pam4 and promod supports this)
-	if(not(CA::Common::usingMod($args->{gid}))
-		&& (CA::Common::missingTeam($args->{hitman}, $args->{gid}))) {
+	if(not(CA::Common::usingMod($args->{gid}))) {
+		if(CA::Common::missingTeam($args->{hitman}, $args->{gid})) {
 			CA::Common::assignTeam($args->{hitman}, $args->{h_team}, $args->{gid});
-	}
-	if(not(CA::Common::usingMod($args->{gid}))
-		&& (CA::Common::missingTeam($args->{wounded}, $args->{gid}))) {
+		}
+		if(CA::Common::missingTeam($args->{wounded}, $args->{gid})) {
 			CA::Common::assignTeam($args->{wounded}, $args->{w_team}, $args->{gid});
+		}
 	}
 	
 	# Nick changes are not logged, so we have to double check
