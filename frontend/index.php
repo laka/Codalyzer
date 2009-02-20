@@ -6,6 +6,7 @@
 	**************************************************************
 */
 
+session_start();
 $start = (float) microtime();
 
 include 'classes/config.php';

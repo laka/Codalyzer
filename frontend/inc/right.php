@@ -7,6 +7,11 @@
 */
 ?>
 
+<h2>Select language</h2>
+<?php
+    include FRONTEND_PATH . '/inc/langselect.php';
+?>
+
 <h2>10 best players</h2>
 <?php
     include FRONTEND_PATH . '/inc/bestplayers.php';
