@@ -15,7 +15,7 @@ $lang['h_rounds']         = 'Runder';
 $lang['h_maps']           = 'Baner';
 $lang['h_modes']          = 'Spillmodus';
 $lang['h_players']        = 'Spillere';
-$lang['h_weapons']        = 'Våpen';
+$lang['h_weapons']        = 'VÃ¥pen';
  
 // TABLE TITLES
 $lang['tt_bestplayers']    = 'Beste spillere';
@@ -32,7 +32,7 @@ $lang['th_kills']          = 'Drap';
 $lang['th_score']          = 'Poeng'; 
 $lang['th_ping']           = 'Ping'; 
 $lang['th_suicides']       = 'Selvmord'; 
-$lang['th_deaths']         = 'Død';
+$lang['th_deaths']         = 'DÃ¸d';
 $lang['th_players']        = 'Spillere';
 $lang['th_player']         = 'Spiller';
 $lang['th_games']          = 'Runder';
@@ -52,6 +52,6 @@ $lang['abb_avgdiffr']      = 'Diff/r';
 // MISC
 $lang['m_page']            = 'Side';
 $lang['m_minutes']         = '(minutter)';
-$lang['m_offline']         = 'Serveren er ikke tilkoblet for øyeblikket.';
-$lang['m_onlineat']        = 'Serveren er online, på banen ';
+$lang['m_offline']         = 'Serveren er ikke tilkoblet for Ã¸yeblikket.';
+$lang['m_onlineat']        = 'Serveren er online, pÃ¥ banen ';
  ?>
