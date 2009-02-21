@@ -7,6 +7,7 @@ package CA::Toolbox;
 use strict;
 use warnings;
 use SQL::Abstract;
+use List::Util qw(max min);
 use Carp;
 use lib '/home/homer/ju/jussimik/CA-Parser/';
 use CA::SimpleDB;
@@ -64,7 +65,6 @@ sub addNewGame {
 
 sub addNewPlayer {
 	my($args) = @_;
-	$args->{handle} =~ s/\s+$//;
 	
 	if(CA::Common::playerExist($args->{handle}, $args->{gid})) {
 		return;
@@ -73,6 +73,9 @@ sub addNewPlayer {
 		my($sth, @bind) = $orm->insert('players', \%$args);
 		$dbh->do($sth, undef, @bind) 
 			or croak "CA (error): Couldn't add new player: " . DBI->errstr;
+
+		# Add a profile to the player
+		CA::Common::makeProfile($args->{handle});
 	}
 }
 
@@ -140,11 +143,16 @@ sub addKill {
 	if(CA::Common::missingTeam($args->{corpse}, $args->{gid})) {
 		CA::Common::try2findTeam($args->{corpse}, $args->{killer}, $args->{gid});
 	}
+	
+	# Don't think we need this after all..
+	#if(CA::Common::usingMod($args->{gid})) {
+	#	CA::Common::assignTeam($args->{killer}, $args->{k_team}, $args->{gid});
+	#	CA::Common::assignTeam($args->{corpse}, $args->{c_team}, $args->{gid});
+	#}
 }
 
 sub addQuote {
 	my($args) = @_;
-	$args->{quote} =~ s/^U//;
 	
 	my($sth, @bind) = $orm->insert('quotes', \%$args);
 	
@@ -153,15 +161,45 @@ sub addQuote {
 }
 
 sub addAction {
-
+	my($args) = @_;
+	
+	my($sth, @bind) = $orm->insert('actions', \%$args);
+	
+	$dbh->do($sth, undef, @bind)
+		or croak "CA (error): Couldn't add action: " . DBI->errstr;
 }
 
 sub addGameResult {
-
+	my($args) = @_;
+	my $high = max($args->{score1}, $args->{score2});
+	my $low = min($args->{score1}, $args->{score2});
+	
+	delete $args->{score1}; 
+	delete $args->{score2};
+	
+	if($args->{winner} eq 'axis') {
+		$args->{axisscore} = $high;
+		$args->{alliesscore} = $low;
+	} else {
+		$args->{axisscore} = $low;
+		$args->{alliesscore} = $high;
+	}
+	
+	delete $args->{winner};
+	
+	my %where = (id => $args->{id});
+	my($sth, @bind) = $orm->update('games', \%$args, \%where);
+	
+	$dbh->do($sth, undef, @bind)
+		or croak "CA (error): Couldn't update game result: " . DBI->errstr;
 }
 
 sub addFinished {
+	my($args) = @_;
 
+	$dbh->do('UPDATE games SET stop=? WHERE id=?',
+		undef, $args->{ts}, $args->{id})
+		or croak "CA (error): Couldn't set game stop " . DBI->errstr;
 }
 
 sub addExitLevel {
@@ -172,11 +210,30 @@ sub addExitLevel {
 }
 
 sub addJoinTeam {
-
+	my($args) = @_;
+	
+	# We don't wanna update teams after the match is over
+	return if CA::Common::gameOver($args->{gid});
+	
+	# We flip the teams (because they change sides after 10 rounds)
+	$args->{team} = (($args->{team} eq 'axis') ? 'allies' : 'axis');
+	
+	$dbh->do('UPDATE players SET team=? WHERE handle=? AND gid=?',
+		undef, $args->{team}, $args->{handle}, $args->{gid})
+		or croak "CA (error): Couldn't set player team: " . DBI->errstr;
 }
 
 sub addRoundStart {
-
+	my($args) = @_;
+	
+	# Mark the game as a clanmatch
+	CA::Common::going2war($args->{id}, $args->{rcount});
+	
+	my %where = (id => $args->{id});
+	my($sth, @bind) = $orm->update('games', \%$args, \%where);
+	
+	$dbh->do($sth, undef, @bind)
+		or croak "CA (error): Couldn't update game rcount: " . DBI->errstr;
 }
 
 sub addRoundWin {

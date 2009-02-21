@@ -12,6 +12,7 @@ use CA::SimpleDB;
 use CA::Common;
 use CA::Toolbox;
 use CA::Regex;
+use CA::Core;
 
 my $dbh = CA::SimpleDB::getDbh();
 
@@ -29,6 +30,7 @@ my $dbh = CA::SimpleDB::getDbh();
 # ONLY FOR TESTING
 END {
 	parser();
+	CA::Core::handler();
 }
 
 sub parser {
@@ -58,7 +60,7 @@ sub parser {
 																	gid => $gid,
 																	ts => CA::Common::ts2seconds($1),
 																	hash => substr($2, -8),
-																	handle => $3}); 
+																	handle => CA::Common::niceString($3)}); 
 																	next LINE;
 															};
 		
@@ -66,10 +68,10 @@ sub parser {
 																	ts => CA::Common::ts2seconds($1),
 																	w_hash => substr($2, -8),
 																	w_team => $3,
-																	wounded => $4,
+																	wounded => CA::Common::niceString($4),
 																	h_hash => substr($5, -8),
 																	h_team => $6,
-																	hitman => $7,
+																	hitman => CA::Common::niceString($7),
 																	weapon => $8,
 																	damage => $9,
 																	mods => $10,
@@ -82,10 +84,10 @@ sub parser {
 																	ts => CA::Common::ts2seconds($1),
 																	c_hash => substr($2, -8),
 																	c_team => $3,
-																	corpse => $4,
+																	corpse => CA::Common::niceString($4),
 																	k_hash => substr($5, -8),
 																	k_team => $6,
-																	killer => $7,
+																	killer => CA::Common::niceString($7),
 																	weapon => $8,
 																	damage => $9,
 																	mods => $10,
@@ -96,8 +98,8 @@ sub parser {
 		
 		/$CA::Regex::Parser{Quotes}{$version}/		&& do { CA::Toolbox::addQuote({
 																	ts => CA::Common::ts2seconds($1),
-																	handle => $2,
-																	quote => $3,
+																	handle => CA::Common::niceString($2),
+																	quote => CA::Common::niceString($3),
 																	gid => $gid}); 
 																	next LINE; 		
 															};
@@ -105,22 +107,22 @@ sub parser {
 		/$CA::Regex::Parser{Action}{$version}/		&& do { CA::Toolbox::addAction({
 																	ts => CA::Common::ts2seconds($1),
 																	action => $2,
-																	player => $3,
-																	team => $4}); 
+																	handle => CA::Common::niceString($3),
+																	gid => $gid}); 
 																	next LINE; 
 															};
 																	
 		/$CA::Regex::Parser{Result}{$version}/		&& do { CA::Toolbox::addGameResult({
-																	ts => CA::Common::ts2seconds($1),
-																	winner => $2,
-																	score1 => $3,
-																	score2 => $4}); 
+																	winner => $1,
+																	score1 => $2,
+																	score2 => $3,
+																	id => $gid}); 
 																	next LINE;
 															};
 																	
 		/$CA::Regex::Parser{Finish}{$version}/		&& do { CA::Toolbox::addFinished({
 																	ts => CA::Common::ts2seconds($1),
-																	string => $2}); 
+																	id => $gid});
 																	next LINE; 
 															};
 																	
@@ -134,13 +136,14 @@ sub parser {
 																	ts => CA::Common::ts2seconds($1),
 																	hash => $2,
 																	team => $3,
-																	handle => $4}); 
+																	handle => CA::Common::niceString($4),
+																	gid => $gid}); 
 																	next LINE; 
 															};
 		
 		/$CA::Regex::Parser{Roundstart}{$version}/	&& do { CA::Toolbox::addRoundStart({
-																	ts => CA::Common::ts2seconds($1),
-																	nr => $2}); 
+																	rcount => $1,
+																	id => $gid}); 
 																	next LINE; 
 															};
 																	
@@ -154,7 +157,7 @@ sub parser {
 		/$CA::Regex::Parser{Timeout}{$version}/		&& do { CA::Toolbox::addTimeOut({
 																	ts => CA::Common::ts2seconds($1),
 																	team => $2,
-																	who => $3}); 
+																	who => CA::Common::niceString($3)}); 
 																	next LINE; 
 															};
 		

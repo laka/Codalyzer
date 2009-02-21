@@ -113,11 +113,21 @@ sub assignTeam {
 
 sub playerExist {
 	my($player, $gid) = @_;
-
+	
+	#print "Checking $player in game $gid..\n";
+	
 	my $sth = $dbh->prepare("SELECT id FROM players WHERE handle=? AND gid=?");
     $sth->execute($player, $gid);
 	
-	($sth->rows() == 0) ? return : return 1;
+	if($sth->rows() == 0) {
+		#print "\tPlayer $player does NOT exist\n";
+		#sleepFor(1);
+		return;
+	} else {
+		#print "\tPlayer $player does exist\n";
+		#sleepFor(1);
+		return 1;
+	}
 }
 
 # subroutine: round ($gid, $decimal)
@@ -204,5 +214,123 @@ sub try2findTeam {
 		undef, $team, $need, $gid)
 		or croak "CA (error): Couldn't update opposite team: " . DBI->errstr;
 }
+
+# subroutine: gameOver ($gid)
+# -------------------------------------------------------------
+# Returns true if a game has passed more then 5 round (because
+# then we don't need to assign teams anymore)
+
+sub gameOver {
+	my($gid) = @_;
+	
+	my $row = $dbh->selectrow_hashref('SELECT rcount FROM games WHERE id=?',
+		undef, $gid);
+	
+	if($row->{rcount}) {
+		($row->{rcount} > 5) ? return 1 : return;
+	}
+}
+
+# subroutine: cleanUpGames 
+# -------------------------------------------------------------
+# First of all, delete matches where round count is 1 or less
+
+sub cleanUpGames {
+	my($gid) = @_;
 		
+	my $rcount = gameData('rcount', $gid);
+	if($rcount <= 1) {
+		deleteGame($gid);
+	}
+	
+	my $row = $dbh->selectrow_hashref(
+		'SELECT COUNT(*) AS num FROM kills WHERE gid=?',
+		undef, $gid);
+	
+	if($row->{num} < 5) {
+		deleteGame($gid);
+	}
+}
+
+sub deleteGame {
+	my($gid) = @_;
+	$dbh->do('DELETE FROM games WHERE id=?', undef, $gid);
+	$dbh->do('DELETE FROM actions WHERE gid=?', undef, $gid);
+	$dbh->do('DELETE FROM kills WHERE gid=?', undef, $gid);
+	$dbh->do('DELETE FROM hits WHERE gid=?', undef, $gid);
+	$dbh->do('DELETE FROM quotes WHERE gid=?', undef, $gid);
+	$dbh->do('DELETE FROM players WHERE gid=?', undef, $gid);
+	$dbh->do('DELETE FROM streaks WHERE gid=?', undef, $gid);
+}
+
+# subroutine: going2war ($gid, $rcount)
+# -------------------------------------------------------------
+# Mark a game as a war (clanmatch)
+
+sub going2war {
+	my($gid, $rcount) = @_;
+	
+	# Allready marked
+	return if $rcount > 1;
+	
+	$dbh->do('UPDATE games SET war=? WHERE id=?',
+		undef, 1, $gid)
+		or croak "CA (error): Couldn't set clanmatch " . DBI->errstr;
+}
+
+# subroutine: makeProfile ($handle)
+# -------------------------------------------------------------
+# Mark a game as a war (clanmatch)
+
+sub makeProfile {
+	my($player) = @_;
+	
+	#$dbcon->do('INSERT INTO profiles (handle) VALUES(?)',
+    #    undef, $handle);
+}
+
+sub sumKills {
+
+}
+
+sub sumDeaths {
+
+}
+
+sub sumSuicides {
+	
+}
+
+sub currentElo {
+
+}
+
+sub niceString {
+	my($string) = @_;
+
+	for($string) {
+		s/^U//;
+		s/\s+$//;
+		s/^\s+//;
+	}
+	return $string;
+}
+
+sub sleepFor {
+	my($duration) = @_;
+	select undef, undef, undef, $duration;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 1;

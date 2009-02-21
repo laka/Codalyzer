@@ -81,7 +81,7 @@ our %Parser = (
         cod15 => '',
         cod20 => '',
         cod30 => '',
-        cod40 => qr/(\d+:\d+)\sRS;(.*)/,
+        cod40 => qr/\d+:\d+\sRS;(.*)/,
         cod50 => '',
     },
     Roundwin => {
@@ -97,7 +97,7 @@ our %Parser = (
         cod15 => '',
         cod20 => '',
         cod30 => '',
-        cod40 => qr/(\d+:\d+)\sA;(bomb_[planted|defused]);(.*?);(.*)/,
+        cod40 => qr/(\d+:\d+)\sA;(bomb.*);.*?;(.*)/,
         cod50 => '',
     },
 	Pickups => {
@@ -125,7 +125,7 @@ our %Parser = (
         cod15 => '',
         cod20 => '',
         cod30 => '',
-        cod40 => qr/(\d+:\d+)\sMO;(.*?);(.*?);(.*)/,
+        cod40 => qr/\d+:\d+\sMO;(.*?);(.*?);(.*)/,
         cod50 => '',
     },
     Winners => {
@@ -133,7 +133,7 @@ our %Parser = (
         cod15 => '',
         cod20 => '',
         cod30 => '',
-        cod40 => qr/(\d+:\d+)\sW;(.*?);(.*)/,
+        cod40 => qr/(\d+:\d+)\sW;(.*)/,
         cod50 => '',
     },
     Loosers => {
@@ -141,7 +141,7 @@ our %Parser = (
         cod15 => '',
         cod20 => '',
         cod30 => '',
-        cod40 => qr/(\d+:\d+)\sL;(.*?);(.*)/,
+        cod40 => qr/(\d+:\d+)\sL;(.*)/,
         cod50 => '',
     },
 );
