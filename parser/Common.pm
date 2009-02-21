@@ -299,6 +299,7 @@ sub addProfileData {
 	sumSuicides($player);
 	currentElo($player);
 	sumGames($player);
+	getClanTag($player);
 }
 
 sub sumKills {
@@ -398,10 +399,68 @@ sub lastElo {
 	}
 }
 
-sub trashZombies {
-	my($player) = @_;
+sub killZombies {
+	my $query = $dbh->prepare('SELECT gid,handle FROM players WHERE team="" AND elo IS NULL');
+	$query->execute();
 	
+	while(my $ref = $query->fetchrow_hashref()) {
+		my $kills = $dbh->prepare('SELECT COUNT(*) AS count FROM kills WHERE killer=? AND gid=?');
+		$kills->execute($ref->{handle}, $ref->{gid});
+		
+		if($kills->rows() <= 1) {
+			deletePlayer($ref->{handle}, $ref->{gid});
+		}
+	}
 }
 
+sub deletePlayer {
+	my($player, $gid) = @_;
+	$dbh->do('DELETE FROM players WHERE handle=? AND gid=?', undef, $player, $gid);
+	$dbh->do('DELETE FROM quotes WHERE handle=? AND gid=?', undef, $player, $gid);
+	$dbh->do('DELETE FROM hits WHERE (hitman=? OR wounded=?) AND gid=?', undef, $player, $player, $gid);
+	$dbh->do('DELETE FROM actions WHERE handle=? AND gid=?', undef, $player, $gid);
+	$dbh->do('DELETE FROM kills WHERE (killer=? OR corpse=?) AND gid=?', undef, $player, $player, $gid);
+}
+
+sub cleanUpProfiles {
+	$dbh->do('DELETE FROM profiles WHERE games="0"');
+}
+
+sub getClanTag {
+	my($player) = @_;
+	my $clan = 'NO_MATCH';
+
+	if(missingClan($player)) {
+		if($player =~ /(\w+).*?(\w+)$/) {
+			$clan = $1;
+		}
+		$dbh->do('UPDATE profiles SET clan=? WHERE handle=?',
+        undef, $clan, $player)
+		or croak "CA (error): Couldn't set profile clan " . DBI->errstr;
+	}
+}
+
+sub searchClanTag {
+	my $tags = $dbh->prepare('SELECT DISTINCT(clan) FROM profiles WHERE clan !=? AND clan IS NOT NULL');
+	$tags->execute('NO_MATCH');
+	
+	# It's 06:45 and I just can't get the query to act normal with placeholders.. wtf
+	while(my $ref = $tags->fetchrow_hashref()) {
+		$dbh->do('UPDATE profiles SET clan="'.$ref->{clan}.'" WHERE handle LIKE "%'.$ref->{clan}.'%"');
+			#undef, $ref->{clan}, $ref->{clan})
+			#or croak "CA (error): Couldn't set public clan " . DBI->errstr;
+	}
+}
+
+sub missingClan {
+	my($player) = @_;
+	
+	my $sth = $dbh->prepare('SELECT clan FROM profiles WHERE handle=? AND clan IS NOT NULL AND clan !=?');
+    $sth->execute($player, 'NO_MATCH');
+	
+	if($sth->rows() == 0) {
+		return 1;
+	} else { return; }
+}
 
 1;
