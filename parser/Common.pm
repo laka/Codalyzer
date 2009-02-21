@@ -16,7 +16,6 @@ my $dbh = CA::SimpleDB::getDbh();
 # -------------------------------------------------------------
 # Dropping the user to an interactive shell where he has
 # full access to the entire application (through commands)
-
 sub interactiveCmd {
     print "Command: ";
     my $command = <STDIN>;
@@ -37,7 +36,6 @@ sub interactiveCmd {
 # subroutine: lastGid
 # -------------------------------------------------------------
 # Returns the last game id found in the games table
-
 sub lastGid {
 	my $row = $dbh->selectrow_hashref("
 		SELECT id FROM games ORDER BY id DESC LIMIT 1
@@ -48,7 +46,6 @@ sub lastGid {
 # subroutine: gameData ($what, $gid)
 # -------------------------------------------------------------
 # Lookup function for the games table
-
 sub gameData {
     my ($what, $gid) = @_;
     my $sth = $dbh->prepare("SELECT $what FROM games WHERE id=?");
@@ -61,7 +58,6 @@ sub gameData {
 # -------------------------------------------------------------
 # Translates the Call of Duty name to a number
 # Like CoD:MW is number 4 in the serie
-
 sub name2version {
 	my($version) = @_;
 	my %map = (
@@ -76,7 +72,6 @@ sub name2version {
 # subroutine: ts2seconds ($ts)
 # -------------------------------------------------------------
 # Converts timestamps in the log to seconds
-
 sub ts2seconds {
     my @t = split(':', $_[0]);
     return $t[0]*60 + $t[1];
@@ -85,7 +80,6 @@ sub ts2seconds {
 # subroutine: usingMod ($gid)
 # -------------------------------------------------------------
 # Checks to see if the game is running any mod (like pam4)
-
 sub usingMod {
 	my($gid) = @_;
 	my $row = $dbh->selectrow_hashref('SELECT mods FROM games WHERE id=?',
@@ -99,7 +93,6 @@ sub usingMod {
 # subroutine: assignTeam ($player, $team, $gid)
 # -------------------------------------------------------------
 # Put the player on the team parsed from damage hits
-
 sub assignTeam {
 	my($player, $team, $gid) = @_;
 	$dbh->do('UPDATE players SET team=? WHERE handle=? AND gid=?',
@@ -110,7 +103,6 @@ sub assignTeam {
 # subroutine: playerExist ($player, $gid)
 # -------------------------------------------------------------
 # Checks the existens of a player (so we don't add him twice)
-
 sub playerExist {
 	my($player, $gid) = @_;
 	
@@ -133,7 +125,6 @@ sub playerExist {
 # subroutine: round ($gid, $decimal)
 # -------------------------------------------------------------
 # Round function used in the elo-rating
-
 sub round {
 	my $number = shift || 0;
 	my $dec = 10 ** (shift || 0);
@@ -143,7 +134,6 @@ sub round {
 # subroutine: missingTeam ($player, $gid)
 # -------------------------------------------------------------
 # Check if the player is missing team membership
-
 sub missingTeam {
 	my($player, $gid) = @_;
 	
@@ -159,7 +149,6 @@ sub missingTeam {
 # subroutine: changeHandle ($handle, $hash, $gid)
 # -------------------------------------------------------------
 # Change the players nick
-
 sub changeHandle {
 	my($handle, $hash, $gid) = @_;
 	
@@ -197,7 +186,6 @@ sub changeHandle {
 # -------------------------------------------------------------
 # Setting the oppsite team of the killer/corpse, if they
 # have any
-
 sub try2findTeam {
 	my($need, $has, $gid) = @_;
 	my $team;
@@ -219,7 +207,6 @@ sub try2findTeam {
 # -------------------------------------------------------------
 # Returns true if a game has passed more then 5 round (because
 # then we don't need to assign teams anymore)
-
 sub gameOver {
 	my($gid) = @_;
 	
@@ -234,7 +221,6 @@ sub gameOver {
 # subroutine: cleanUpGames  ($gid)
 # -------------------------------------------------------------
 # Find games to delete
-
 sub cleanUpGames {
 	my($gid) = @_;
 		
@@ -255,7 +241,6 @@ sub cleanUpGames {
 # subroutine: deleteGame ($gid)
 # -------------------------------------------------------------
 # ..and then delete them
-
 sub deleteGame {
 	my($gid) = @_;
 	$dbh->do('DELETE FROM games WHERE id=?', undef, $gid);
@@ -270,7 +255,6 @@ sub deleteGame {
 # subroutine: going2war ($gid, $rcount)
 # -------------------------------------------------------------
 # Mark a game as a war (clanmatch)
-
 sub going2war {
 	my($gid, $rcount) = @_;
 	
@@ -285,23 +269,28 @@ sub going2war {
 # subroutine: makeProfile ($handle)
 # -------------------------------------------------------------
 # Mark a game as a war (clanmatch)
-
 sub makeProfile {
 	my($player) = @_;
 	$dbh->do('INSERT INTO profiles (handle) VALUES(?)',
 		undef, $player);
 }
 
+# subroutine: addProfileData ($player)
+# -------------------------------------------------------------
+# Add data to existing profiles
 sub addProfileData {
 	my($player) = @_;
 	sumKills($player);
 	sumDeaths($player);
 	sumSuicides($player);
-	currentElo($player);
 	sumGames($player);
-	getClanTag($player);
+	addLastElo($player);
+	addClanTag($player);
 }
 
+# subroutine: sumKills ($killer)
+# -------------------------------------------------------------
+# Sum total player kills
 sub sumKills {
 	my($killer) = @_;
 	
@@ -313,6 +302,9 @@ sub sumKills {
         or croak "CA (error): Couldn't set profile kills " . DBI->errstr;
 }
 
+# subroutine: sumDeaths ($corpse)
+# -------------------------------------------------------------
+# Sum total player deaths
 sub sumDeaths {
 	my($corpse) = @_;
 	
@@ -324,6 +316,9 @@ sub sumDeaths {
 		or croak "CA (error): Couldn't set profile deaths " . DBI->errstr;
 }
 
+# subroutine: sumSuicides ($dead)
+# -------------------------------------------------------------
+# Sum total player suicides
 sub sumSuicides {
 	my($dead) = @_;
 	
@@ -335,6 +330,9 @@ sub sumSuicides {
 		or croak "CA (error): Couldn't set profile deaths " . DBI->errstr;
 }
 
+# subroutine: sumGames ($player)
+# -------------------------------------------------------------
+# Sum total player games
 sub sumGames {
 	my($player) = @_;
 	
@@ -346,19 +344,25 @@ sub sumGames {
 		or croak "CA (error): Couldn't set profile games " . DBI->errstr;
 }
 
-sub currentElo {
+# subroutine: addLastElo ($player)
+# -------------------------------------------------------------
+# Fetch the current elo and put it in profiles
+sub addLastElo {
 	my($player) = @_;
 	my $row = $dbh->selectrow_hashref(
 		'SELECT elo FROM players WHERE handle=? AND elo IS NOT NULL ORDER BY id DESC LIMIT 1',
 		undef, $player);
 	
-	$row->{elo} = (($row->{elo}) ? $row->{elo} : return 1000);
+	$row->{elo} = (($row->{elo}) ? $row->{elo} : 1000);
 		
 	$dbh->do('UPDATE profiles SET elo=? WHERE handle=?',
         undef, $row->{elo}, $player)
 		or croak "CA (error): Couldn't set profile elo " . DBI->errstr;
 }
 
+# subroutine: niceString ($string)
+# -------------------------------------------------------------
+# Clean up given string and remove trailing chars
 sub niceString {
 	my($string) = @_;
 
@@ -370,11 +374,17 @@ sub niceString {
 	return $string;
 }
 
+# subroutine: sleepFor ($duration)
+# -------------------------------------------------------------
+# Uses the 4th argument in select to sleep
 sub sleepFor {
 	my($duration) = @_;
 	select undef, undef, undef, $duration;
 }
 
+# subroutine: hasProfile ($player)
+# -------------------------------------------------------------
+# Returns true if the given player exists in profiles
 sub hasProfile {
 	my($player) = @_;
 	
@@ -386,6 +396,9 @@ sub hasProfile {
 	} else { return 1; }
 }
 
+# subroutine: lastElo ($player)
+# -------------------------------------------------------------
+# Grabs the last elo from players
 sub lastElo {
 	my($handle) = @_;
 	
@@ -399,6 +412,9 @@ sub lastElo {
 	}
 }
 
+# subroutine: killZombies ()
+# -------------------------------------------------------------
+# Add data to existing profiles
 sub killZombies {
 	my $query = $dbh->prepare('SELECT gid,handle FROM players WHERE team="" AND elo IS NULL');
 	$query->execute();
@@ -413,6 +429,9 @@ sub killZombies {
 	}
 }
 
+# subroutine: deletePlayer ($player)
+# -------------------------------------------------------------
+# Add data to existing profiles
 sub deletePlayer {
 	my($player, $gid) = @_;
 	$dbh->do('DELETE FROM players WHERE handle=? AND gid=?', undef, $player, $gid);
@@ -422,11 +441,17 @@ sub deletePlayer {
 	$dbh->do('DELETE FROM kills WHERE (killer=? OR corpse=?) AND gid=?', undef, $player, $player, $gid);
 }
 
+# subroutine: cleanUpProfiles
+# -------------------------------------------------------------
+# Deletes profiles where games = 0 or kills AND deaths = 0
 sub cleanUpProfiles {
 	$dbh->do('DELETE FROM profiles WHERE games="0" OR (kills="0" AND deaths="0")');
 }
 
-sub getClanTag {
+# subroutine: addClanTag ($player)
+# -------------------------------------------------------------
+# Grabs the clan tag off the player name and puts it in profiles
+sub addClanTag {
 	my($player) = @_;
 	my $clan = 'NO_MATCH';
 
@@ -443,6 +468,10 @@ sub getClanTag {
 	}
 }
 
+# subroutine: searchClanTag
+# -------------------------------------------------------------
+# Loops through all clans and updates profiles with no clan,
+# if their handle match the clantag
 sub searchClanTag {
 	my $tags = $dbh->prepare('SELECT DISTINCT(clan) FROM profiles WHERE clan !=? AND clan IS NOT NULL');
 	$tags->execute('NO_MATCH');
@@ -455,6 +484,9 @@ sub searchClanTag {
 	}
 }
 
+# subroutine: missingClan
+# -------------------------------------------------------------
+# Returns true if the player lacks clan
 sub missingClan {
 	my($player) = @_;
 	
@@ -466,14 +498,20 @@ sub missingClan {
 	} else { return; }
 }
 
+# subroutine: firstKillAndDeath
+# -------------------------------------------------------------
 sub firstKillAndDeath {
 	
 }
 
+# subroutine: lastKillAndDeath
+# -------------------------------------------------------------
 sub lastKillAndDeath {
 
 }
 
+# subroutine: playerRoundStamina
+# -------------------------------------------------------------
 sub playerRoundStamina {
 
 }

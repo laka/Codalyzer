@@ -41,22 +41,22 @@ sub parser {
 	# ONLY FOR TESTING
 	CA::SimpleDB::flushTable();
 	my $version = "cod40";
-	my @to_parse = read_file("pam4.log");
+	my @to_parse = read_file($ARGV[0]);
 	
 	LINE: for (@to_parse) {
 		my $gid = CA::Common::lastGid();
 		
-		# Check if line matches regex..					# ..and if so - do this (the sub name speaks for itself)
+		# Check if line matches regex				# And if so do this (the sub name speaks for itself)
 		/$CA::Regex::Parser{InitGame}{all}/			&& do { CA::Toolbox::addNewGame({ 
 																	start => CA::Common::ts2seconds($1),
 																	mods => $2,
 																	type => $3,
 																	version => $4,
-																	map => CA::Common::ts2seconds($5)});
+																	map => CA::Common::niceString($5)});
 																	next LINE; 
 															};
 																	
-		/$CA::Regex::Parser{Join}{$version}/			&& do { CA::Toolbox::addNewPlayer({
+		/$CA::Regex::Parser{Join}{$version}/		&& do { CA::Toolbox::addNewPlayer({
 																	gid => $gid,
 																	ts => CA::Common::ts2seconds($1),
 																	hash => substr($2, -8),
@@ -80,7 +80,7 @@ sub parser {
 																	next LINE; 
 															};
 		
-		/$CA::Regex::Parser{Kills}{$version}/			&& do { CA::Toolbox::addKill({
+		/$CA::Regex::Parser{Kills}{$version}/		&& do { CA::Toolbox::addKill({
 																	ts => CA::Common::ts2seconds($1),
 																	c_hash => substr($2, -8),
 																	c_team => $3,
@@ -132,7 +132,7 @@ sub parser {
 																	next LINE; 
 															};
 																	
-		/$CA::Regex::Parser{Jointeam}{$version}/		&& do { CA::Toolbox::addJoinTeam({
+		/$CA::Regex::Parser{Jointeam}{$version}/	&& do { CA::Toolbox::addJoinTeam({
 																	ts => CA::Common::ts2seconds($1),
 																	hash => $2,
 																	team => $3,
@@ -147,37 +147,37 @@ sub parser {
 																	next LINE; 
 															};
 																	
-#		/$CA::Regex::Parser{Roundwin}{$version}/		&& do { CA::Toolbox::addRoundWin({
+		#/$CA::Regex::Parser{Roundwin}{$version}/	&& do { CA::Toolbox::addRoundWin({
 #																	ts => CA::Common::ts2seconds($1),
 #																	winner => $2}); 
 #																	next LINE; 
 #															};
 		
-		
-#		/$CA::Regex::Parser{Timeout}{$version}/		&& do { CA::Toolbox::addTimeOut({
+		#/$CA::Regex::Parser{Timeout}{$version}/	&& do { CA::Toolbox::addTimeOut({
 #																	ts => CA::Common::ts2seconds($1),
 #																	team => $2,
 #																	who => CA::Common::niceString($3)}); 
 #																	next LINE; 
 #															};
 		
-#		/$CA::Regex::Parser{Sidechange}{$version}/	&& do { CA::Toolbox::addSideChange({
+		#/$CA::Regex::Parser{Sidechange}{$version}/	&& do { CA::Toolbox::addSideChange({
 #																	ts => CA::Common::ts2seconds($1),
 #																	string => $2}); 
 #																	next LINE; 
 #															};
 																	
-#		/$CA::Regex::Parser{Winners}{$version}/		&& do { CA::Toolbox::addGameWinners({
+		#/$CA::Regex::Parser{Winners}{$version}/	&& do { CA::Toolbox::addGameWinners({
 #																	foo => CA::Common::ts2seconds($1),
 #																	bar => $2});
 #																	next LINE; 
 #															};
 		
-#		/$CA::Regex::Parser{Loosers}{$version}/		&& do { CA::Toolbox::addGameLoosers({
+		#/$CA::Regex::Parser{Loosers}{$version}/	&& do { CA::Toolbox::addGameLoosers({
 #																	foo => CA::Common::ts2seconds($1),
 #																	bar => $2});
 #																	next LINE; 
 #															};
+
 	}
 }
 

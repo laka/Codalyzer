@@ -25,7 +25,6 @@ our($dbh);
 # -------------------------------------------------------------
 # Returns the given DBI handle if it still can be reached,
 # otherwise try to reconnect
-
 sub getDbh {
 	my %config = CA::Config::readConfig();
 	if (!(defined($dbh) && $dbh->ping)) {
@@ -44,7 +43,6 @@ sub getDbh {
 # Inserts the rows into the table specified.
 # NOTE: Uses placeholders, but should consider rewriting it 
 # using a prepare statement and quotes
-
 sub insertRow {
     my $table = shift;
     my %insert = @_;
@@ -61,7 +59,6 @@ sub insertRow {
 # -------------------------------------------------------------
 # Updates rows accordingly to the hash (of hashes) argument.
 # NOTE: Looking into an ORM so commented out for now
-
 sub updateRow {
 	my ($args) = @_;
 	my $table = $args->{table};
@@ -79,7 +76,6 @@ sub updateRow {
 # subroutine: flushTable
 # -------------------------------------------------------------
 # Flushes (truncates) tables
-
 sub flushTable {
 	$dbh->do('TRUNCATE TABLE games');
 	$dbh->do('TRUNCATE TABLE players');

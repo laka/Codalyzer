@@ -13,13 +13,14 @@ use lib '/home/homer/ju/jussimik/CA-Parser/';
 use CA::SimpleDB;
 
 my $dbh = CA::SimpleDB::getDbh();
+
+# Generate SQL from Perl data structures
 my $orm = SQL::Abstract->new();
 
 # subroutine: addNewGame (%hash)
 # -------------------------------------------------------------
 # LOG IDENTIFIER: InitGame
 # Adds a new game
-
 sub addNewGame {
 	my ($args) = @_;
 	# Global game id 
@@ -64,7 +65,6 @@ sub addNewGame {
 # -------------------------------------------------------------
 # LOG IDENTIFIER: J
 # You can figure this out
-
 sub addNewPlayer {
 	my($args) = @_;
 	
@@ -87,7 +87,6 @@ sub addNewPlayer {
 # -------------------------------------------------------------
 # LOG IDENTIFIER: D
 # Adds a damage hit 
-
 sub addDamageHit {
 	my($args) = @_;
 	$args->{mods} =~ s/MOD_//;
@@ -121,7 +120,6 @@ sub addDamageHit {
 # -------------------------------------------------------------
 # LOG IDENTIFIER: K
 # Adds a new kill
-
 sub addKill {
 	my($args) = @_;
 	$args->{mods} =~ s/MOD_//;
@@ -179,7 +177,6 @@ sub addKill {
 # -------------------------------------------------------------
 # LOG IDENTIFIER: say (sayteam)
 # Adds messages
-
 sub addQuote {
 	my($args) = @_;
 	
@@ -193,7 +190,6 @@ sub addQuote {
 # -------------------------------------------------------------
 # LOG IDENTIFIER: A
 # Adds actions like bomb plants/defuse
-
 sub addAction {
 	my($args) = @_;
 	
@@ -207,7 +203,6 @@ sub addAction {
 # -------------------------------------------------------------
 # LOG IDENTIFIER: MO
 # Adds the game result, mostly from mods like pam4
-
 sub addGameResult {
 	my($args) = @_;
 	my $high = max($args->{score1}, $args->{score2});
@@ -237,7 +232,6 @@ sub addGameResult {
 # -------------------------------------------------------------
 # LOG IDENTIFIER: ShutdownGame
 # Updates the stop time to the games table
-
 sub addFinished {
 	my($args) = @_;
 
@@ -250,7 +244,6 @@ sub addFinished {
 # -------------------------------------------------------------
 # LOG IDENTIFIER: Exitlevel
 # Declares a game finished
-
 sub addExitLevel {
 	my($args) = @_;
 	$dbh->do('UPDATE games SET finish=? WHERE id=?',
@@ -262,7 +255,6 @@ sub addExitLevel {
 # -------------------------------------------------------------
 # LOG IDENTIFIER: JT
 # Updates players according to the chosen team
-
 sub addJoinTeam {
 	my($args) = @_;
 	
@@ -281,7 +273,6 @@ sub addJoinTeam {
 # -------------------------------------------------------------
 # LOG IDENTIFIER: RS
 # Keeps track of the current round (in the war/match)
-
 sub addRoundStart {
 	my($args) = @_;
 	

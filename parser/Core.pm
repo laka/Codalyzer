@@ -18,7 +18,6 @@ my $dbh = CA::SimpleDB::getDbh();
 # Starts a main loop control where we run a whole lot of core 
 # functions at once (inside the same loop, instead of one loop
 # for each function)
-
 sub handler {
 	
 	CA::Common::killZombies();
@@ -54,7 +53,6 @@ sub handler {
 # Our rating system defined. Visit 
 # http://en.wikipedia.org/wiki/Elo_rating_system for the glory
 # details
-
 sub eloRating {
 	my ($gid) = @_;
     my %scores = ();
