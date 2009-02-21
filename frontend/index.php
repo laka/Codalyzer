@@ -32,7 +32,7 @@ include_once 'inc/header.php';
             
             <!-- HEADER TEXT START-->
 			<div id="overskrift">
-				<a href="index.php"><h1>www.norsof.org</h1></a>
+				<a href="index.php"><h1>Codalyzer beta</h1></a>
 			</div>		
             <!-- HEADER TEXT END-->
             

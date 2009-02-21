@@ -5,7 +5,7 @@
 	* -  Player table
 	**************************************************************
 */	
-	echo '<h1>Players</h1>';
+	echo '<h1>'. $lang['h_players'] .'</h1>';
 	
 	$query = "SELECT *, round(((kills-deaths)/games),1) as avgdiff,  round(kills/(deaths+1),2) as ratio, round(kills/(games+1),2) as kpg,
              round(((SELECT count('') FROM kills WHERE killer = p.handle AND k_team != c_team AND location = 'head')*100/kills), 2) as hspercentage,

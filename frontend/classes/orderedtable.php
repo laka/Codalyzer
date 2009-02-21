@@ -142,7 +142,7 @@ class orderedtable {
 	
 	// finds the headers of a table, if not specified
 	private function tableHeaders (){
-		if(count($this->tableheaders) == 0 && count($this->columndata == 0)){
+		if(count($this->tableheaders) == 0 && count($this->columndata) == 0){
 			$this->result = database::getInstance()->sqlResult($this->query);
 			$firstrow = mysql_fetch_assoc($this->result);
 			$this->tableheaders = array_keys($firstrow);		
