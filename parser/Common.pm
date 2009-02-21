@@ -231,9 +231,9 @@ sub gameOver {
 	}
 }
 
-# subroutine: cleanUpGames 
+# subroutine: cleanUpGames  ($gid)
 # -------------------------------------------------------------
-# First of all, delete matches where round count is 1 or less
+# Find games to delete
 
 sub cleanUpGames {
 	my($gid) = @_;
@@ -251,6 +251,10 @@ sub cleanUpGames {
 		deleteGame($gid);
 	}
 }
+
+# subroutine: deleteGame ($gid)
+# -------------------------------------------------------------
+# ..and then delete them
 
 sub deleteGame {
 	my($gid) = @_;
@@ -284,25 +288,74 @@ sub going2war {
 
 sub makeProfile {
 	my($player) = @_;
-	
-	#$dbcon->do('INSERT INTO profiles (handle) VALUES(?)',
-    #    undef, $handle);
+	$dbh->do('INSERT INTO profiles (handle) VALUES(?)',
+		undef, $player);
+}
+
+sub addProfileData {
+	my($player) = @_;
+	sumKills($player);
+	sumDeaths($player);
+	sumSuicides($player);
+	currentElo($player);
+	sumGames($player);
 }
 
 sub sumKills {
+	my($killer) = @_;
+	
+	my $kills = $dbh->selectrow_hashref('SELECT COUNT(*) AS count FROM kills WHERE killer=? AND corpse != ?',
+		undef, $killer, $killer);
 
+    $dbh->do('UPDATE profiles SET kills=? WHERE handle=?',
+        undef, $kills->{count}, $killer)
+        or croak "CA (error): Couldn't set profile kills " . DBI->errstr;
 }
 
 sub sumDeaths {
+	my($corpse) = @_;
+	
+	my $deaths = $dbh->selectrow_hashref('SELECT COUNT(*) AS count FROM kills WHERE corpse=? AND killer != ?',
+        undef, $corpse, $corpse);
 
+    $dbh->do('UPDATE profiles SET deaths=? WHERE handle=?',
+        undef, $deaths->{count}, $corpse)
+		or croak "CA (error): Couldn't set profile deaths " . DBI->errstr;
 }
 
 sub sumSuicides {
+	my($dead) = @_;
 	
+	my $suicides = $dbh->selectrow_hashref('SELECT COUNT(*) AS count FROM kills WHERE killer=? AND corpse=?',
+        undef, $dead, $dead);
+
+    $dbh->do('UPDATE profiles SET suicides=? WHERE handle=?',
+        undef, $suicides->{count}, $dead)
+		or croak "CA (error): Couldn't set profile deaths " . DBI->errstr;
+}
+
+sub sumGames {
+	my($player) = @_;
+	
+	my $games = $dbh->selectrow_hashref('SELECT COUNT(DISTINCT gid) AS count FROM players WHERE handle=?',
+        undef, $player);
+
+    $dbh->do('UPDATE profiles SET games=? WHERE handle=?',
+        undef, $games->{count}, $player)
+		or croak "CA (error): Couldn't set profile games " . DBI->errstr;
 }
 
 sub currentElo {
-
+	my($player) = @_;
+	my $row = $dbh->selectrow_hashref(
+		'SELECT elo FROM players WHERE handle=? AND elo IS NOT NULL ORDER BY id DESC LIMIT 1',
+		undef, $player);
+	
+	$row->{elo} = (($row->{elo}) ? $row->{elo} : return 1000);
+		
+	$dbh->do('UPDATE profiles SET elo=? WHERE handle=?',
+        undef, $row->{elo}, $player)
+		or croak "CA (error): Couldn't set profile elo " . DBI->errstr;
 }
 
 sub niceString {
@@ -319,6 +372,17 @@ sub niceString {
 sub sleepFor {
 	my($duration) = @_;
 	select undef, undef, undef, $duration;
+}
+
+sub hasProfile {
+	my($player) = @_;
+	
+	my $sth = $dbh->prepare('SELECT id FROM profiles WHERE handle=?');
+    $sth->execute($player);
+	
+	if($sth->rows() == 0) {
+		return;
+	} else { return 1; }
 }
 
 

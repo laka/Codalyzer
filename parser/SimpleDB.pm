@@ -82,6 +82,7 @@ sub flushTable {
 	$dbh->do('TRUNCATE TABLE hits');
 	$dbh->do('TRUNCATE TABLE quotes');
 	$dbh->do('TRUNCATE TABLE actions');
+	$dbh->do('TRUNCATE TABLE profiles');
 }
 
 END {

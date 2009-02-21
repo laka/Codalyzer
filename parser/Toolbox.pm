@@ -74,8 +74,10 @@ sub addNewPlayer {
 		$dbh->do($sth, undef, @bind) 
 			or croak "CA (error): Couldn't add new player: " . DBI->errstr;
 
-		# Add a profile to the player
-		CA::Common::makeProfile($args->{handle});
+		if(not(CA::Common::hasProfile($args->{handle}))) {
+			# Add a profile to the player
+			CA::Common::makeProfile($args->{handle});
+		}
 	}
 }
 
