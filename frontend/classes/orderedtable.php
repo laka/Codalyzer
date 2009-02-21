@@ -258,93 +258,97 @@ class orderedtable {
 	
 		// we create the SQL-query
 		$this->createQuery ();
-		
-		// prints out the table...
-		echo "<table class=\"{$this->tableclass}\" width=\"{$this->tablewidth}\">\n";
-		$this->printHeaders ();
+
 		$result = database::getInstance()->sqlResult($this->query);
-		$rownumber = 1;
-		
-		// decides whether to use MYSQL_ASSOC or MYSQL_NUM. Uses the second if column names/order is not specified.
-		if(count($this->columndata) > 0){
-			$fetchtype = MYSQL_ASSOC;
-		} else {
-			$fetchtype = MYSQL_NUM;
-		}
         
 		// loops through the rows
-        $rownumber = 0;
-		while($row = mysql_fetch_array($result, $fetchtype)){
-		echo "\t<tr>\n";		
-			if(count($this->columndata) > 0){
-                // loops through the columns
-				foreach($this->columndata as $header=>$d){
-					echo "\t\t<td>";
-					
-					if(isset($d[5])){
-						echo $this->compare($row[$header], $row[$d[5]]);
-					}
-					if(strlen($d[4]) > 0){
-						$urlize = urlencode($row[$header]);
-						$row[$header] = "<a href=\"{$d[4]}$urlize\">{$row[$header]}</a>";
-					}					
-					echo $row[$header];
-					echo "</td>\n";   
-					
-					// if we want to print out the sum...
-					if($this->totalsum){
-						switch ($this->columndata[$header][3]){
-							case 'avg':
-                                $totals[$header] = round(($totals[$header]*$rownumber+$row[$header])/(++$rownumber),2);          
-							break;					
-							
-							case 'totalstring':
-							$totals[$header] = 'SUM:';
-							break;	
-							
-							default:
-							case 'sum':
-								if(is_numeric($row[$header]))
-									$totals[$header] += $row[$header];
-								else 
-									$totals[$header] = '';
-							break;					
-						}
-						// if it is compared to something
-						if(isset($this->columndata[$header][5])){
-							if(strlen($row[$this->columndata[$header][5]]) > 0)
-								$comparesum[$header] += $row[$header]-($row[$this->columndata[$header][5]]);
-						}
-					}
-				}				
-			} else {
-				for($i=0; $i<count($row); $i++){
-					// if we want to print out the sum...
-					if($this->totalsum){
-						$totals[$header] += $row[$header];
-					}				
-					
-					echo "\t\t<td>";
-					echo round($row[$i], 2);
-					echo "</td>\n";
-				}
-			}
-			echo "\t</tr>\n";	
-		}
-		if($this->totalsum){
-			echo "\t<tr>\n";
-			foreach($totals as $header=>$sum){
-				if(isset($this->columndata[$header][5])){
-					echo "\t\t<td class=\"{$this->totalclass}\">";
-					echo $this->compare($comparesum[$header], 0);
-					echo "$sum</td>\n";
-				} else {
-					echo "\t\t<td class=\"{$this->totalclass}\">$sum</td>\n";
-				}
-			}			
-			echo "\t</tr>\n";	
-		}
-		echo "</table>";
+        if($result){
+            // prints out the table...
+            echo "<table class=\"{$this->tableclass}\" width=\"{$this->tablewidth}\">\n";
+            $this->printHeaders ();
+            $rownumber = 0;
+            
+            // decides whether to use MYSQL_ASSOC or MYSQL_NUM. Uses the second if column names/order is not specified.
+            if(count($this->columndata) > 0){
+                $fetchtype = MYSQL_ASSOC;
+            } else {
+                $fetchtype = MYSQL_NUM;
+            }        
+        
+            while($row = mysql_fetch_array($result, $fetchtype)){
+            echo "\t<tr>\n";		
+                if(count($this->columndata) > 0){
+                    // loops through the columns
+                    foreach($this->columndata as $header=>$d){
+                        echo "\t\t<td>";
+                        
+                        if(isset($d[5])){
+                            echo $this->compare($row[$header], $row[$d[5]]);
+                        }
+                        if(strlen($d[4]) > 0){
+                            $urlize = urlencode($row[$header]);
+                            $row[$header] = "<a href=\"{$d[4]}$urlize\">{$row[$header]}</a>";
+                        }					
+                        echo $row[$header];
+                        echo "</td>\n";   
+                        
+                        // if we want to print out the sum...
+                        if($this->totalsum){
+                            switch ($this->columndata[$header][3]){
+                                case 'avg':
+                                    $totals[$header] = round(($totals[$header]*$rownumber+$row[$header])/(++$rownumber),2);          
+                                break;					
+                                
+                                case 'totalstring':
+                                $totals[$header] = 'SUM:';
+                                break;	
+                                
+                                default:
+                                case 'sum':
+                                    if(is_numeric($row[$header]))
+                                        $totals[$header] += $row[$header];
+                                    else 
+                                        $totals[$header] = '';
+                                break;					
+                            }
+                            // if it is compared to something
+                            if(isset($this->columndata[$header][5])){
+                                if(strlen($row[$this->columndata[$header][5]]) > 0)
+                                    $comparesum[$header] += $row[$header]-($row[$this->columndata[$header][5]]);
+                            }
+                        }
+                    }				
+                } else {
+                    for($i=0; $i<count($row); $i++){
+                        // if we want to print out the sum...
+                        if($this->totalsum){
+                            $totals[$header] += $row[$header];
+                        }				
+                        
+                        echo "\t\t<td>";
+                        echo round($row[$i], 2);
+                        echo "</td>\n";
+                    }
+                }
+                echo "\t</tr>\n";	
+            }
+            if($this->totalsum && is_array($totals)){
+                echo "\t<tr>\n";
+                foreach($totals as $header=>$sum){
+                    if(isset($this->columndata[$header][5])){
+                        echo "\t\t<td class=\"{$this->totalclass}\">";
+                        echo $this->compare($comparesum[$header], 0);
+                        echo "$sum</td>\n";
+                    } else {
+                        echo "\t\t<td class=\"{$this->totalclass}\">$sum</td>\n";
+                    }
+                }			
+                echo "\t</tr>\n";	
+            }
+            echo "</table>";
+        } else {
+            echo "<p><strong>Error: </strong>Could not get data</p>";
+        }
 	}
 }
 ?>
