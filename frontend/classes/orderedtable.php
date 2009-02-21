@@ -142,6 +142,8 @@ class orderedtable {
 	
 	// finds the headers of a table, if not specified
 	private function tableHeaders (){
+        // creates an empty array so in_array doesn't give a warning later in the script
+        $this->tableheaders = array();
 		if(count($this->tableheaders) == 0 && count($this->columndata) == 0){
 			$this->result = database::getInstance()->sqlResult($this->query);
 			$firstrow = mysql_fetch_assoc($this->result);
@@ -245,10 +247,10 @@ class orderedtable {
 	public function printTable (){
 		// fetch tableheaders, if not specified in $this->columndata
 		$this->tableHeaders ();				
-		
+        
 		// validata $_GET-input, if the column exists, we order by it.
-		if(isset($_GET[self::$urlprefix.'o']) && (in_array($_GET[self::$urlprefix.'o'], $this->tableheaders) || in_array($_GET[self::$urlprefix.'o'], $this->columndata)) ){
-			$this->orderby	= $_GET[self::$urlprefix.'o'];
+		if(isset($_GET[self::$urlprefix.'o']) && (in_array($_GET[self::$urlprefix.'o'], $this->tableheaders) || count($this->columndata[$_GET[self::$urlprefix.'o']]) > 0) ){
+            $this->orderby	= $_GET[self::$urlprefix.'o'];
 		}
 		
 		// if order = asc or desc, order=order, else: order=desc.
@@ -269,11 +271,13 @@ class orderedtable {
 		} else {
 			$fetchtype = MYSQL_NUM;
 		}
-		
-		// loops through the columns
+        
+		// loops through the rows
+        $rownumber = 0;
 		while($row = mysql_fetch_array($result, $fetchtype)){
 		echo "\t<tr>\n";		
 			if(count($this->columndata) > 0){
+                // loops through the columns
 				foreach($this->columndata as $header=>$d){
 					echo "\t\t<td>";
 					
@@ -291,7 +295,7 @@ class orderedtable {
 					if($this->totalsum){
 						switch ($this->columndata[$header][3]){
 							case 'avg':
-							$totals[$header] = ($totals[$header]+$row[$header])/($rownumber++);
+                                $totals[$header] = round(($totals[$header]*$rownumber+$row[$header])/(++$rownumber),2);          
 							break;					
 							
 							case 'totalstring':
@@ -321,9 +325,8 @@ class orderedtable {
 					}				
 					
 					echo "\t\t<td>";
-					echo $row[$i];
+					echo round($row[$i], 2);
 					echo "</td>\n";
-					print_r($row);
 				}
 			}
 			echo "\t</tr>\n";	

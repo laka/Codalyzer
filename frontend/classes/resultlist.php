@@ -49,9 +49,9 @@ class resultlist extends orderedtable {
 		$result = database::getInstance()->sqlResult($sql);
 		if(!$this->teams){
 			$this->query = "SELECT handle, elo,
-					(SELECT COUNT('') FROM kills WHERE killer=p.handle AND k_team != c_team) AS kills,
-					(SELECT COUNT('') FROM kills WHERE corpse=p.handle AND k_team != c_team) AS deaths,
-					(SELECT COUNT('') FROM kills WHERE corpse=p.handle AND killer = corpse) AS suicides,
+					(SELECT COUNT('') FROM kills WHERE killer=p.handle AND k_team != c_team AND gid=p.gid) AS kills,
+					(SELECT COUNT('') FROM kills WHERE corpse=p.handle AND k_team != c_team AND gid=p.gid) AS deaths,
+					(SELECT COUNT('') FROM kills WHERE corpse=p.handle AND killer = corpse AND gid=p.gid) AS suicides,
 					(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as prevelo
 					FROM players as p WHERE gid={$this->gid}";
 			$this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "40%", '', '?mode=profile&h='),
@@ -62,13 +62,13 @@ class resultlist extends orderedtable {
 									   ));		
 		} else {
 			$this->query = "SELECT handle, elo,
-					(SELECT COUNT('') FROM kills WHERE killer=p.handle AND k_team != c_team) AS kills,
-					(SELECT COUNT('') FROM kills WHERE corpse=p.handle AND k_team != c_team) AS deaths,
-					(SELECT COUNT('') FROM kills WHERE corpse=p.handle AND killer = corpse) AS suicides,
-					(SELECT COUNT('') FROM kills WHERE killer=p.handle AND k_team = c_team) AS teamkills,
-					(SELECT COUNT('') FROM actions WHERE handle=p.handle) AS actions,
+					(SELECT COUNT('') FROM kills WHERE killer=p.handle AND k_team != c_team AND gid=p.gid) AS kills,
+					(SELECT COUNT('') FROM kills WHERE corpse=p.handle AND k_team != c_team AND gid=p.gid) AS deaths,
+					(SELECT COUNT('') FROM kills WHERE corpse=p.handle AND killer = corpse AND gid=p.gid) AS suicides,
+					(SELECT COUNT('') FROM kills WHERE killer=p.handle AND k_team = c_team AND gid=p.gid) AS teamkills,
+					(SELECT COUNT('') FROM actions WHERE handle=p.handle AND gid=p.gid) AS actions,
 					(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as prevelo
-					FROM players as p WHERE gid={$this->gid} AND team='$team'";
+					FROM players as p WHERE gid={$this->gid} AND team='$team'";         
 			$this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', '?mode=profile&h='),
 									'kills' 	=>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "9%","sum"),
 									'deaths' 	=>  array (array('deaths' => 1, 'suicides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "9%","sum"),

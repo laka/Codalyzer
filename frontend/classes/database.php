@@ -51,7 +51,8 @@ class database
 	
     public function singleRow($sql)
     {
-		return mysql_fetch_assoc(self::sqlResult($sql));
+        if($result = self::sqlResult($sql))
+            return mysql_fetch_assoc($result);
     }	
 }
 
