@@ -17,6 +17,7 @@ my $orm = SQL::Abstract->new();
 
 # subroutine: addNewGame (%hash)
 # -------------------------------------------------------------
+# LOG IDENTIFIER: InitGame
 # Adds a new game
 
 sub addNewGame {
@@ -61,6 +62,7 @@ sub addNewGame {
 
 # subroutine: addNewPlayer (%hash)
 # -------------------------------------------------------------
+# LOG IDENTIFIER: J
 # You can figure this out
 
 sub addNewPlayer {
@@ -80,6 +82,11 @@ sub addNewPlayer {
 		}
 	}
 }
+
+# subroutine: addDamageHit (%hash)
+# -------------------------------------------------------------
+# LOG IDENTIFIER: D
+# Adds a damage hit 
 
 sub addDamageHit {
 	my($args) = @_;
@@ -109,6 +116,11 @@ sub addDamageHit {
 		CA::Common::changeHandle($args->{corpse}, $args->{w_hash}, $args->{gid});
 	}
 }
+
+# subroutine: addKill (%hash)
+# -------------------------------------------------------------
+# LOG IDENTIFIER: K
+# Adds a new kill
 
 sub addKill {
 	my($args) = @_;
@@ -153,6 +165,11 @@ sub addKill {
 	#}
 }
 
+# subroutine: addQuote (%hash)
+# -------------------------------------------------------------
+# LOG IDENTIFIER: say (sayteam)
+# Adds messages
+
 sub addQuote {
 	my($args) = @_;
 	
@@ -162,6 +179,11 @@ sub addQuote {
 		or croak "CA (error): Couldn't add qoute: " . DBI->errstr;
 }
 
+# subroutine: addAction (%hash)
+# -------------------------------------------------------------
+# LOG IDENTIFIER: A
+# Adds actions like bomb plants/defuse
+
 sub addAction {
 	my($args) = @_;
 	
@@ -170,6 +192,11 @@ sub addAction {
 	$dbh->do($sth, undef, @bind)
 		or croak "CA (error): Couldn't add action: " . DBI->errstr;
 }
+
+# subroutine: addGameResult (%hash)
+# -------------------------------------------------------------
+# LOG IDENTIFIER: MO
+# Adds the game result, mostly from mods like pam4
 
 sub addGameResult {
 	my($args) = @_;
@@ -196,6 +223,11 @@ sub addGameResult {
 		or croak "CA (error): Couldn't update game result: " . DBI->errstr;
 }
 
+# subroutine: addFinished (%hash)
+# -------------------------------------------------------------
+# LOG IDENTIFIER: ShutdownGame
+# Updates the stop time to the games table
+
 sub addFinished {
 	my($args) = @_;
 
@@ -204,12 +236,22 @@ sub addFinished {
 		or croak "CA (error): Couldn't set game stop " . DBI->errstr;
 }
 
+# subroutine: addExitLevel (%hash)
+# -------------------------------------------------------------
+# LOG IDENTIFIER: Exitlevel
+# Declares a game finished
+
 sub addExitLevel {
 	my($args) = @_;
 	$dbh->do('UPDATE games SET finish=? WHERE id=?',
 		undef, 1, $args->{gid})
 		or croak "CA (error): Couldn't finish game: " . DBI->errstr;
 }
+
+# subroutine: addJoinTeam
+# -------------------------------------------------------------
+# LOG IDENTIFIER: JT
+# Updates players according to the chosen team
 
 sub addJoinTeam {
 	my($args) = @_;
@@ -225,6 +267,11 @@ sub addJoinTeam {
 		or croak "CA (error): Couldn't set player team: " . DBI->errstr;
 }
 
+# subroutine: addRoundStart
+# -------------------------------------------------------------
+# LOG IDENTIFIER: RS
+# Keeps track of the current round (in the war/match)
+
 sub addRoundStart {
 	my($args) = @_;
 	
@@ -236,26 +283,6 @@ sub addRoundStart {
 	
 	$dbh->do($sth, undef, @bind)
 		or croak "CA (error): Couldn't update game rcount: " . DBI->errstr;
-}
-
-sub addRoundWin {
-
-}
-
-sub addGameWinners {
-
-}
-
-sub addGameLoosers {
-
-}
-
-sub addTimeOut {
-
-}
-
-sub addSideChange {
-
 }
 
 1;

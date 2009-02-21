@@ -21,6 +21,11 @@ BEGIN {
 
 our($dbh);
 
+# subroutine: getDbh
+# -------------------------------------------------------------
+# Returns the given DBI handle if it still can be reached,
+# otherwise try to reconnect
+
 sub getDbh {
 	my %config = CA::Config::readConfig();
 	if (!(defined($dbh) && $dbh->ping)) {

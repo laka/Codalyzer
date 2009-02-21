@@ -147,37 +147,37 @@ sub parser {
 																	next LINE; 
 															};
 																	
-		/$CA::Regex::Parser{Roundwin}{$version}/		&& do { CA::Toolbox::addRoundWin({
-																	ts => CA::Common::ts2seconds($1),
-																	winner => $2}); 
-																	next LINE; 
-															};
+#		/$CA::Regex::Parser{Roundwin}{$version}/		&& do { CA::Toolbox::addRoundWin({
+#																	ts => CA::Common::ts2seconds($1),
+#																	winner => $2}); 
+#																	next LINE; 
+#															};
 		
 		
-		/$CA::Regex::Parser{Timeout}{$version}/		&& do { CA::Toolbox::addTimeOut({
-																	ts => CA::Common::ts2seconds($1),
-																	team => $2,
-																	who => CA::Common::niceString($3)}); 
-																	next LINE; 
-															};
+#		/$CA::Regex::Parser{Timeout}{$version}/		&& do { CA::Toolbox::addTimeOut({
+#																	ts => CA::Common::ts2seconds($1),
+#																	team => $2,
+#																	who => CA::Common::niceString($3)}); 
+#																	next LINE; 
+#															};
 		
-		/$CA::Regex::Parser{Sidechange}{$version}/	&& do { CA::Toolbox::addSideChange({
-																	ts => CA::Common::ts2seconds($1),
-																	string => $2}); 
-																	next LINE; 
-															};
+#		/$CA::Regex::Parser{Sidechange}{$version}/	&& do { CA::Toolbox::addSideChange({
+#																	ts => CA::Common::ts2seconds($1),
+#																	string => $2}); 
+#																	next LINE; 
+#															};
 																	
-		/$CA::Regex::Parser{Winners}{$version}/		&& do { CA::Toolbox::addGameWinners({
-																	foo => CA::Common::ts2seconds($1),
-																	bar => $2});
-																	next LINE; 
-															};
+#		/$CA::Regex::Parser{Winners}{$version}/		&& do { CA::Toolbox::addGameWinners({
+#																	foo => CA::Common::ts2seconds($1),
+#																	bar => $2});
+#																	next LINE; 
+#															};
 		
-		/$CA::Regex::Parser{Loosers}{$version}/		&& do { CA::Toolbox::addGameLoosers({
-																	foo => CA::Common::ts2seconds($1),
-																	bar => $2});
-																	next LINE; 
-															};
+#		/$CA::Regex::Parser{Loosers}{$version}/		&& do { CA::Toolbox::addGameLoosers({
+#																	foo => CA::Common::ts2seconds($1),
+#																	bar => $2});
+#																	next LINE; 
+#															};
 	}
 }
 

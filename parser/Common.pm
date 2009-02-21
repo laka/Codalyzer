@@ -385,16 +385,23 @@ sub hasProfile {
 	} else { return 1; }
 }
 
+sub lastElo {
+	my($handle) = @_;
+	
+    my $q = $dbh->prepare("SELECT elo FROM players WHERE handle=? AND elo IS NOT NULL ORDER BY id DESC LIMIT 1");
+    $q->execute($handle);
 
+    if($q->rows > 0) {
+        return $q->fetchrow();
+    } else {
+        return '1000';
+	}
+}
 
-
-
-
-
-
-
-
-
+sub trashZombies {
+	my($player) = @_;
+	
+}
 
 
 1;
