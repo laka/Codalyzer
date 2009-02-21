@@ -163,6 +163,16 @@ sub addKill {
 	#	CA::Common::assignTeam($args->{killer}, $args->{k_team}, $args->{gid});
 	#	CA::Common::assignTeam($args->{corpse}, $args->{c_team}, $args->{gid});
 	#}
+	
+	#if(CA::Common::firstKill) {
+	#	$dbh->do('INSERT INTO survivability (gid, handle, firstkill) VALUES (?,?,?)',
+	#		undef, $args->{killer}, $args->{gid}); 
+	#}
+	
+	#if(CA::Common::lastKill) {
+	#	$dbh->do('INSERT INTO survivability (gid, handle, lastkill) VALUES (?,?,?)',
+	#		undef, $args->{killer}, $args->{gid}); 
+	#}
 }
 
 # subroutine: addQuote (%hash)

@@ -129,7 +129,7 @@ sub findClanTags {
 
 END {
 	CA::Common::cleanUpProfiles();
-	CA::Common::searchClanTag();
+	#CA::Common::searchClanTag();
 }
 
 1;

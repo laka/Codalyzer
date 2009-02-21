@@ -423,7 +423,7 @@ sub deletePlayer {
 }
 
 sub cleanUpProfiles {
-	$dbh->do('DELETE FROM profiles WHERE games="0"');
+	$dbh->do('DELETE FROM profiles WHERE games="0" OR (kills="0" AND deaths="0")');
 }
 
 sub getClanTag {
@@ -433,6 +433,9 @@ sub getClanTag {
 	if(missingClan($player)) {
 		if($player =~ /(\w+).*?(\w+)$/) {
 			$clan = $1;
+		}
+		if($player =~ /^[A-Za-z0-9]+$/) {
+			$clan = 'lonewolf';
 		}
 		$dbh->do('UPDATE profiles SET clan=? WHERE handle=?',
         undef, $clan, $player)
@@ -461,6 +464,18 @@ sub missingClan {
 	if($sth->rows() == 0) {
 		return 1;
 	} else { return; }
+}
+
+sub firstKillAndDeath {
+	
+}
+
+sub lastKillAndDeath {
+
+}
+
+sub playerRoundStamina {
+
 }
 
 1;

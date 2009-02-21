@@ -52,7 +52,7 @@ sub parser {
 																	mods => $2,
 																	type => $3,
 																	version => $4,
-																	map => $5});
+																	map => CA::Common::ts2seconds($5)});
 																	next LINE; 
 															};
 																	
@@ -75,7 +75,7 @@ sub parser {
 																	weapon => $8,
 																	damage => $9,
 																	mods => $10,
-																	location => $11,
+																	location => CA::Common::niceString($11),
 																	gid => $gid}); 
 																	next LINE; 
 															};
@@ -91,7 +91,7 @@ sub parser {
 																	weapon => $8,
 																	damage => $9,
 																	mods => $10,
-																	location => $11,
+																	location => CA::Common::niceString($11),
 																	gid => $gid}); 
 																	next LINE; 
 															};
