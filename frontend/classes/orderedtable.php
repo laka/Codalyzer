@@ -249,9 +249,7 @@ class orderedtable {
 		// validate $_GET-input, if the column exists, we order by it.
 		if(isset($_GET[self::$urlprefix.'o']) && (in_array($_GET[self::$urlprefix.'o'], $this->tableheaders) || count($this->columndata[$_GET[self::$urlprefix.'o']]) > 0) ){
             $this->orderby	= $_GET[self::$urlprefix.'o'];
-		} else {
-            $this->orderby = $this->defaultorder;
-        }
+		}
 
 		// if order = asc or desc, order=order, else: order=desc.
 		$this->order	= ($_GET[self::$urlprefix.'a'] == 'ASC' || $_GET[self::$urlprefix.'a'] == 'DESC') ? $_GET[self::$urlprefix.'a'] : $this->order ; 
