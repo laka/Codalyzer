@@ -252,7 +252,7 @@ class orderedtable {
 		}
 		
 		// if order = asc or desc, order=order, else: order=desc.
-		$this->order	= ($_GET[self::$urlprefix.'a'] == 'ASC' || $_GET[self::$urlprefix.'a'] == 'DESC') ? $_GET[self::$urlprefix.'a'] : 'DESC' ; 
+		$this->order	= ($_GET[self::$urlprefix.'a'] == 'ASC' || $_GET[self::$urlprefix.'a'] == 'DESC') ? $_GET[self::$urlprefix.'a'] : $this->order ; 
 	
 		// we create the SQL-query
 		$this->createQuery ();

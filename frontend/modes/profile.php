@@ -10,11 +10,11 @@ if(strlen($_GET['h']) > 0){
     // gets data from the profiles, players and streak tables
     $handle = $db->sqlQuote($_GET['h']);
     $sql = "SELECT *, ROUND((kills/(deaths+1)),2) as kpd,
-            (SELECT elo FROM players WHERE handle = 'norsof | mikael' ORDER BY gid DESC LIMIT 1) AS elo, 
-            (SELECT elo FROM players WHERE handle = 'norsof | mikael' ORDER BY gid DESC LIMIT 1,1) AS prevelo,
-            (SELECT streak FROM streaks WHERE handle = 'norsof | mikael' AND type='kill' ORDER BY streak DESC LIMIT 1) as killstreak,
-            (SELECT streak FROM streaks WHERE handle = 'norsof | mikael' AND type='death' ORDER BY streak DESC LIMIT 1) as deathstreak
-            FROM profiles where handle='norsof | mikael' LIMIT 1";
+            (SELECT elo FROM players WHERE handle = '$handle' ORDER BY gid DESC LIMIT 1) AS elo, 
+            (SELECT elo FROM players WHERE handle = '$handle' ORDER BY gid DESC LIMIT 1,1) AS prevelo,
+            (SELECT streak FROM streaks WHERE handle = '$handle' AND type='kill' ORDER BY streak DESC LIMIT 1) as killstreak,
+            (SELECT streak FROM streaks WHERE handle = '$handle' AND type='death' ORDER BY streak DESC LIMIT 1) as deathstreak
+            FROM profiles where handle='$handle' LIMIT 1";
     $data = $db->singleRow ($sql);
 
     // this functionality is almost the same as the compare-function in orderedtable
@@ -63,8 +63,7 @@ if(strlen($_GET['h']) > 0){
             $query = "SELECT corpse, count('')/(SELECT count('') FROM kills WHERE corpse = k.killer AND killer = k.corpse) AS ratio, 
                       count('') AS k, (SELECT count( '' ) FROM kills WHERE corpse = k.killer AND killer = k.corpse) AS d,
                       round((count('')*100/{$data['kills']}),2) as percentage
-                      FROM kills AS k WHERE killer = 'norsof | mikael' GROUP BY corpse HAVING k>10";
-
+                      FROM kills AS k WHERE killer = '$handle' GROUP BY corpse HAVING k>10";
             $easiestprey = new orderedtable($query, 1);
             $easiestprey->setUrl("?mode=profile&h=".urlencode($handle));
             $easiestprey->setUrlVars(array('mode', 'h'));
@@ -85,7 +84,7 @@ if(strlen($_GET['h']) > 0){
             $query = "SELECT corpse, count('')/(SELECT count('') FROM kills WHERE corpse = k.killer AND killer = k.corpse) AS ratio, 
                       count('') AS k, (SELECT count( '' ) FROM kills WHERE corpse = k.killer AND killer = k.corpse) AS d,
                       round((count('')*100/{$data['kills']}),2) as percentage
-                      FROM kills AS k WHERE killer = 'norsof | mikael' GROUP BY corpse HAVING k>10";
+                      FROM kills AS k WHERE killer = '$handle' GROUP BY corpse HAVING k>10";
 
             $worstenemy = new orderedtable($query, 1);
             $worstenemy->setUrl("?mode=profile&h=".urlencode($handle));
