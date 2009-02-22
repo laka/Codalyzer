@@ -244,11 +244,10 @@ div#footer {
 	background:#4E2B2B;
 }
 .teamname{
-	width:85%;
-	float:left;
+    width:85%;
+    float:left;
+    clear:none;
 }
-
-
 
 .summary{
 	border-collapse:collapse;
