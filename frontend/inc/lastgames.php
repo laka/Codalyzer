@@ -11,7 +11,7 @@ if(is_object($db) && class_exists(orderedtable)){
 	$tenlast->setWidth('100%');
 	$tenlast->setClass( CLASS_LAST_GAMES );
 	$tenlast->setLimit( NUM_LAST_GAMES ); 
-	$tenlast->setColumndata(	array('map' 	=> array (array('map' => 1), $lang['th_map'], "40%", 0, "?mode=map&m="),
+	$tenlast->setColumndata(	array('map' 	=> array (array('map' => 1), $lang['th_map'], "40%", 0, "?mode=map&amp;m="),
 								 'type' 		=> array (array('type' => 1), $lang['th_mode'], "20%"),
 								 't' 			=> array (array('t' => 1), $lang['th_players'], "20%"),
 								 'id' 			=> array (array('id' => 1), $lang['th_id'], "20%", 0, "?mode=single&amp;gid=")	

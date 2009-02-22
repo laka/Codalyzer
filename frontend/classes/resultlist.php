@@ -26,7 +26,7 @@ class resultlist extends orderedtable {
 		$this->setOrder('DESC');
 		$this->setClass('summary');	
 		$this->setOrderBy('kills');
-		$this->setUrl("?mode=single&gid={$this->gid}");
+		$this->setUrl("?mode=single&amp;gid={$this->gid}");
 		$this->setUrlVars(array('mode', 'gid'));
 		$this->setTotalSum(1);
 		
@@ -54,7 +54,7 @@ class resultlist extends orderedtable {
 					(SELECT COUNT('') FROM kills WHERE corpse=p.handle AND killer = corpse AND gid=p.gid) AS suicides,
 					(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as prevelo
 					FROM players as p WHERE gid={$this->gid}";
-			$this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "40%", '', '?mode=profile&h='),
+			$this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "40%", '', '?mode=profile&amp;h='),
                                        'kills' 	    =>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "12%","sum"),
 								       'deaths' 	=>  array (array('deaths' => 1, 'sucides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "12%","sum"),
 									   'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "12%", "sum"),
@@ -67,15 +67,17 @@ class resultlist extends orderedtable {
 					(SELECT COUNT('') FROM kills WHERE corpse=p.handle AND killer = corpse AND gid=p.gid) AS suicides,
 					(SELECT COUNT('') FROM kills WHERE killer=p.handle AND k_team = c_team AND gid=p.gid) AS teamkills,
 					(SELECT COUNT('') FROM actions WHERE handle=p.handle AND gid=p.gid) AS actions,
-					(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as prevelo
+					(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as prevelo,
+                    elo-(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as elodiff
 					FROM players as p WHERE gid={$this->gid} AND team='$team'";         
-			$this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', '?mode=profile&h='),
-									'kills' 	=>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "9%","sum"),
-									'deaths' 	=>  array (array('deaths' => 1, 'suicides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "9%","sum"),
-									'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "9%", "sum"),
-									'teamkills' =>  array (array('teamkills' => 1), $this->lang['abb_teamkills'], "9%", "sum"),
-									'actions' 	=>  array (array('actions' => 1), $this->lang['abb_actions'], "9%", "sum"),
-									'elo' 		=>  array (array('elo' => 1), $this->lang['th_elo'], "15%", "avg", '', 'prevelo')
+			$this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', '?mode=profile&amp;h='),
+									'kills' 	=>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "8%","sum"),
+									'deaths' 	=>  array (array('deaths' => 1, 'suicides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "8%","sum"),
+									'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "8%", "sum"),
+									'teamkills' =>  array (array('teamkills' => 1), $this->lang['abb_teamkills'], "10%", "sum"),
+									'actions' 	=>  array (array('actions' => 1), $this->lang['abb_actions'], "8%", "sum"),
+									'elo' 		=>  array (array('elo' => 1), $this->lang['th_elo'], "12%", "avg"),
+                                    'elodiff'   =>  array (array('elodiff' => 1), "+", "13%", "sum", '', '0')
 									));
 		}	
 		// runs the constructor of orderedtable, and sets the query and makes the table sortable
@@ -101,12 +103,15 @@ class resultlist extends orderedtable {
 			echo "<table width=\"100%\">\n\t<tr valign=\"top\">\n\t\t<td width=\"50%\">\n";
 			echo $this->alliesheader;
 			$this->setFunctiondata('allies');
+            $this->setOrderBy('kills');
 			$this->printTable();			
 			echo "\t\t</td>\n\t\t<td width=\"50%\">\n";
 			echo $this->axisheader;
 			
 			$this->assignLetter ();
 			$this->setFunctiondata('axis');
+            // ugly fix in order to have two tables in one instance... SHOULD rewrite this class one day.
+            $this->setOrderBy('kills');
 			$this->printTable();
 			echo "\t\t</td>\n\t</tr>\n</table>";
 		} else {

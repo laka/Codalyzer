@@ -23,5 +23,5 @@ if ($handle = opendir(FRONTEND_PATH . '/lang')) {
     }
 closedir($handle);
 }
-echo '</select></post>';
+echo '</select></form>';
 ?>

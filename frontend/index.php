@@ -14,7 +14,8 @@ $config = new config('../config.ini');
 
 include_once 'inc/header.php';
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
 <html>
 	<head>
 		<title>Call of Duty 4 - Hall of Fame</title>
@@ -32,7 +33,7 @@ include_once 'inc/header.php';
             
             <!-- HEADER TEXT START-->
 			<div id="overskrift">
-				<a href="index.php"><h1>Codalyzer beta</h1></a>
+				<h1><a href="index.php">Codalyzer beta</a></h1>
 			</div>		
             <!-- HEADER TEXT END-->
             

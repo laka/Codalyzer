@@ -107,7 +107,7 @@ class orderedtable {
 	
 	// generates a url based on url, what to order by, which order to order, and keeps all other variables from the query string
 	public function urlGenerator ($page){
-		$urlbase = $this->url.$this->otherElements()."&".self::$urlprefix."o={$this->orderby}&".self::$urlprefix."a={$this->order}&".self::$urlprefix."p=$page";
+		$urlbase = $this->url.$this->otherElements()."&amp;".self::$urlprefix."o={$this->orderby}&amp;".self::$urlprefix."a={$this->order}&amp;".self::$urlprefix."p=$page";
 		return $urlbase;
 	}	
 	
@@ -117,7 +117,7 @@ class orderedtable {
 		$this->currentPage();
 		// if we are ordering by that certain column, we make a link to sort the other way
 		if($this->orderby == $column){
-			return "<img src=\"img/".$this->oppositeOrder().".gif\"> <a href=\"".$this->url.$this->otherElements()."&amp;".self::$urlprefix."o=$column&amp;".self::$urlprefix."a=".$this->oppositeOrder()."&amp;".self::$urlprefix."p=".$this->currentpage."\">";		
+			return "<img src=\"img/".$this->oppositeOrder().".gif\" alt=\"".$this->oppositeOrder()."\"> <a href=\"".$this->url.$this->otherElements()."&amp;".self::$urlprefix."o=$column&amp;".self::$urlprefix."a=".$this->oppositeOrder()."&amp;".self::$urlprefix."p=".$this->currentpage."\">";		
 		}
 		// if not, we just print out a link to the default order
 		else{
@@ -126,7 +126,7 @@ class orderedtable {
 			} else {
 				$defaultorder = 'DESC';
 			}
-			return "<img src=\"img/none.gif\"> <a href=\"".$this->url.$this->otherElements()."&amp;".self::$urlprefix."o=$column&amp;".self::$urlprefix."a=$defaultorder&amp;".self::$urlprefix."p=".$this->currentpage."\">";			
+			return "<img src=\"img/none.gif\" alt=\"none\"> <a href=\"".$this->url.$this->otherElements()."&amp;".self::$urlprefix."o=$column&amp;".self::$urlprefix."a=$defaultorder&amp;".self::$urlprefix."p=".$this->currentpage."\">";			
 		}
 	}
 
@@ -192,7 +192,7 @@ class orderedtable {
 				foreach($this->columndata as $c => $columninfo){
 					$name = $columninfo[1];
 					if($this->sortable){
-						$name = $this->orderLink($c) . $name;
+						$name = $this->orderLink($c) . $name . '</a>';
 					}
 					$width = $columninfo[2];
 					echo "\t\t<th width=\"$width\">$name</th>\n";
@@ -201,7 +201,7 @@ class orderedtable {
 				$width = round(100/(count($this->tableheaders)));
 				foreach($this->tableheaders as $headername){
 					if($this->sortable){
-						$headername = $this->orderLink($headername) . $headername;
+						$headername = $this->orderLink($headername) . $headername . '</a>';
 					}
 					echo "\t\t<th width=\"$width%\">$headername</th>\n";
 				}
@@ -246,11 +246,13 @@ class orderedtable {
 		// fetch tableheaders, if not specified in $this->columndata
 		$this->tableHeaders ();				
         
-		// validata $_GET-input, if the column exists, we order by it.
+		// validate $_GET-input, if the column exists, we order by it.
 		if(isset($_GET[self::$urlprefix.'o']) && (in_array($_GET[self::$urlprefix.'o'], $this->tableheaders) || count($this->columndata[$_GET[self::$urlprefix.'o']]) > 0) ){
             $this->orderby	= $_GET[self::$urlprefix.'o'];
-		}
-		
+		} else {
+            $this->orderby = $this->defaultorder;
+        }
+
 		// if order = asc or desc, order=order, else: order=desc.
 		$this->order	= ($_GET[self::$urlprefix.'a'] == 'ASC' || $_GET[self::$urlprefix.'a'] == 'DESC') ? $_GET[self::$urlprefix.'a'] : $this->order ; 
 	

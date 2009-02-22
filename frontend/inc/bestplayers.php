@@ -11,7 +11,7 @@ if(is_object($db) && class_exists(orderedtable)){
     $tenbest->setWidth('100%');
     $tenbest->setClass( CLASS_BEST_PLAYERS );
     $tenbest->setLimit( NUM_BEST_PLAYERS ); 
-    $tenbest->setColumndata(array('handle' 	=> array (array('handle' => 1), $lang['th_player'], "70%", 0, "?mode=profile&h="),
+    $tenbest->setColumndata(array('handle' 	=> array (array('handle' => 1), $lang['th_player'], "70%", 0, "?mode=profile&amp;h="),
                                       'elo' => array (array('elo' => 1, 'deaths' => 0), $lang['th_elo'], "30%")								
                                   ));		
     $tenbest->printTable();

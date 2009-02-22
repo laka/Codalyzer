@@ -49,7 +49,7 @@
             
         // prints out the development graph
         echo "<h2>" . $lang['tt_development'] . "</h2>";
-        echo "<img src=\"graphs/gamegraph.php?gid=$gid\">";		
+        echo "<img src=\"graphs/gamegraph.php?gid=$gid\" alt=\"" . $lang['tt_development'] . "\">";		
     } else {
         echo "<p><strong>Error:</strong> No games in the database.</p>";
     }

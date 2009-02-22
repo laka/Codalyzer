@@ -11,7 +11,7 @@ if(is_object($db) && class_exists(orderedtable)){
     $row = database::getInstance()->singleRow($query);
 
     if($row['status'] == 'Online'){
-        echo '<p><img src="img/online.gif"> ' . $lang['m_onlineat'] .' <a href="?mode=map&m='.$row['map'].'">'.$row['map'].'</a></p>';
+        echo '<p><img src="img/online.gif" alt="online"> ' . $lang['m_onlineat'] .' <a href="?mode=map&m='.$row['map'].'">'.$row['map'].'</a></p>';
         
         $detailsSQL = "SELECT id, handle, score, ping FROM active";
         $serverstatus->setColumndata(array('ID'     => array (array('id' => 1), $lang['th_id'], "10%"),
@@ -25,7 +25,7 @@ if(is_object($db) && class_exists(orderedtable)){
         $serverstatus->setLimit( NUM_ACTIVE_PLAYERS );         
         $serverstatus->printTable();
     } else {
-		echo '<p><img src="img/offline.gif"> ' . $lang['m_offline'] . '</p>';
+		echo '<p><img src="img/offline.gif" alt="offline"> ' . $lang['m_offline'] . '</p>';
 	}
 }	
 ?>
