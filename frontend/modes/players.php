@@ -7,11 +7,19 @@
 */	
 	echo '<h1>'. $lang['h_players'] .'</h1>';
 	
-	$query = "SELECT *, round(((kills-deaths)/games),1) as avgdiff,  round(kills/(deaths+1),2) as ratio, round(kills/(games+1),2) as kpg,
-             round(((SELECT count('') FROM kills WHERE killer = p.handle AND k_team != c_team AND location = 'head')*100/kills), 2) as hspercentage,
-             (SELECT elo FROM players WHERE handle = p.handle  AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) AS elo,
-             (SELECT elo FROM players WHERE handle = p.handle  AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1,1) AS prevelo
-             FROM profiles AS p WHERE (deaths > 0 OR kills > 0)";	    
+    if(!DISTINGUISH_BY_HASH){
+        $query = "SELECT *, round(((kills-deaths)/games),1) as avgdiff,  round(kills/(deaths+1),2) as ratio, round(kills/(games+1),2) as kpg,
+                 round(((SELECT count('') FROM kills WHERE killer = p.handle AND k_team != c_team AND location = 'head')*100/kills), 2) as hspercentage,
+                 (SELECT elo FROM players WHERE handle = p.handle  AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) AS elo,
+                 (SELECT elo FROM players WHERE handle = p.handle  AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1,1) AS prevelo
+                 FROM profiles AS p WHERE (deaths > 0 OR kills > 0)";	    
+    } else {
+        $query = "SELECT *, round(((kills-deaths)/games),1) as avgdiff, round(kills/(deaths+1),2) as ratio, round(kills/(games+1),2) as kpg,
+                 round(((SELECT count('') FROM kills WHERE killer = p.handle AND k_team != c_team AND location = 'head')*100/kills), 2) as hspercentage,
+                 (SELECT elo FROM players WHERE handle = p.handle  AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) AS elo,
+                 (SELECT elo FROM players WHERE handle = p.handle  AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1,1) AS prevelo
+                 FROM profiles AS p WHERE (deaths > 0 OR kills > 0)";	     
+    }
 	$players = new orderedtable($query, 1);
 	$players->setClass('summary');
 	$players->setUrl('?mode=players');

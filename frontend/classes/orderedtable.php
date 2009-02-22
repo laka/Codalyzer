@@ -154,31 +154,29 @@ class orderedtable {
 	// takes care of the SQL-query
 	private function createQuery (){
 		$orders = array('ASC', 'DESC');
-		if($this->sortable){
-			$from = $this->limit*$this->currentpage-$this->limit;
-			if(strlen($this->orderby) > 0){
-				$this->query .= ' ORDER BY ';
-				// hvis det er spesifisert spesielt hvordan den skal sorteres...
-				if($this->columndata[$this->orderby][0]){
-					// if the list currently is ordered opposite of default...
-					$defaultorder = current($this->columndata[$this->orderby][0]);
-					if($orders[$defaultorder] != $this->order){
-						$opposite = TRUE;
-					}
-					foreach($this->columndata[$this->orderby][0] as $column => $order){
-						$t = ($opposite) ? $orders[!$order] : $orders[$order];
-						$ordersql[] = " $column $t ";
-					}
-					$this->query .= implode(',', $ordersql);
-				}
-				// columndata is not specified. we add order by and order, if anything is specified
-				else {
-					if(strlen($this->orderby) > 0 && strlen($this->order) > 0){
-						$this->query .= " {$this->orderby} {$this->order}";
-					}
-				}
-			}
-		}
+        $from = $this->limit*$this->currentpage-$this->limit;
+        if(strlen($this->orderby) > 0){
+            $this->query .= ' ORDER BY ';
+            // hvis det er spesifisert spesielt hvordan den skal sorteres...
+            if($this->columndata[$this->orderby][0]){
+                // if the list currently is ordered opposite of default...
+                $defaultorder = current($this->columndata[$this->orderby][0]);
+                if($orders[$defaultorder] != $this->order){
+                    $opposite = TRUE;
+                }
+                foreach($this->columndata[$this->orderby][0] as $column => $order){
+                    $t = ($opposite) ? $orders[!$order] : $orders[$order];
+                    $ordersql[] = " $column $t ";
+                }
+                $this->query .= implode(',', $ordersql);
+            }
+            // columndata is not specified. we add order by and order, if anything is specified
+            else {
+                if(strlen($this->orderby) > 0 && strlen($this->order) > 0){
+                    $this->query .= " {$this->orderby} {$this->order}";
+                }
+            }
+        }
 		if($this->limit){
 			$this->currentPage ();
 			$from = $this->limit*$this->currentpage-$this->limit;
@@ -258,9 +256,8 @@ class orderedtable {
 	
 		// we create the SQL-query
 		$this->createQuery ();
-
 		$result = database::getInstance()->sqlResult($this->query);
-        
+
 		// loops through the rows
         if($result){
             // prints out the table...
@@ -286,7 +283,21 @@ class orderedtable {
                             echo $this->compare($row[$header], $row[$d[5]]);
                         }
                         if(strlen($d[4]) > 0){
-                            $urlize = urlencode($row[$header]);
+                            // if something in the url pattern points to another column (enclosed by *), we find it..
+                            preg_match('/\*([A-Za-z0-9_.-]*)\*/', $d[4], $matches);
+                            if(count($matches) > 0){
+                                foreach($matches as $match){
+                                    if(isset($row[$match])){
+                                        $d[4] = str_replace("*$match*", urlencode($row[$match]), $d[4]);
+                                        $replaced = TRUE;
+                                    }
+                                }
+                            }
+                            // if we find something, the value of the column won't be appended to the end, unless that is specified with *
+                            if(!$replaced)
+                                $urlize = urlencode($row[$header]);
+                            else 
+                                $urlize = '';
                             $row[$header] = "<a href=\"{$d[4]}$urlize\">{$row[$header]}</a>";
                         }					
                         echo $row[$header];
@@ -324,9 +335,12 @@ class orderedtable {
                         if($this->totalsum){
                             $totals[$header] += $row[$header];
                         }				
-                        
                         echo "\t\t<td>";
-                        echo round($row[$i], 2);
+                            if(is_numeric($row[$i])){
+                                echo round($row[$i], 2);                            
+                            } else {
+                                echo $row[$i];   
+                            }
                         echo "</td>\n";
                     }
                 }

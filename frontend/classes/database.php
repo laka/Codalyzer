@@ -53,6 +53,8 @@ class database
     {
         if($result = self::sqlResult($sql))
             return mysql_fetch_assoc($result);
+        else 
+            return array();
     }	
 }
 
