@@ -91,6 +91,7 @@ class resultlist extends orderedtable {
 			
 			$this->alliesheader = "<div class=\"allies\"><div class=\"teamname\">{$names[$ally]}</div>{$this->gamedata['alliesscore']}</div>";
 			$this->axisheader = "<div class=\"axis\"><div class=\"teamname\">{$names[$axe]}</div>{$this->gamedata['axisscore']}</div>";
+            echo "<table width=\"100%\">\n<tr>\n<td width=\"50%\">{$this->alliesheader}</td>\n<td width=\"50%\">{$this->axisheader}</td>\n</table>\n";
 		} 
 	}
 	
@@ -98,20 +99,23 @@ class resultlist extends orderedtable {
 		if($this->teams){
 			$this->printResultHeader ();
 			echo "<table width=\"100%\">\n\t<tr valign=\"top\">\n\t\t<td width=\"50%\">\n";
-			echo $this->alliesheader;
+            
+            // allies
 			$this->setFunctiondata('allies');
             $this->setOrderBy('kills');       
             $this->setOrder('DESC');            
-			$this->printTable();			
-			echo "\t\t</td>\n\t\t<td width=\"50%\">\n";
-			echo $this->axisheader;
+			$this->printTable();
+
 			
+			echo "\t\t</td>\n\t\t<td width=\"50%\">\n";
+			
+            // axis
 			$this->assignLetter ();
 			$this->setFunctiondata('axis');
-            // ugly fix in order to have two tables in one instance... SHOULD rewrite this class one day.
             $this->setOrderBy('kills');
             $this->setOrder('DESC');
 			$this->printTable();
+            
 			echo "\t\t</td>\n\t</tr>\n</table>";
 		} else {
 			echo "<table width=\"100%\">\n\t<tr>\n\t\t<td>\n";

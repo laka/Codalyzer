@@ -69,4 +69,5 @@ $lang['m_minutes']         = '(minutes)';
 $lang['m_offline']         = 'The server is offline at the moment';
 $lang['m_onlineat']        = 'The server is online at';
 $lang['m_with']            = 'with';
+$lang['m_elodesc']         = 'How this player\'s Elo-rating has developed over time:';
  ?>

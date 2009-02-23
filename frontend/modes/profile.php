@@ -171,7 +171,7 @@ if(strlen($_GET['h']) > 0){
             $lastgames->setWidth('100%');
             $lastgames->setClass('summary');
             $lastgames->setColumnData(array(
-                                        'map' => array(array('map'=>1), $lang['th_map'], "50%"),
+                                        'map' => array(array('map'=>1), $lang['th_map'], "50%", 0, "?mode=map&amp;m="),
                                         'type' => array(array('type'=>1), $lang['th_mode'], "25%"),
                                         'gid' =>   array(array('gid'=>1), $lang['th_gid'], "25%", 0, "?mode=single&amp;gid=")
                                         ));

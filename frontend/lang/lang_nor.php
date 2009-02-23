@@ -69,4 +69,5 @@ $lang['m_minutes']         = '(minutter)';
 $lang['m_offline']         = 'Serveren er ikke tilkoblet for øyeblikket.';
 $lang['m_onlineat']        = 'Serveren er online, på banen ';
 $lang['m_with']            = 'med';
+$lang['m_elodesc']         = 'Hvordan denne spillerens Elo-rating har utviklet seg.';
  ?>
