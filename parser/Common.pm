@@ -61,10 +61,10 @@ sub gameData {
 sub name2version {
 	my($version) = @_;
 	my %map = (
-		'call of duty' => 1,
-		'cod:united offensive' => 1.5,
-		'call of duty 4' => 4,
-		'Call of Duty: World at War' => 5,
+		'call of duty' => 10,
+		'cod:united offensive' => 15,
+		'call of duty 4' => 40,
+		'Call of Duty: World at War' => 50,
 	);
 	return $map{lc $version} || 'unknown';
 }

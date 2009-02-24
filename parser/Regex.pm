@@ -10,7 +10,16 @@ use lib '/home/homer/ju/jussimik/CA-Parser/';
 
 our %Parser = (
 	InitGame => {
-		all => qr/(\d+:\d+)\sInitGame:\s(.*)g_gametype\\(.*?)\\.*gamename\\(.*?)\\mapname\\(.*?)\\protocol/,
+		# VERSION	LOGPRINT
+		# ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+		# COD10	 	0:00 InitGame: \g_gametype\dm\g_timeoutsAllowed\3\gamename\Call of Duty\mapname\mp_carentan\
+		# COD15		0:00 InitGame: \g_gametype\dm\g_timeoutsallowed\0\gamename\CoD:United Offensive\mapname\mp_cassino\
+		# COD20	
+		# COD40		0:00 InitGame: \g_compassShowEnemies\0\g_gametype\war\gamename\Call of Duty 4\mapname\mp_killhouse\
+		# COD50		0:00 InitGame: \fxfrustumCutoff\1000\g_compassShowEnemies\0\g_gametype\dm\gamename\Call of Duty: World at War\mapname\mp_makin\
+		# MOD		0:00 InitGame: \_GV_streaming\enabled - CB v2.5\fs_game\mods/pam4\g_compassShowEnemies\0\g_gametype\sd\gamename\Call of Duty 4\mapname\mp_crash\
+		# ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+		all => qr/(\d+:\d+)\sInitGame:\s(.*)g_gametype\\(.*?)\\.*gamename\\(.*?)\\mapname\\(.*?)\\/,
 	},
 	Join => {
         cod10 => qr/(\d+:\d+)\sJ;\d+;\d+(.*?)/,

@@ -88,6 +88,11 @@ sub eloRating {
     }
 }
 
+# subroutine: findClanTags
+# -------------------------------------------------------------
+# Alternative to addClanTag and searchClanTag
+# Looks for the leftmost longest common substring between 
+# arbitrary groups of lines
 sub findClanTags {
 	my($gid) = @_;
 	my @mates;
