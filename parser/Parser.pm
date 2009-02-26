@@ -120,11 +120,11 @@ sub parser {
 																	next LINE;
 															};
 																	
-		/$CA::Regex::Parser{Finish}{$version}/		&& do { CA::Toolbox::addFinished({
-																	ts => CA::Common::ts2seconds($1),
-																	id => $gid});
-																	next LINE; 
-															};
+		#/$CA::Regex::Parser{Finish}{$version}/		&& do { CA::Toolbox::addFinished({
+		#															ts => CA::Common::ts2seconds($1),
+		#															id => $gid});
+		#															next LINE; 
+		#													};
 																	
 		/$CA::Regex::Parser{Exitlev}{$version}/		&& do { CA::Toolbox::addExitLevel({
 																	ts => CA::Common::ts2seconds($1),

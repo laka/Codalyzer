@@ -7,10 +7,33 @@ package CA::Common;
 use strict;
 use warnings;
 use Carp;
+use Net::FTP;
 use lib '/home/homer/ju/jussimik/CA-Parser/';
 use CA::SimpleDB;
+use CA::Config;
 
 my $dbh = CA::SimpleDB::getDbh();
+my %config = CA::Config::readConfig();
+
+# subroutine: getLogByFtp 
+# -------------------------------------------------------------
+# Downloads the logfile by ftp, based on current bytes in 
+# the last (if any) logfile
+sub getLogByFtp {
+	# Amount of bytes in the file to NOT be downloaded
+	my($bytes) = @_;
+	
+	# Opens the FTP-handle
+	my $ftp = Net::FTP->new($config{ftp_host}) 
+		or  croak "CA (error): Couldn't fetch logfile by FTP: " . $@;
+		
+	$ftp->login($config{ftp_user}, $config{ftp_pass});
+	
+	$config{ftp_path} =~ s/^\///;
+	$ftp->cwd($config{ftp_path});
+	$ftp->get($config{logfile}, $config{save_to}, $bytes);
+	$ftp->quit;
+}
 
 # subroutine: interactiveCmd ($command)
 # -------------------------------------------------------------
@@ -496,6 +519,22 @@ sub missingClan {
 	if($sth->rows() == 0) {
 		return 1;
 	} else { return; }
+}
+
+sub adjustPlayTime {
+	my($gid) = @_;
+	
+	my $start_ts = $dbh->selectrow_hashref(
+		'SELECT ts FROM kills WHERE gid=? ORDER BY ts ASC LIMIT 1',
+		undef, $gid);
+		
+	my $stop_ts = $dbh->selectrow_hashref(
+		'SELECT ts FROM kills WHERE gid=? ORDER BY ts DESC LIMIT 1',
+		undef, $gid);
+	
+	$dbh->do('UPDATE games SET start=?, stop=? WHERE id=?',
+		undef, $start_ts, $stop_ts, $gid)
+		or croak "CA (error): Couldn't set game start/stop " . DBI->errstr;
 }
 
 # subroutine: firstKillAndDeath

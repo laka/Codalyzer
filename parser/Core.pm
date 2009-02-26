@@ -2,7 +2,7 @@ package CA::Core;
 
 # Codalyzer
 # - Core Operations
-# The main functions are placed here (ELO-rating, Awards etc.)
+# The main functions (critical ones) are placed here (ELO-rating, Awards etc.)
 
 use strict;
 use warnings;
@@ -33,19 +33,21 @@ sub handler {
 		# Run our ranking system
 		eloRating($ref->{id});
 		
-		# Grab clan tags
-		#findClanTags($ref->{id});
+		# Find game winners
+		findGameWinners($ref->{id});
+		
+		# Set playtime to first kill and last kill
+		CA::Common::adjustPlayTime($ref->{id});
 	}
-	# END -----------------------------------------------------
 	
 	# Players loop --------------------------------------------
 	my $players = $dbh->prepare('SELECT handle FROM players ORDER BY id');
 	$players->execute();
 	
 	while(my $ref = $players->fetchrow_hashref()) {
+		# Add player data to the profiles (kills, deaths, etc)
 		CA::Common::addProfileData($ref->{handle});
 	}
-	# END -----------------------------------------------------
 }
 
 # subroutine: eloRating
@@ -128,6 +130,26 @@ sub findClanTags {
     $dbh->do('UPDATE profiles SET clan=? WHERE team=? AND gid=?',
         undef, $common, 'axis', $gid)
 		or croak "CA (error): Couldn't set profile clan " . DBI->errstr;
+}
+
+# subroutine: findGameWinners
+# -------------------------------------------------------------
+# The game winner is the player with most kills 
+sub findGameWinners {
+	my($gid) = @_;
+	
+	my $ref = $dbh->selectrow_hashref(
+		'SELECT DISTINCT handle AS winner,
+			(SELECT COUNT(id) FROM kills WHERE killer=p.handle AND corpse!=p.handle AND gid=?) AS kills
+			FROM players AS p 
+			WHERE gid=? 
+			ORDER BY kills DESC 
+			LIMIT 1', 
+		undef, $gid, $gid);
+		
+	$dbh->do('UPDATE games SET winner=? WHERE id=?',
+		undef, $ref->{winner}, $gid) 
+		or croak "CA (error): Couldn't set game winner " . DBI->errstr;
 }
 
 END {

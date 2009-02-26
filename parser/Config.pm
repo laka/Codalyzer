@@ -23,7 +23,7 @@ sub readConfig {
     while(<CONFIG>) {
         next if (($_ eq "\n") || /^\;/); # skip comments and blank lines
         chomp;
-        my($setting, $value) = split(/;/, $_);
+        my($setting, $value) = split(/=/, $_);
         $config{$setting} = $value;
     }
     return %config;

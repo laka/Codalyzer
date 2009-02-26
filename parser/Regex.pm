@@ -14,7 +14,7 @@ our %Parser = (
 		# ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 		# COD10	 	0:00 InitGame: \g_gametype\dm\g_timeoutsAllowed\3\gamename\Call of Duty\mapname\mp_carentan\
 		# COD15		0:00 InitGame: \g_gametype\dm\g_timeoutsallowed\0\gamename\CoD:United Offensive\mapname\mp_cassino\
-		# COD20	
+		# COD20		0:00 InitGame: \g_antilag\1\g_gametype\ctf\gamename\Call of Duty 2\mapname\mp_carentan\
 		# COD40		0:00 InitGame: \g_compassShowEnemies\0\g_gametype\war\gamename\Call of Duty 4\mapname\mp_killhouse\
 		# COD50		0:00 InitGame: \fxfrustumCutoff\1000\g_compassShowEnemies\0\g_gametype\dm\gamename\Call of Duty: World at War\mapname\mp_makin\
 		# MOD		0:00 InitGame: \_GV_streaming\enabled - CB v2.5\fs_game\mods/pam4\g_compassShowEnemies\0\g_gametype\sd\gamename\Call of Duty 4\mapname\mp_crash\
