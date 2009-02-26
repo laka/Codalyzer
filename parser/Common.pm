@@ -521,19 +521,36 @@ sub missingClan {
 	} else { return; }
 }
 
+# subroutine: adjustPlayTime ($gid)
+# -------------------------------------------------------------
+# Adjusts the play time, start = ts to first kill
+# stop = ts to last kill
 sub adjustPlayTime {
 	my($gid) = @_;
+	my $and = '';
+	
+	if(gameData('mods', $gid)) {
+		$and = ' AND k_team!=c_team ';
+	}
 	
 	my $start_ts = $dbh->selectrow_hashref(
-		'SELECT ts FROM kills WHERE gid=? ORDER BY ts ASC LIMIT 1',
-		undef, $gid);
+		'SELECT ts FROM kills WHERE gid=? 
+		AND id != (SELECT MAX(id) FROM kills WHERE gid=?)
+		AND killer!=corpse
+		'. $and.'
+		ORDER BY ts ASC LIMIT 1',
+		undef, $gid, $gid);
 		
 	my $stop_ts = $dbh->selectrow_hashref(
-		'SELECT ts FROM kills WHERE gid=? ORDER BY ts DESC LIMIT 1',
-		undef, $gid);
+		'SELECT ts FROM kills WHERE gid=? 
+		AND id != (SELECT MAX(id) FROM kills WHERE gid=?) 
+		AND killer!=corpse
+		'. $and.'
+		ORDER BY ts DESC LIMIT 1',
+		undef, $gid, $gid);
 	
 	$dbh->do('UPDATE games SET start=?, stop=? WHERE id=?',
-		undef, $start_ts, $stop_ts, $gid)
+		undef, $start_ts->{ts}, $stop_ts->{ts}, $gid)
 		or croak "CA (error): Couldn't set game start/stop " . DBI->errstr;
 }
 

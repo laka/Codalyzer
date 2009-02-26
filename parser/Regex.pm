@@ -10,7 +10,7 @@ use lib '/home/homer/ju/jussimik/CA-Parser/';
 
 our %Parser = (
 	InitGame => {
-		# VERSION	LOGPRINT
+		# VERSION	LOGPRINT	STATUS: WORKS ON EVERY VERSION
 		# ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 		# COD10	 	0:00 InitGame: \g_gametype\dm\g_timeoutsAllowed\3\gamename\Call of Duty\mapname\mp_carentan\
 		# COD15		0:00 InitGame: \g_gametype\dm\g_timeoutsallowed\0\gamename\CoD:United Offensive\mapname\mp_cassino\
