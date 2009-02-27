@@ -390,7 +390,8 @@ sub niceString {
 	my($string) = @_;
 
 	for($string) {
-		s/^U//;
+		s/\^U//;
+		s/\^M//;
 		s/\s+$//;
 		s/^\s+//;
 	}

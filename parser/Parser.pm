@@ -56,7 +56,7 @@ sub parser {
 																	next LINE; 
 															};
 																	
-		/$CA::Regex::Parser{Join}{$version}/		&& do { CA::Toolbox::addNewPlayer({
+		/$CA::Regex::Parser{Join}{all}/				&& do { CA::Toolbox::addNewPlayer({
 																	gid => $gid,
 																	ts => CA::Common::ts2seconds($1),
 																	hash => substr($2, -8),
@@ -64,7 +64,7 @@ sub parser {
 																	next LINE;
 															};
 		
-		/$CA::Regex::Parser{Damage}{$version}/		&& do { CA::Toolbox::addDamageHit({
+		/$CA::Regex::Parser{Damage}{all}/			&& do { CA::Toolbox::addDamageHit({
 																	ts => CA::Common::ts2seconds($1),
 																	w_hash => substr($2, -8),
 																	w_team => $3,
@@ -80,7 +80,7 @@ sub parser {
 																	next LINE; 
 															};
 		
-		/$CA::Regex::Parser{Kills}{$version}/		&& do { CA::Toolbox::addKill({
+		/$CA::Regex::Parser{Kills}{all}/			&& do { CA::Toolbox::addKill({
 																	ts => CA::Common::ts2seconds($1),
 																	c_hash => substr($2, -8),
 																	c_team => $3,
@@ -96,7 +96,7 @@ sub parser {
 																	next LINE; 
 															};
 		
-		/$CA::Regex::Parser{Quotes}{$version}/		&& do { CA::Toolbox::addQuote({
+		/$CA::Regex::Parser{Quotes}{all}/			&& do { CA::Toolbox::addQuote({
 																	ts => CA::Common::ts2seconds($1),
 																	handle => CA::Common::niceString($2),
 																	quote => CA::Common::niceString($3),
@@ -126,7 +126,7 @@ sub parser {
 		#															next LINE; 
 		#													};
 																	
-		/$CA::Regex::Parser{Exitlev}{$version}/		&& do { CA::Toolbox::addExitLevel({
+		/$CA::Regex::Parser{Exitlev}{all}/		&& do { CA::Toolbox::addExitLevel({
 																	ts => CA::Common::ts2seconds($1),
 																	gid => $gid}); 
 																	next LINE; 
