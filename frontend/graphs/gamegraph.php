@@ -18,7 +18,7 @@ $colors = array('f0c04c', 'e4e4e4', '6077c3', 'da6060', '9cd69a', '88b822', 'ff0
 
 if($_GET['gid']){
 	if(is_numeric($_GET['gid'])){
-		$sql = "SELECT id, start, stop FROM games where id='{$_GET['gid']}'";
+		$sql = "SELECT id, start, stop, type FROM games where id='{$_GET['gid']}'";
 		$gamedata = $db->singleRow($sql);		
 	}
 	if(count($gamedata['id']) == 1){
@@ -33,6 +33,26 @@ if($_GET['gid']){
 		} else {
 			$stop = $gamedata['stop'];
 		}
+        
+        // this block of code is shared with resultlist.php
+        switch($gamedata['type']){
+			case 'dm':
+				$teams 	    = 0;
+				$actions	= 0;
+			break;
+			case 'tdm':
+				$teams 	    = 1;
+				$actions	= 0;
+			break;	
+			default:
+				$teams 	    = 1;
+				$actions	= 1;
+		}
+        
+        if($teams){
+            $teamsql = "AND k_team != c_team";
+        }
+        
 		// looks up the 10 best players from this game
 		$sql = "SELECT killer FROM kills WHERE gid = '$gid' AND killer != '' AND killer != corpse GROUP BY killer ORDER BY count('') DESC LIMIT 10";
 		$res = $db->sqlResult($sql);
@@ -42,7 +62,7 @@ if($_GET['gid']){
 		while($line = mysql_fetch_assoc($res)){
 			$graphdata[$i][0] = $line['killer'];
 			$graphdata[$i][1] = $colors[$i];
-			$sql = "SELECT ts FROM kills WHERE killer =  '" . $db->sqlQuote($line['killer']) . "' AND gid='$gid' AND k_team != c_team ORDER BY ts asc";
+			$sql = "SELECT ts FROM kills WHERE killer =  '" . $db->sqlQuote($line['killer']) . "' AND gid='$gid' $teamsql ORDER BY ts asc";
 			$playerres = $db->sqlResult($sql);
 			$a = 0;
 			// makes start point for the graphs (in the origin)

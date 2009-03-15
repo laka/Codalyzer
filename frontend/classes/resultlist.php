@@ -46,8 +46,8 @@ class resultlist extends orderedtable {
 		$result = database::getInstance()->sqlResult($sql);
 		if(!$this->teams){
 			$this->query = "SELECT handle, elo,
-					(SELECT COUNT('') FROM kills WHERE killer=p.handle AND k_team != c_team AND gid=p.gid) AS kills,
-					(SELECT COUNT('') FROM kills WHERE corpse=p.handle AND k_team != c_team AND gid=p.gid) AS deaths,
+					(SELECT COUNT('') FROM kills WHERE killer=p.handle AND gid=p.gid AND killer != corpse) AS kills,
+					(SELECT COUNT('') FROM kills WHERE corpse=p.handle AND gid=p.gid AND killer != corpse) AS deaths,
 					(SELECT COUNT('') FROM kills WHERE corpse=p.handle AND killer = corpse AND gid=p.gid) AS suicides,
 					(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as prevelo
 					FROM players as p WHERE gid={$this->gid}";
