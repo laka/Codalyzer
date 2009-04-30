@@ -107,10 +107,12 @@ sub usingMod {
 	my($gid) = @_;
 	my $row = $dbh->selectrow_hashref('SELECT mods FROM games WHERE id=?',
 		undef, $gid);
-		
-	if($row->{mods} eq 'none') {
-		return;
-	} else { return 1; } 
+	
+	if(defined($row->{mods})) {
+		if($row->{mods} eq 'none') {
+			return;
+		} else { return 1; } 
+	}
 }
 
 # subroutine: assignTeam ($player, $team, $gid)
@@ -248,8 +250,10 @@ sub cleanUpGames {
 	my($gid) = @_;
 		
 	my $rcount = gameData('rcount', $gid);
-	if($rcount <= 1) {
-		deleteGame($gid);
+	if(usingMod($gid)) {
+		if($rcount <= 1) {
+			deleteGame($gid);
+		}
 	}
 	
 	my $row = $dbh->selectrow_hashref(
@@ -530,7 +534,7 @@ sub adjustPlayTime {
 	my($gid) = @_;
 	my $and = '';
 	
-	if(gameData('mods', $gid)) {
+	if(usingMod($gid)) {
 		$and = ' AND k_team!=c_team ';
 	}
 	

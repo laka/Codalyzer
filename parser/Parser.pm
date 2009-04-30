@@ -126,7 +126,7 @@ sub parser {
 		#															next LINE; 
 		#													};
 																	
-		/$CA::Regex::Parser{Exitlev}{all}/		&& do { CA::Toolbox::addExitLevel({
+		/$CA::Regex::Parser{Exitlev}{all}/			&& do { CA::Toolbox::addExitLevel({
 																	ts => CA::Common::ts2seconds($1),
 																	gid => $gid}); 
 																	next LINE; 

@@ -156,7 +156,7 @@ sub addKill {
 		CA::Common::try2findTeam($args->{corpse}, $args->{killer}, $args->{gid});
 	}
 	
-	# Don't think we need this after all..
+	# Don't think we need this after all.. (deprecated)
 	#if(CA::Common::usingMod($args->{gid})) {
 	#	CA::Common::assignTeam($args->{killer}, $args->{k_team}, $args->{gid});
 	#	CA::Common::assignTeam($args->{corpse}, $args->{c_team}, $args->{gid});
