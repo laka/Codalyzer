@@ -32,7 +32,6 @@ sub parser {
 	#my @to_parse = @rawfile[$linestart..$#rawfile];
 	
 	# ONLY FOR TESTING
-	CA::SimpleDB::flushTable();
 	my $version = "cod40";
 	
 	LINE: for (@rawfile) {

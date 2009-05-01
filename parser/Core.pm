@@ -20,9 +20,10 @@ my $dbh = CA::SimpleDB::getDbh();
 # for each function)
 sub handler {
 	
+	# Delete players with <= 1 kill
 	CA::Common::killZombies();
 		
-	# Gid loop ------------------------------------------------
+	# GID LOOP
 	my $game_ids = $dbh->prepare('SELECT id FROM games ORDER BY id');
 	$game_ids->execute();
 	
@@ -37,10 +38,12 @@ sub handler {
 		findGameWinners($ref->{id});
 		
 		# Set playtime to first kill and last kill
+		# We do this to make sure duration does not get fucked up if the server stalls
 		CA::Common::adjustPlayTime($ref->{id});
+		
 	}
 	
-	# Players loop --------------------------------------------
+	# PLAYERS LOOP 
 	my $players = $dbh->prepare('SELECT handle FROM players ORDER BY id');
 	$players->execute();
 	
@@ -48,6 +51,13 @@ sub handler {
 		# Add player data to the profiles (kills, deaths, etc)
 		CA::Common::addProfileData($ref->{handle});
 	}
+	
+	# Deletes profiles where games = 0 or kills AND deaths = 0
+	CA::Common::cleanUpProfiles();
+	
+	# Loops through all clans and updates profiles with no clan, 
+	# if their handle match the clantag
+	CA::Common::searchClanTag();
 }
 
 # subroutine: eloRating
@@ -153,8 +163,6 @@ sub findGameWinners {
 }
 
 END {
-	CA::Common::cleanUpProfiles();
-	#CA::Common::searchClanTag();
 }
 
 1;

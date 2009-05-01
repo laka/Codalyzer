@@ -407,6 +407,7 @@ sub niceString {
 		s/\^M//;
 		s/\s+$//;
 		s/^\s+//;
+		s/mp_//;
 	}
 	return $string;
 }
@@ -451,7 +452,7 @@ sub lastElo {
 
 # subroutine: killZombies ()
 # -------------------------------------------------------------
-# Add data to existing profiles
+# 
 sub killZombies {
 	my $query = $dbh->prepare('SELECT gid,handle FROM players WHERE team="" AND elo IS NULL');
 	$query->execute();
@@ -468,7 +469,7 @@ sub killZombies {
 
 # subroutine: deletePlayer ($player)
 # -------------------------------------------------------------
-# Add data to existing profiles
+# Deletes a players record
 sub deletePlayer {
 	my($player, $gid) = @_;
 	$dbh->do('DELETE FROM players WHERE handle=? AND gid=?', undef, $player, $gid);
