@@ -58,6 +58,8 @@ if(strlen($_GET['h']) > 0){
         
         // EASIEST PREY - WORST ENEMY - UGLY NESTED TABLES, SHOULD MAYBE BE DIVs
         // THE ONLY DIFFERENCE BETWEEN THESE TWO IS THE ORDER..
+        
+
         echo "<table width=\"100%\">\n<tr>\n<td valign=\"top\" width=\"50%\">";
         echo "<h2>" . $lang['tt_easiestpreys'] . "</h2>";
             $query = "SELECT corpse, count('')/(SELECT count('') FROM kills WHERE corpse = k.killer AND killer = k.corpse) AS ratio, 
@@ -102,6 +104,7 @@ if(strlen($_GET['h']) > 0){
                                        ));		
             $worstenemy->printTable();       
         echo "</tr>\n</table>";
+
         
         // FAVORITE WEAPON - MOST COMMON DEATH
         echo "<table width=\"100%\">\n<tr>\n<td valign=\"top\" width=\"50%\">";
@@ -122,6 +125,7 @@ if(strlen($_GET['h']) > 0){
                                             'percentage' => array(array('percentage'=>1), $lang['abb_percentage'], '30%'),
                                            ));
             $favoriteweapon->printTable();	
+            
         echo "</td>\n<td valign=\"top\">\n";  
         echo "<h2>" . $lang['tt_frequentdeaths'] . "</h2>";
             $query = "SELECT weapon, CONCAT_WS(' with ', (SELECT full FROM weapons WHERE name=t.weapon LIMIT 1), (SELECT attachments FROM weapons WHERE name=t.weapon LIMIT 1)) AS weaponfull, 

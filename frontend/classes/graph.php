@@ -56,7 +56,6 @@ class graph {
 		if(function_exists(imageantialias)){
 			imageantialias($this->img, true);
 		}			
-		
 		$this->rangeFinder();
 	}
 

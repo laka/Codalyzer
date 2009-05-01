@@ -6,7 +6,7 @@
 	**************************************************************
 */	
 	echo '<h1>' . $lang['h_rounds'] .'</h1>';
-	$query 	= "SELECT id, map, type, ROUND((stop-start)/60) as duration,(SELECT count(distinct handle) FROM players WHERE players.gid = games.id) as players FROM games WHERE (SELECT count('') from kills where gid=games.id) >= 5";
+	$query 	= "SELECT id, map, type, ROUND((stop-start)/60) as duration, (SELECT count(distinct handle) FROM players WHERE players.gid = games.id) as players FROM games";
 	$rounds = new orderedtable($query, 1);
     
 	$rounds->setClass('summary');

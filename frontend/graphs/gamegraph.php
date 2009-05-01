@@ -27,7 +27,7 @@ if($_GET['gid']){
 		// decides when the game ended
 		$start = $gamedata['start'];
 		if($gamedata['stop'] == '00:00') {
-			$sql = "SELECT ts FROM kills WHERE gid='$gid ' ORDER BY gid DESC LIMIT 1";
+			$sql = "SELECT ts FROM kills WHERE gid='$gid' ORDER BY gid DESC LIMIT 1";
 			$lastts = $db->singleRow($sql);
 			$stop = $lastts['ts'];
 		} else {
@@ -48,11 +48,16 @@ if($_GET['gid']){
 				$teams 	    = 1;
 				$actions	= 1;
 		}
-        
-        if($teams){
-            $teamsql = "AND k_team != c_team";
-        }
-        
+     
+        switch($gametype['mods']){
+            case 'pam40':
+            case 'promod':
+                $teamsql = "AND k_team != c_team";
+            break;
+            default:
+                "";
+        }     
+
 		// looks up the 10 best players from this game
 		$sql = "SELECT killer FROM kills WHERE gid = '$gid' AND killer != '' AND killer != corpse GROUP BY killer ORDER BY count('') DESC LIMIT 10";
 		$res = $db->sqlResult($sql);
@@ -62,7 +67,7 @@ if($_GET['gid']){
 		while($line = mysql_fetch_assoc($res)){
 			$graphdata[$i][0] = $line['killer'];
 			$graphdata[$i][1] = $colors[$i];
-			$sql = "SELECT ts FROM kills WHERE killer =  '" . $db->sqlQuote($line['killer']) . "' AND gid='$gid' $teamsql ORDER BY ts asc";
+			$sql = "SELECT ts FROM kills WHERE killer =  '" . $db->sqlQuote($line['killer']) . "' AND gid='$gid' AND killer != corpse $teamsql ORDER BY ts asc";
 			$playerres = $db->sqlResult($sql);
 			$a = 0;
 			// makes start point for the graphs (in the origin)
@@ -91,6 +96,7 @@ if($_GET['gid']){
 	if(max($kills) > 20){
 		$yvalues = 20;
 	}
+    print_r($graphdata);
 	$t = new graph($graphdata, 790, 300+30*count($graphdata));
 	$t->valuesx = 0;
 	$t->simplify = 0;
@@ -99,9 +105,7 @@ if($_GET['gid']){
 	$t->bkg = '212526';			
 	$t->decimalsvaluesy = 0;
 	$t->valuesywidth = 25;
-	$t->createGraph();
-
-			
+	$t->createGraph();	
 	}
 	else {
 		echo "<h1>Error</h1><p>The game was not found</p>";
