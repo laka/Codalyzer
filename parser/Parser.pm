@@ -31,11 +31,18 @@ sub parser {
 	my @rawfile = read_file($logfile);
 	#my @to_parse = @rawfile[$linestart..$#rawfile];
 	
-	# ONLY FOR TESTING
-	my $version = "cod40";
+	my $version;
+	my $gid;
 	
 	LINE: for (@rawfile) {
-		my $gid = CA::Common::lastGid();
+		next LINE if $_ =~ /---/;
+		$gid = CA::Common::lastGid();
+		
+		if(defined($gid)) {
+			$version = 'cod' . CA::Common::gameData('version', $gid);
+		} else {
+			$version  = 'cod40';
+		}
 		
 		# Check if line matches regex				# And if so do this (the sub name speaks for itself)
 		/$CA::Regex::Parser{InitGame}{all}/			&& do { CA::Toolbox::addNewGame({ 

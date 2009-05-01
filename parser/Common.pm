@@ -560,6 +560,7 @@ sub missingClan {
 sub adjustPlayTime {
 	my($gid) = @_;
 	my $and = '';
+	my $duration;
 	
 	if(usingMod($gid)) {
 		$and = ' AND k_team!=c_team ';
@@ -584,6 +585,28 @@ sub adjustPlayTime {
 	$dbh->do('UPDATE games SET start=?, stop=? WHERE id=?',
 		undef, $start_ts->{ts}, $stop_ts->{ts}, $gid)
 		or croak "CA (error): Couldn't set game start/stop " . DBI->errstr;
+	
+	if(defined($stop_ts->{ts}) && defined($start_ts->{ts})) {
+		$duration = (($stop_ts->{ts} - $start_ts->{ts}) / 60);
+	}
+	
+	$dbh->do('UPDATE games SET duration=? WHERE id=?',
+		undef, $duration, $gid)
+		or croak "CA (error): Couldn't set game duration " . DBI->errstr;
+}
+
+# subroutine: addNumPlayers
+# -------------------------------------------------------------
+sub addNumPlayers {
+	my($gid) = @_;
+	
+	my $players = $dbh->selectrow_hashref(
+		'SELECT COUNT(DISTINCT handle) AS num FROM players WHERE gid=?',
+		undef, $gid);
+	
+	$dbh->do('UPDATE games SET players=? WHERE id=?',
+		undef, $players->{num}, $gid)
+		or croak "CA (error): Couldn't set game players " . DBI->errstr;
 }
 
 # subroutine: firstKillAndDeath

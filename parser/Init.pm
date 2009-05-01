@@ -14,7 +14,6 @@ use CA::Core;
 use CA::SimpleDB;
 use CA::Parser;
 
-
 my $dbh = CA::SimpleDB::getDbh();
 my %config = CA::Config::readConfig();
 
@@ -34,11 +33,10 @@ if(exists($cmd_args{i})) {
 	print "Using logfile: \"$logfile\"\n";
 	
 	CA::Common::getLatestLog($logfile, $config{transfer_protocol}, 'cron');
-	
-	#CA::SimpleDB::flushTable();
-	#CA::Parser::parser($logfile);
-    #CA::Core::handler();
-	#CA::SimpleDB::optimizeTable();
+	CA::SimpleDB::flushTable();
+	CA::Parser::parser($logfile);
+    CA::Core::handler();
+	CA::SimpleDB::optimizeTable();
 }
 
 END {

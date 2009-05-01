@@ -41,6 +41,8 @@ sub handler {
 		# We do this to make sure duration does not get fucked up if the server stalls
 		CA::Common::adjustPlayTime($ref->{id});
 		
+		# Add number of player for each game to games table
+		CA::Common::addNumPlayers($ref->{id});
 	}
 	
 	# PLAYERS LOOP 
