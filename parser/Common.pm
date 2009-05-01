@@ -8,6 +8,7 @@ use strict;
 use warnings;
 use Carp;
 use Net::FTP;
+use File::Slurp;
 use lib '/home/homer/ju/jussimik/CA-Parser/';
 use CA::SimpleDB;
 use CA::Config;
@@ -21,7 +22,7 @@ my %config = CA::Config::readConfig();
 # the last (if any) logfile
 sub getLogByFtp {
 	# Amount of bytes in the file to NOT be downloaded
-	my($bytes) = @_;
+	my($logfile, $bytes) = @_;
 	
 	# Opens the FTP-handle
 	my $ftp = Net::FTP->new($config{ftp_host}) 
@@ -31,8 +32,15 @@ sub getLogByFtp {
 	
 	$config{ftp_path} =~ s/^\///;
 	$ftp->cwd($config{ftp_path});
-	$ftp->get($config{logfile}, $config{save_to}, $bytes);
+	$ftp->get($logfile, $logfile, $bytes);
 	$ftp->quit;
+	
+	my $filesize = -s $logfile;
+	my @array = read_file($logfile);
+	my $numlines = scalar(@array);
+	
+	$dbh->do('INSERT INTO loghist (filename, filesize, numlines) VALUES(?,?,?)',
+		undef, $logfile, $filesize, $numlines);
 }
 
 # subroutine: interactiveCmd ($command)
@@ -61,8 +69,17 @@ sub interactiveCmd {
 # Downloads (or updates) the current logfile using which ever protocol 
 # specified in config ($config{transfer_protocol})
 sub getLatestLog {
-	print("I will now fetch the latest logfile using (according to the config file)\n");
-	#interactiveCmd;
+	my($logfile, $method, $via) = @_;
+	print("I will now fetch the latest logfile using <$method> (according to the config file)\n");
+	
+	if($method eq 'ftp') {
+		my $current_size = logHist('filesize', $logfile);
+		getLogByFtp($logfile, $current_size);
+	}
+	
+	if($via ne 'cron') {
+		interactiveCmd();
+	}
 }
 
 # subroutine: lastGid
@@ -585,6 +602,16 @@ sub lastKillAndDeath {
 # -------------------------------------------------------------
 sub playerRoundStamina {
 
+}
+
+# subroutine: logHist
+# -------------------------------------------------------------
+sub logHist {
+	my($what, $logfile) = @_;
+    my $sth = $dbh->prepare("SELECT $what FROM loghist WHERE filename=?");
+    $sth->execute($logfile);
+    return $sth->fetchrow() 
+		or return "CA (warn): Couldn't find data on FILENAME $logfile";
 }
 
 1;
