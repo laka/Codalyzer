@@ -42,7 +42,7 @@ sub handler {
 		CA::Common::adjustPlayTime($ref->{id});
 		
 		# Add number of player for each game to games table
-		CA::Common::addNumPlayers($ref->{id});
+		#CA::Common::addNumPlayers($ref->{id});
 	}
 	
 	# PLAYERS LOOP 
@@ -59,7 +59,7 @@ sub handler {
 	
 	# Loops through all clans and updates profiles with no clan, 
 	# if their handle match the clantag
-	CA::Common::searchClanTag();
+	#CA::Common::searchClanTag();
 }
 
 # subroutine: eloRating
