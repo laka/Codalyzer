@@ -96,7 +96,7 @@ if($_GET['gid']){
 	if(max($kills) > 20){
 		$yvalues = 20;
 	}
-    print_r($graphdata);
+    //print_r($graphdata);
 	$t = new graph($graphdata, 790, 300+30*count($graphdata));
 	$t->valuesx = 0;
 	$t->simplify = 0;
