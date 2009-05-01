@@ -44,16 +44,25 @@ sub interactiveCmd {
     my $command = <STDIN>;
     chomp($command);
     my %commands = (
-        quit => sub { print("Leaving..\n"); exit },
+        quit 		=> sub { print("Leaving..\n"); exit; },
+		test 		=> sub { exit; },
+		download 	=> \&getLatestLog,
     );
 
     while(my($key,$value) = each %commands) {
         if($command eq $key) {
             $value->();
-        } else {
-            print "Unknown command, try again (or help)\n";
-        }
+		}
     }
+}
+
+# subroutine: getLatestLog
+# -------------------------------------------------------------
+# Downloads (or updates) the current logfile using which ever protocol 
+# specified in config ($config{transfer_protocol})
+sub getLatestLog {
+	print("I will now fetch the latest logfile using (according to the config file)\n");
+	#interactiveCmd;
 }
 
 # subroutine: lastGid

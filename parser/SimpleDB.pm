@@ -86,6 +86,19 @@ sub flushTable {
 	$dbh->do('TRUNCATE TABLE profiles');
 }
 
+# subroutine: optimizeTable
+# -------------------------------------------------------------
+# Optimizes all tables
+sub optimizeTable {
+	$dbh->do('OPTIMIZE TABLE games');
+	$dbh->do('OPTIMIZE TABLE players');
+	$dbh->do('OPTIMIZE TABLE kills');
+	$dbh->do('OPTIMIZE TABLE hits');
+	$dbh->do('OPTIMIZE TABLE quotes');
+	$dbh->do('OPTIMIZE TABLE actions');
+	$dbh->do('OPTIMIZE TABLE profiles');
+}
+
 END {
 	our $dbh;
     $dbh->disconnect;

@@ -15,6 +15,7 @@ use CA::SimpleDB;
 use CA::Parser;
 
 my $dbh = CA::SimpleDB::getDbh();
+my %config = CA::Config::readConfig();
 
 # Fetch command-line arguments
 my %cmd_args;
@@ -27,8 +28,12 @@ if(exists($cmd_args{i})) {
 		CA::Common::interactiveCmd();
     }
 } else {
-    # Cronjob mode
-    CA::Common::analyzeLogFile();
+	# Cronjob mode
+	my $logfile = $ARGV[0] || $config{logfile};
+	print "Using logfile: \"$logfile\"\n";
+	
+	CA::Parser::parser($logfile);
+    CA::Core::handler();
 }
 
 END {

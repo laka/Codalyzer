@@ -26,24 +26,16 @@ my $dbh = CA::SimpleDB::getDbh();
 # Arguments:
 #	1) logfile (the logfile to parse)
 #	2) linestart (where in the logfile should we start parsing)
-
-# ONLY FOR TESTING
-END {
-	parser();
-	CA::Core::handler();
-}
-
 sub parser {
-	#my($logfile, $linestart) = @_;
-	#my @rawfile = read_file($logfile);
+	my($logfile) = @_;
+	my @rawfile = read_file($logfile);
 	#my @to_parse = @rawfile[$linestart..$#rawfile];
 	
 	# ONLY FOR TESTING
 	CA::SimpleDB::flushTable();
 	my $version = "cod40";
-	my @to_parse = read_file($ARGV[0]);
 	
-	LINE: for (@to_parse) {
+	LINE: for (@rawfile) {
 		my $gid = CA::Common::lastGid();
 		
 		# Check if line matches regex				# And if so do this (the sub name speaks for itself)
@@ -120,19 +112,13 @@ sub parser {
 																	next LINE;
 															};
 																	
-		#/$CA::Regex::Parser{Finish}{$version}/		&& do { CA::Toolbox::addFinished({
-		#															ts => CA::Common::ts2seconds($1),
-		#															id => $gid});
-		#															next LINE; 
-		#													};
-																	
 		/$CA::Regex::Parser{Exitlev}{all}/			&& do { CA::Toolbox::addExitLevel({
 																	ts => CA::Common::ts2seconds($1),
 																	gid => $gid}); 
 																	next LINE; 
 															};
 																	
-		/$CA::Regex::Parser{Jointeam}{$version}/	&& do { CA::Toolbox::addJoinTeam({
+		/$CA::Regex::Parser{Jointeam}{all}/			&& do { CA::Toolbox::addJoinTeam({
 																	ts => CA::Common::ts2seconds($1),
 																	hash => $2,
 																	team => $3,
@@ -141,38 +127,44 @@ sub parser {
 																	next LINE; 
 															};
 		
-		/$CA::Regex::Parser{Roundstart}{$version}/	&& do { CA::Toolbox::addRoundStart({
+		/$CA::Regex::Parser{Roundstart}{all}/		&& do { CA::Toolbox::addRoundStart({
 																	rcount => $1,
 																	id => $gid}); 
 																	next LINE; 
 															};
+															
+#		/$CA::Regex::Parser{Finish}{$version}/		&& do { CA::Toolbox::addFinished({
+#																	ts => CA::Common::ts2seconds($1),
+#																	id => $gid});
+#																	next LINE; 
+#															};													
 																	
-		#/$CA::Regex::Parser{Roundwin}{$version}/	&& do { CA::Toolbox::addRoundWin({
+#		/$CA::Regex::Parser{Roundwin}{$version}/	&& do { CA::Toolbox::addRoundWin({
 #																	ts => CA::Common::ts2seconds($1),
 #																	winner => $2}); 
 #																	next LINE; 
 #															};
 		
-		#/$CA::Regex::Parser{Timeout}{$version}/	&& do { CA::Toolbox::addTimeOut({
+#		/$CA::Regex::Parser{Timeout}{$version}/		&& do { CA::Toolbox::addTimeOut({
 #																	ts => CA::Common::ts2seconds($1),
 #																	team => $2,
 #																	who => CA::Common::niceString($3)}); 
 #																	next LINE; 
 #															};
 		
-		#/$CA::Regex::Parser{Sidechange}{$version}/	&& do { CA::Toolbox::addSideChange({
+#		/$CA::Regex::Parser{Sidechange}{$version}/	&& do { CA::Toolbox::addSideChange({
 #																	ts => CA::Common::ts2seconds($1),
 #																	string => $2}); 
 #																	next LINE; 
 #															};
 																	
-		#/$CA::Regex::Parser{Winners}{$version}/	&& do { CA::Toolbox::addGameWinners({
+#		/$CA::Regex::Parser{Winners}{$version}/		&& do { CA::Toolbox::addGameWinners({
 #																	foo => CA::Common::ts2seconds($1),
 #																	bar => $2});
 #																	next LINE; 
 #															};
 		
-		#/$CA::Regex::Parser{Loosers}{$version}/	&& do { CA::Toolbox::addGameLoosers({
+#		/$CA::Regex::Parser{Loosers}{$version}/		&& do { CA::Toolbox::addGameLoosers({
 #																	foo => CA::Common::ts2seconds($1),
 #																	bar => $2});
 #																	next LINE; 
