@@ -21,7 +21,7 @@ my $dbh = CA::SimpleDB::getDbh();
 sub handler {
 	
 	# Delete players with <= 1 kill
-	CA::Common::killZombies();
+	#CA::Common::killZombies();
 		
 	# GID LOOP
 	my $game_ids = $dbh->prepare('SELECT id FROM games ORDER BY id');
@@ -40,9 +40,6 @@ sub handler {
 		# Set playtime to first kill and last kill
 		# We do this to make sure duration does not get fucked up if the server stalls
 		CA::Common::adjustPlayTime($ref->{id});
-		
-		# Add number of player for each game to games table
-		#CA::Common::addNumPlayers($ref->{id});
 	}
 	
 	# PLAYERS LOOP 

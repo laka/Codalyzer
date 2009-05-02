@@ -162,6 +162,11 @@ sub addKill {
 	#	CA::Common::assignTeam($args->{corpse}, $args->{c_team}, $args->{gid});
 	#}
 	
+	if(CA::Common::usingMod($args->{gid}) && (CA::Common::gameData('type', $args->{gid}) =~ /koth|dom/)) {
+		CA::Common::assignTeam($args->{killer}, $args->{k_team}, $args->{gid});
+		CA::Common::assignTeam($args->{corpse}, $args->{c_team}, $args->{gid});
+	}
+	
 	#if(CA::Common::firstKill) {
 	#	$dbh->do('INSERT INTO survivability (gid, handle, firstkill) VALUES (?,?,?)',
 	#		undef, $args->{killer}, $args->{gid}); 
@@ -276,8 +281,9 @@ sub addJoinTeam {
 sub addRoundStart {
 	my($args) = @_;
 	
-	# Mark the game as a clanmatch
-	CA::Common::going2war($args->{id}, $args->{rcount});
+	if($args->{rcount} > 1) {
+		CA::Common::going2war($args->{id}, $args->{rcount});
+	}
 	
 	my %where = (id => $args->{id});
 	my($sth, @bind) = $orm->update('games', \%$args, \%where);

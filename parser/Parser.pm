@@ -27,7 +27,7 @@ my $dbh = CA::SimpleDB::getDbh();
 #	1) logfile (the logfile to parse)
 #	2) linestart (where in the logfile should we start parsing)
 sub parser {
-	my($logfile) = @_;
+	my($logfile, $linestart) = @_;
 	my @rawfile = read_file($logfile);
 	#my @to_parse = @rawfile[$linestart..$#rawfile];
 	

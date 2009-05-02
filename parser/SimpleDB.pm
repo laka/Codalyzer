@@ -84,6 +84,7 @@ sub flushTable {
 	$dbh->do('TRUNCATE TABLE quotes');
 	$dbh->do('TRUNCATE TABLE actions');
 	$dbh->do('TRUNCATE TABLE profiles');
+	$dbh->do('TRUNCATE TABLE loghist');
 }
 
 # subroutine: optimizeTable

@@ -122,7 +122,7 @@ our %Parser = (
         cod15 => qr/(\d+:\d+)\sA;\d;(\d);(allies|axis);.*;(bomb_(plant|defuse))/,
         cod20 => '',
         cod30 => '',
-        cod40 => qr/(\d+:\d+)\sA;(bomb.*);.*?;(.*)/,
+        cod40 => qr/(\d+:\d+)\sA;(bomb_planted|bomb_defused|hq_captured|hq_destroyed|captured_a|captured_b|captured_c);.*;(.*)/,
         cod50 => '',
     },
 	Pickups => {

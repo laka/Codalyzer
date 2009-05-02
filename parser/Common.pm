@@ -143,7 +143,7 @@ sub usingMod {
 
 # subroutine: assignTeam ($player, $team, $gid)
 # -------------------------------------------------------------
-# Put the player on the team parsed from damage hits
+# Put the player on the team parsed from damage hits or kills
 sub assignTeam {
 	my($player, $team, $gid) = @_;
 	$dbh->do('UPDATE players SET team=? WHERE handle=? AND gid=?',
@@ -274,19 +274,17 @@ sub gameOver {
 # Find games to delete
 sub cleanUpGames {
 	my($gid) = @_;
-		
-	my $rcount = gameData('rcount', $gid);
-	if(usingMod($gid)) {
-		if($rcount <= 1) {
-			deleteGame($gid);
-		}
-	}
 	
 	my $row = $dbh->selectrow_hashref(
-		'SELECT COUNT(*) AS num FROM kills WHERE gid=?',
-		undef, $gid);
-	
-	if($row->{num} < 5) {
+		'SELECT id, 
+			(SELECT COUNT(*) FROM kills WHERE gid=a.id) AS kills, 
+			(SELECT COUNT(*) FROM players WHERE gid=a.id) AS players 
+		FROM games AS a WHERE id=?', undef, $gid);
+		
+	if($row->{kills} < 5) {
+		deleteGame($gid);
+	}
+	if($row->{players} <= 1) {
 		deleteGame($gid);
 	}
 }
@@ -309,10 +307,7 @@ sub deleteGame {
 # -------------------------------------------------------------
 # Mark a game as a war (clanmatch)
 sub going2war {
-	my($gid, $rcount) = @_;
-	
-	# Allready marked
-	return if $rcount > 1;
+	my($gid) = @_;
 	
 	$dbh->do('UPDATE games SET war=? WHERE id=?',
 		undef, 1, $gid)
@@ -321,7 +316,7 @@ sub going2war {
 
 # subroutine: makeProfile ($handle)
 # -------------------------------------------------------------
-# Mark a game as a war (clanmatch)
+# 
 sub makeProfile {
 	my($player) = @_;
 	$dbh->do('INSERT INTO profiles (handle) VALUES(?)',
@@ -559,10 +554,11 @@ sub missingClan {
 sub adjustPlayTime {
 	my($gid) = @_;
 	my $and = '';
-	my $duration;
 	
 	if(usingMod($gid)) {
-		$and = ' AND k_team!=c_team ';
+		if(gameData('type', $gid) ne 'dm') {
+			$and = ' AND k_team!=c_team ';
+		}
 	}
 	
 	my $start_ts = $dbh->selectrow_hashref(
@@ -575,11 +571,12 @@ sub adjustPlayTime {
 		
 	my $stop_ts = $dbh->selectrow_hashref(
 		'SELECT ts FROM kills WHERE gid=? 
-		AND id != (SELECT MAX(id) FROM kills WHERE gid=?) 
 		AND killer!=corpse
 		'. $and.'
 		ORDER BY ts DESC LIMIT 1',
-		undef, $gid, $gid);
+		undef,  $gid);
+		
+		#AND id != (SELECT MAX(id) FROM kills WHERE gid=?) 
 	
 	$dbh->do('UPDATE games SET start=?, stop=? WHERE id=?',
 		undef, $start_ts->{ts}, $stop_ts->{ts}, $gid)

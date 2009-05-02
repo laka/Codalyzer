@@ -32,12 +32,21 @@ if(exists($cmd_args{i})) {
 	my $logfile = $ARGV[0] || $config{logfile};
 	print "Using logfile: \"$logfile\"\n";
 	
-	CA::Common::getLatestLog(
-		$logfile, $config{transfer_protocol}, 'cron');
-		
+	# Fetch latest log
+	#CA::Common::getLatestLog(
+	#	$logfile, $config{transfer_protocol}, 'cron');
+	
+	# Flush out tables
 	CA::SimpleDB::flushTable();
-	CA::Parser::parser($logfile);
+	
+	# Run the parser
+	CA::Parser::parser(
+		$logfile, CA::Common::logHist('numlines', $logfile));
+	
+	# Run the main loop control and core operations
     CA::Core::handler();
+	
+	# Optimize tables
 	CA::SimpleDB::optimizeTable();
 }
 
