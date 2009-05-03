@@ -47,6 +47,7 @@ $lang['th_deathstreak']    = 'Death streak';
 $lang['th_games']          = 'Games';
 $lang['th_elo']            = 'Elo';
 $lang['th_weapon']         = 'Weapon';
+$lang['th_weapontype']     = 'Weapon category';
 $lang['th_percentage']     = 'Percentage';
 $lang['th_quote']          = 'Quote';
 $lang['th_gid']            = 'Game id';
