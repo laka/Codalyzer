@@ -16,6 +16,7 @@ $lang['h_maps']           = 'Baner';
 $lang['h_modes']          = 'Spillmodus';
 $lang['h_players']        = 'Spillere';
 $lang['h_weapons']        = 'Våpen';
+$lang['h_weapon']         = 'Våpen';
 $lang['h_profile']        = 'Spillerprofil';
  
 // TABLE TITLES
@@ -28,6 +29,8 @@ $lang['tt_frequentdeaths'] = 'Oftest drept av';
 $lang['tt_favoriteweapons']= 'Favorittvåpen';
 $lang['tt_randomquotes']   = 'Chatmeldinger';
 $lang['tt_lastgames']      = 'Siste spilte';
+$lang['tt_mostkillswith']  = 'Flest drap med';
+$lang['tt_mostdeathsby']   = 'Flest ganger drept med';
  
 // TABLE HEADERS
 $lang['th_id']             = 'ID';

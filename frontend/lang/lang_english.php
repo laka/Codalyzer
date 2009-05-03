@@ -16,6 +16,7 @@ $lang['h_maps']           = 'Maps';
 $lang['h_modes']          = 'Modes';
 $lang['h_players']        = 'Players';
 $lang['h_weapons']        = 'Weapons';
+$lang['h_weapon']         = 'Weapon';
 $lang['h_profile']        = 'Profile';
  
 // TABLE TITLES
@@ -28,6 +29,8 @@ $lang['tt_frequentdeaths'] = 'Most frequent deaths';
 $lang['tt_favoriteweapons']= 'Favorite weapons';
 $lang['tt_randomquotes']   = 'Random quotes';
 $lang['tt_lastgames']      = 'Last games';
+$lang['tt_mostkillswith']  = 'Most kills with';
+$lang['tt_mostdeathsby']   = 'Most deaths by';
  
 // TABLE HEADERS
 $lang['th_id']             = 'ID';
