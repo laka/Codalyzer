@@ -12,9 +12,9 @@
 	echo '<h1>'. $lang['h_weapons'] .'</h1>';
     
     $query = "SELECT full, mother, SUM(killz) AS totalkills, category, id, version FROM ( 
-              SELECT weapons.id, weapons.full, weapons.category, weapons.mother, weapons.version, COUNT('') AS killz FROM kills, weapons, games
-              WHERE weapons.name = kills.weapon AND games.id = kills.gid AND games.version = weapons.version
-              GROUP BY weapons.name, weapons.version) AS allvariants GROUP BY full, version";
+              SELECT weapons.id, weapons.full, weapons.category, weapons.mother, weapons.version, COUNT('') AS killz
+              FROM kills, weapons, games WHERE weapons.name = kills.weapon AND games.id = kills.gid AND games.version = weapons.version
+              GROUP BY weapons.name, weapons.version ORDER BY full, attachments ASC) AS allvariants GROUP BY full, version";
     
 	$weapons = new orderedtable($query, 1);
 	$weapons->setClass('summary');

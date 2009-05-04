@@ -58,14 +58,13 @@ if(strlen($_GET['h']) > 0){
         
         // EASIEST PREY - WORST ENEMY - UGLY NESTED TABLES, SHOULD MAYBE BE DIVs
         // THE ONLY DIFFERENCE BETWEEN THESE TWO IS THE ORDER..
-        
 
         echo "<table width=\"100%\">\n<tr>\n<td valign=\"top\" width=\"50%\">";
         echo "<h2>" . $lang['tt_easiestpreys'] . "</h2>";
             $query = "SELECT corpse, count('')/(SELECT count('') FROM kills WHERE corpse = k.killer AND killer = k.corpse) AS ratio, 
                       count('') AS k, (SELECT count( '' ) FROM kills WHERE corpse = k.killer AND killer = k.corpse) AS d,
                       round((count('')*100/{$data['kills']}),2) as percentage
-                      FROM kills AS k WHERE killer = '$handle' GROUP BY corpse HAVING k>10";
+                      FROM kills AS k WHERE killer = '$handle' GROUP BY corpse HAVING percentage>0.5";
             $easiestprey = new orderedtable($query, 1);
             $easiestprey->setUrl("?mode=profile&h=".urlencode($handle));
             $easiestprey->setUrlVars(array('mode', 'h'));
@@ -86,7 +85,7 @@ if(strlen($_GET['h']) > 0){
             $query = "SELECT corpse, count('')/(SELECT count('') FROM kills WHERE corpse = k.killer AND killer = k.corpse) AS ratio, 
                       count('') AS k, (SELECT count( '' ) FROM kills WHERE corpse = k.killer AND killer = k.corpse) AS d,
                       round((count('')*100/{$data['kills']}),2) as percentage
-                      FROM kills AS k WHERE killer = '$handle' GROUP BY corpse HAVING d>10";
+                      FROM kills AS k WHERE killer = '$handle' GROUP BY corpse";
 
             $worstenemy = new orderedtable($query, 1);
             $worstenemy->setUrl("?mode=profile&h=".urlencode($handle));
@@ -104,13 +103,14 @@ if(strlen($_GET['h']) > 0){
                                        ));		
             $worstenemy->printTable();       
         echo "</tr>\n</table>";
-
         
         // FAVORITE WEAPON - MOST COMMON DEATH
         echo "<table width=\"100%\">\n<tr>\n<td valign=\"top\" width=\"50%\">";
         echo "<h2>" . $lang['tt_favoriteweapons'] . "</h2>";
-            $query = "SELECT weapon, CONCAT_WS(' with ', (SELECT full FROM weapons WHERE name=t.weapon LIMIT 1), (SELECT attachments FROM weapons WHERE name=t.weapon LIMIT 1)) AS weaponfull, 
-                      count('') AS k, round(count('')*100/{$data['kills']},2) as percentage FROM kills as t WHERE killer='$handle' AND corpse != '$handle' GROUP BY weapon";
+            //$query = "SELECT weapon, CONCAT_WS(' with ', (SELECT full FROM weapons WHERE name=t.weapon LIMIT 1), (SELECT attachments FROM weapons WHERE name=t.weapon LIMIT 1)) AS weaponfull, 
+            //          count('') AS k, round(count('')*100/{$data['kills']},2) as percentage FROM kills as t WHERE killer='$handle' AND corpse != '$handle' GROUP BY weapon";
+            $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as k, round(count('')*100/{$data['kills']},2) as percentage
+                      FROM weapons, kills WHERE kills.weapon=weapons.name AND killer='$handle' AND corpse != '$handle' GROUP BY weapon";
             $favoriteweapon = new orderedtable($query, 1);
             $favoriteweapon->setUrl("?mode=profile&h=".urlencode($handle));
             $favoriteweapon->setUrlVars(array('mode', 'h'));
@@ -120,7 +120,7 @@ if(strlen($_GET['h']) > 0){
             $favoriteweapon->setWidth('100%');
             $favoriteweapon->setClass('summary');
             $favoriteweapon->setColumndata(array(
-                                            'weaponfull' => array(array('weaponfull'=>1), $lang['th_weapon'], '40%', 0, "?mode=weapons&amp;w=*weapon*"),
+                                            'weaponfull' => array(array('weaponfull'=>1), $lang['th_weapon'], '40%', 0, "?mode=weapon&amp;w=*id*"),
                                             'k' => array(array('k'=>1), $lang['th_kills'], '30%'),
                                             'percentage' => array(array('percentage'=>1), $lang['abb_percentage'], '30%'),
                                            ));
@@ -128,8 +128,11 @@ if(strlen($_GET['h']) > 0){
             
         echo "</td>\n<td valign=\"top\">\n";  
         echo "<h2>" . $lang['tt_frequentdeaths'] . "</h2>";
-            $query = "SELECT weapon, CONCAT_WS(' with ', (SELECT full FROM weapons WHERE name=t.weapon LIMIT 1), (SELECT attachments FROM weapons WHERE name=t.weapon LIMIT 1)) AS weaponfull, 
-                      count('') AS d, round(count('')*100/{$data['deaths']},2) as percentage FROM kills as t WHERE corpse='$handle' AND killer != '$handle' GROUP BY weapon";
+            //$query = "SELECT weapon, CONCAT_WS(' with ', (SELECT full FROM weapons WHERE name=t.weapon LIMIT 1), (SELECT attachments FROM weapons WHERE name=t.weapon LIMIT 1)) AS weaponfull, 
+            //          count('') AS d, round(count('')*100/{$data['deaths']},2) as percentage FROM kills as t WHERE corpse='$handle' AND killer != '$handle' GROUP BY weapon";
+            $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as d, round(count('')*100/{$data['deaths']},2) as percentage
+                      FROM weapons, kills WHERE kills.weapon=weapons.name AND corpse='$handle' AND killer != '$handle' GROUP BY weapon";
+
             $frequentdeath = new orderedtable($query, 1);
             $frequentdeath->setUrl("?mode=profile&h=".urlencode($handle));
             $frequentdeath->setUrlVars(array('mode', 'h'));
@@ -139,7 +142,7 @@ if(strlen($_GET['h']) > 0){
             $frequentdeath->setWidth('100%');
             $frequentdeath->setClass('summary');
             $frequentdeath->setColumndata(array(
-                                            'weaponfull' => array(array('weaponfull'=>1), $lang['th_weapon'], '40%', 0, "?mode=weapons&w=*weapon*"),
+                                            'weaponfull' => array(array('weaponfull'=>1), $lang['th_weapon'], '40%', 0, "?mode=weapon&w=*id*"),
                                             'd' => array(array('d'=>1), $lang['th_deaths'], '30%'),
                                             'percentage' => array(array('percentage'=>1), $lang['abb_percentage'], '30%'),
                                            ));
