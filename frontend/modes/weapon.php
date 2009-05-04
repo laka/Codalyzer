@@ -94,9 +94,8 @@ if(is_numeric($_GET['w'])){
             // WHO HAS THE MOST DEATHS WITH THIS WEAPON?                    
             echo "<h2>" . $lang['tt_mostdeathsby'] . " " . $row['full'] . "</h2>";
             
-            $sql = "SELECT corpse, COUNT('') as deathcount, (COUNT('')/(SELECT deaths FROM profiles WHERE handle=kills.corpse LIMIT 1)*100) AS percentage FROM kills 
-                    WHERE killer != corpse AND $weaponsql GROUP BY corpse";
-                                    
+            $sql = "SELECT corpse, COUNT('') as deathcount, (COUNT('')/(SELECT deaths FROM profiles WHERE handle=kills.corpse LIMIT 1)*100) AS percentage FROM kills, games
+                    WHERE killer != corpse AND kills.gid = games.id AND games.version='". $row['version'] ."' AND ($weaponsql) GROUP BY corpse";              
             $mostdeathsby = new orderedtable($sql, 1);               
             $mostdeathsby->setClass('summary');
             $mostdeathsby->setUrl('?mode=weapon&w=' . $weaponid);		 
