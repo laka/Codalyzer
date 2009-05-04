@@ -58,7 +58,7 @@ if(strlen($_GET['h']) > 0){
         
         // EASIEST PREY - WORST ENEMY - UGLY NESTED TABLES, SHOULD MAYBE BE DIVs
         // THE ONLY DIFFERENCE BETWEEN THESE TWO IS THE ORDER..
-
+/*
         echo "<table width=\"100%\">\n<tr>\n<td valign=\"top\" width=\"50%\">";
         echo "<h2>" . $lang['tt_easiestpreys'] . "</h2>";
             $query = "SELECT corpse, count('')/(SELECT count('') FROM kills WHERE corpse = k.killer AND killer = k.corpse) AS ratio, 
@@ -103,7 +103,7 @@ if(strlen($_GET['h']) > 0){
                                        ));		
             $worstenemy->printTable();       
         echo "</tr>\n</table>";
-        
+        */
         // FAVORITE WEAPON - MOST COMMON DEATH
         echo "<table width=\"100%\">\n<tr>\n<td valign=\"top\" width=\"50%\">";
         echo "<h2>" . $lang['tt_favoriteweapons'] . "</h2>";
@@ -184,7 +184,51 @@ if(strlen($_GET['h']) > 0){
                                         ));
 
             $lastgames->printTable();	
-        echo "</tr>\n</table>";             
+        echo "</tr>\n</table>";       
+
+
+        // BRIGHTEST MOMENTS - DARKEST  MOMENTS
+        echo "<table width=\"100%\">\n<tr>\n<td valign=\"top\" width=\"50%\">";
+        echo "<h2>" . $lang['tt_brightestmom'] . "</h2>";
+            mysql_query("SET@prev=1000");
+            $query = "SELECT gid, elo, (elo-previous) as elochange FROM(
+                      SELECT *, @prev as previous, @prev:=elo FROM players WHERE handle = '$handle' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";
+            $brightest = new orderedtable($query);
+            $brightest->setUrl("?mode=profile&h=".urlencode($handle));
+            $brightest->setUrlVars(array('mode', 'h'));
+            $brightest->setOrderBy('elochange');
+            $brightest->setOrder('DESC');
+            $brightest->setLimit('10');
+            $brightest->setWidth('100%');
+            $brightest->setClass('summary');
+            $brightest->setColumnData(array(
+                                        'gid' => array(array('map'=>1), $lang['th_gid'], "50%", 0, "?mode=single&amp;gid="),
+                                        'elo' => array(array('elo'=>1), $lang['th_elo'], "25%"),
+                                        'elochange' =>   array(array('elochange'=>1), $lang['th_elochange'], "25%", 0, "", '0')
+                                        ));
+
+            $brightest->printTable();	
+        echo "</td>\n<td valign=\"top\">\n";  
+        echo "<h2>" . $lang['tt_darkestmoments'] . "</h2>";
+            mysql_query("SET@prev=1000");
+            $query = "SELECT gid, elo, (elo-previous) as elochange FROM(
+                      SELECT *, @prev as previous, @prev:=elo FROM players WHERE handle = '$handle' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";
+            $darkest = new orderedtable($query);
+            $darkest->setUrl("?mode=profile&h=".urlencode($handle));
+            $darkest->setUrlVars(array('mode', 'h'));
+            $darkest->setOrderBy('elochange');
+            $darkest->setOrder('ASC');
+            $darkest->setLimit('10');
+            $darkest->setWidth('100%');
+            $darkest->setClass('summary');
+            $darkest->setColumnData(array(
+                                        'gid' => array(array('map'=>1), $lang['th_gid'], "50%", 0, "?mode=single&amp;gid="),
+                                        'elo' => array(array('elo'=>1), $lang['th_elo'], "25%"),
+                                        'elochange' =>   array(array('elochange'=>1), $lang['th_elochange'], "25%", 0, "", '0')
+                                        ));
+
+            $darkest->printTable();
+        echo "</tr>\n</table>";           
         
         
     } else {

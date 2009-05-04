@@ -31,6 +31,8 @@ $lang['tt_randomquotes']   = 'Random quotes';
 $lang['tt_lastgames']      = 'Last games';
 $lang['tt_mostkillswith']  = 'Most kills with';
 $lang['tt_mostdeathsby']   = 'Most deaths by';
+$lang['tt_brightestmom']   = 'Brightest moments';
+$lang['tt_darkestmoments'] = 'Darkest moments';
  
 // TABLE HEADERS
 $lang['th_id']             = 'ID';
@@ -54,6 +56,7 @@ $lang['th_weapontype']     = 'Weapon category';
 $lang['th_percentage']     = 'Percentage';
 $lang['th_quote']          = 'Quote';
 $lang['th_gid']            = 'Game id';
+$lang['th_elochange']      = 'Elo change';
 
 //ABBREVIATIONS
 $lang['abb_kills']         = 'K';

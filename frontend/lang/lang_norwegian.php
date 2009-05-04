@@ -31,7 +31,9 @@ $lang['tt_randomquotes']   = 'Chatmeldinger';
 $lang['tt_lastgames']      = 'Siste spilte';
 $lang['tt_mostkillswith']  = 'Flest drap med';
 $lang['tt_mostdeathsby']   = 'Flest ganger drept med';
- 
+$lang['tt_brightestmom']   = 'Beste runder';
+$lang['tt_darkestmoments'] = 'Verste runder';
+
 // TABLE HEADERS
 $lang['th_id']             = 'ID';
 $lang['th_map']            = 'Bane';
@@ -54,6 +56,7 @@ $lang['th_weapontype']     = 'Våpenkategori';
 $lang['th_percentage']     = 'Andel';
 $lang['th_quote']          = 'Sitat';
 $lang['th_gid']            = 'Rundenr.';
+$lang['th_elochange']      = 'Elo-endring';
 
 //ABBREVIATIONS
 $lang['abb_kills']         = 'K';

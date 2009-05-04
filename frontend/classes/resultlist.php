@@ -33,7 +33,7 @@ class resultlist extends orderedtable {
 				$this->teams 	= 0;
 				$this->actions	= 0;
 			break;
-			case 'tdm':
+			case 'war':
 				$this->teams 	= 1;
 				$this->actions	= 0;
 			break;	
@@ -80,7 +80,6 @@ class resultlist extends orderedtable {
 					(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as prevelo,
                     elo-(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as elodiff
 					FROM players as p WHERE gid={$this->gid} AND team='$team'";
-                    
             // for mods where teamdata is logged for each kill
             if($this->teamdata){
                 $this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', '?mode=profile&amp;h='),
@@ -94,14 +93,24 @@ class resultlist extends orderedtable {
                                         ));
             } else {
                 // for mods where teamdata is not logged for each kill (teamkills are ignored)   
-                $this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', '?mode=profile&amp;h='),
-                                        'kills' 	=>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "8%","sum"),
-                                        'deaths' 	=>  array (array('deaths' => 1, 'suicides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "8%","sum"),
-                                        'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "8%", "sum"),
-                                        'actions' 	=>  array (array('actions' => 1), $this->lang['abb_actions'], "8%", "sum"),
-                                        'elo' 		=>  array (array('elo' => 1), $this->lang['th_elo'], "12%", "avg"),
-                                        'elodiff'   =>  array (array('elodiff' => 1), "+", "13%", "sum", '', '0')
-                                        ));
+                if($this->gamedata['type'] != 'war'){
+                    $this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', '?mode=profile&amp;h='),
+                                            'kills' 	=>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "8%","sum"),
+                                            'deaths' 	=>  array (array('deaths' => 1, 'suicides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "8%","sum"),
+                                            'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "8%", "sum"),
+                                            'actions' 	=>  array (array('actions' => 1), $this->lang['abb_actions'], "8%", "sum"),
+                                            'elo' 		=>  array (array('elo' => 1), $this->lang['th_elo'], "12%", "avg"),
+                                            'elodiff'   =>  array (array('elodiff' => 1), "+", "13%", "sum", '', '0')
+                                            ));
+                } else {
+                    $this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', '?mode=profile&amp;h='),
+                                            'kills' 	=>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "8%","sum"),
+                                            'deaths' 	=>  array (array('deaths' => 1, 'suicides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "8%","sum"),
+                                            'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "8%", "sum"),
+                                            'elo' 		=>  array (array('elo' => 1), $this->lang['th_elo'], "12%", "avg"),
+                                            'elodiff'   =>  array (array('elodiff' => 1), "+", "13%", "sum", '', '0')
+                                            ));
+                }
             }
 		}	
 		// runs the constructor of orderedtable, and sets the query and makes the table sortable
