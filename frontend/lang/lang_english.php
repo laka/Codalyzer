@@ -75,4 +75,14 @@ $lang['m_onlineat']        = 'The server is online at';
 $lang['m_with']            = 'with';
 $lang['m_elodesc']         = 'How this player\'s Elo-rating has developed over time:';
 $lang['m_attachments']     = 'Attachments';
+
+// ATTACHMENTS
+$lang['at_reflex']         = 'red dot sight';
+$lang['at_grip']           = 'vertical grip';
+$lang['at_acog']           = 'ACOG scope';
+$lang['at_silencer']       = 'silencer';
+$lang['at_bipod_crouch']   = 'bipod (crouching)';
+$lang['at_bipod_stand']    = 'bipod (mounted)';
+$lang['at_gl']             = 'grenade launcher';
+$lang['at_glkill']         = 'grenade launcher (kill with the grenade launcher)';
  ?>

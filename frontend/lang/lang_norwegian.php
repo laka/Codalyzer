@@ -75,4 +75,14 @@ $lang['m_onlineat']        = 'Serveren er online, på banen ';
 $lang['m_with']            = 'med';
 $lang['m_elodesc']         = 'Hvordan denne spillerens Elo-rating har utviklet seg.';
 $lang['m_attachments']     = 'Tilbehør';
+
+// ATTACHMENTS
+$lang['at_reflex']         = 'rødpunktsikte';
+$lang['at_grip']           = 'vertikalt grep';
+$lang['at_acog']           = 'ACOG-sikte';
+$lang['at_silencer']       = 'signaturdemper';
+$lang['at_bipod_crouch']   = 'stativ (på huk)';
+$lang['at_bipod_stand']    = 'stativ (montert)';
+$lang['at_gl']             = 'granatkaster';
+$lang['at_glkill']         = 'granatkaster (granatkasterdrap)';
  ?>

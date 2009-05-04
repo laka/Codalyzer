@@ -64,7 +64,9 @@ if(is_numeric($_GET['w'])){
                         $weaponsql .= ' weapon="' . $line['name'] . '"'; 
                         $a++;
                     }
-                    echo '<input type="checkbox" name="att_'. $i .'" value="'. $line['name'] .'" '. $checked .'>' . $line['attachments'];
+                    
+                    $attatchmentname = isset($lang['at_'.$line['attachments']]) ? $lang['at_'.$line['attachments']] : $line['attachments'];
+                    echo '<input type="checkbox" name="att_'. $i .'" value="'. $line['name'] .'" '. $checked .'>' . ucfirst($attatchmentname);
                     $checked = '';
                     $i++;
                 }
