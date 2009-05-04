@@ -12,6 +12,8 @@
 	$rounds->setClass('summary');
 	$rounds->setUrl('?mode=rounds');		 
 	$rounds->setLimit(50); 
+    $rounds->setOrderBy('id'); 
+    $rounds->setOrder('DESC'); 
 
 	$rounds->setColumnData(array('id' 			=> array (array('id' => 0), $lang['th_id'], "5%", 0, "?mode=single&amp;gid="),
 								 'map' 			=> array (array('map' => 1), $lang['th_map'], "20%"),
