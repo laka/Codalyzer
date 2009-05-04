@@ -14,7 +14,7 @@
     $query = "SELECT full, mother, SUM(killz) AS totalkills, category, id, version FROM ( 
               SELECT weapons.id, weapons.full, weapons.category, weapons.mother, weapons.version, COUNT('') AS killz
               FROM kills, weapons, games WHERE weapons.name = kills.weapon AND games.id = kills.gid AND games.version = weapons.version
-              GROUP BY weapons.name, weapons.version ORDER BY full, attachments ASC) AS allvariants GROUP BY full, version";
+              GROUP BY weapons.name, weapons.version ORDER BY full, attachments ASC) AS allvariants GROUP BY mother";
     
 	$weapons = new orderedtable($query, 1);
 	$weapons->setClass('summary');
@@ -23,7 +23,7 @@
 	$weapons->setLimit(50); 	
     $weapons->setOrderBy('category'); 	
     $weapons->setOrder('ASC'); 	
-	$weapons->setColumnData(array('full' 	=> array (array('full' => 1), $lang['th_weapon'], "30%", 0, "?mode=weapon&w=*id*"),
+	$weapons->setColumnData(array('full' 	=> array (array('full' => 1), $lang['th_weapon'], "30%", 0, "?mode=weapon&w=*mother*"),
 								  'category' => array (array('category' => 1, 'full' => 1), $lang['th_weapontype'], "30%"),			
                                   'totalkills' => array (array('totalkills' => 1, 'full' => 1), $lang['th_kills'], "30%"),	
 								));		
