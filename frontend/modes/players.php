@@ -41,8 +41,7 @@
 	$totalsql = "select count('') as c from profiles WHERE (deaths > 0 OR kills > 0)";
 	$totalrow = $db->singleRow($totalsql);
 	$players->setTotalRows($totalrow['c']);
-
-	echo $players->pageSelector();							
+						
 	$players->printTable();
 	echo $players->pageSelector();	
 ?>

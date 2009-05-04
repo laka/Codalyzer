@@ -31,8 +31,7 @@
 	$totalsql = "SELECT COUNT('') AS c FROM weapons WHERE mother IS NULL";
 	$totalrow = $db->singleRow($totalsql);
 	$weapons->setTotalRows($totalrow['c']);
-
-	echo $weapons->pageSelector();	     
+    
 	$weapons->printTable();
 	echo $weapons->pageSelector();	    
 ?>

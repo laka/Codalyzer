@@ -23,8 +23,7 @@
 	$totalsql = "select count('') as c from games WHERE (SELECT count('') from kills where gid=games.id) >= 5";
 	$totalrow = $db->singleRow($totalsql);
 	$rounds->setTotalRows($totalrow['c']);
-
-	echo $rounds->pageSelector();							
+						
 	$rounds->printTable();
 	echo $rounds->pageSelector();	
 ?>
