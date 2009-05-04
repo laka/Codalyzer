@@ -58,13 +58,14 @@ if(strlen($_GET['h']) > 0){
         
         // EASIEST PREY - WORST ENEMY - UGLY NESTED TABLES, SHOULD MAYBE BE DIVs
         // THE ONLY DIFFERENCE BETWEEN THESE TWO IS THE ORDER..
-/*
+
         echo "<table width=\"100%\">\n<tr>\n<td valign=\"top\" width=\"50%\">";
         echo "<h2>" . $lang['tt_easiestpreys'] . "</h2>";
-            $query = "SELECT corpse, count('')/(SELECT count('') FROM kills WHERE corpse = k.killer AND killer = k.corpse) AS ratio, 
-                      count('') AS k, (SELECT count( '' ) FROM kills WHERE corpse = k.killer AND killer = k.corpse) AS d,
-                      round((count('')*100/{$data['kills']}),2) as percentage
-                      FROM kills AS k WHERE killer = '$handle' GROUP BY corpse HAVING percentage>0.5";
+
+            $query = "SELECT corpse, COUNT('') AS killcount, d.deathcount, round(COUNT('')*100/". $data['kills'] .",2) as percentage, (COUNT('')/d.deathcount) AS ratio
+                      FROM kills AS k LEFT JOIN (SELECT killer AS mm, COUNT('')  AS deathcount FROM kills WHERE corpse = '". $handle ."' GROUP BY killer) AS d 
+                      ON k.corpse = d.mm WHERE k.killer = '". $handle ."' GROUP BY corpse HAVING percentage > 0.4";
+                      
             $easiestprey = new orderedtable($query, 1);
             $easiestprey->setUrl("?mode=profile&h=".urlencode($handle));
             $easiestprey->setUrlVars(array('mode', 'h'));
@@ -74,18 +75,17 @@ if(strlen($_GET['h']) > 0){
             $easiestprey->setWidth('100%');
             $easiestprey->setClass('summary');
             $easiestprey->setColumndata(array('corpse' => array (array('corpse' => 1), $lang['th_player'], "40%", 0, "?mode=profile&amp;h="),
-                                            'ratio' => array (array('ratio' => 1, 'k' => 1), $lang['abb_kpd'], "15%"),
-                                            'k' => array (array('k' => 1, 'd' => 0), $lang['abb_kills'], "15%"),
-                                            'd' => array (array('d' => 1, 'k' => 0), $lang['abb_deaths'], "15%"),
-                                            'percentage' => array (array('percentage' => 1, 'k' => 1), $lang['abb_percentage'], "15%")                                                
+                                            'ratio' => array (array('ratio' => 1, 'killcount' => 1), $lang['abb_kpd'], "15%"),
+                                            'killcount' => array (array('killcount' => 1, 'deathcount' => 0), $lang['abb_kills'], "15%"),
+                                            'deathcount' => array (array('deathcount' => 1, 'killcount' => 0), $lang['abb_deaths'], "15%"),
+                                            'percentage' => array (array('percentage' => 1, 'killcount' => 1), $lang['abb_percentage'], "15%")                                                
                                        ));		
             $easiestprey->printTable();	
         echo "</td>\n<td valign=\"top\" width=\"50%\">\n";
         echo "<h2>" . $lang['tt_worstenemies'] . "</h2>";
-            $query = "SELECT corpse, count('')/(SELECT count('') FROM kills WHERE corpse = k.killer AND killer = k.corpse) AS ratio, 
-                      count('') AS k, (SELECT count( '' ) FROM kills WHERE corpse = k.killer AND killer = k.corpse) AS d,
-                      round((count('')*100/{$data['kills']}),2) as percentage
-                      FROM kills AS k WHERE killer = '$handle' GROUP BY corpse";
+            $query = "SELECT corpse, COUNT('') AS killcount, d.deathcount, round(COUNT('')*100/". $data['deaths'] .",2) as percentage, (COUNT('')/d.deathcount) AS ratio
+                      FROM kills AS k LEFT JOIN (SELECT killer AS mm, COUNT('')  AS deathcount FROM kills WHERE corpse = '". $handle ."' GROUP BY killer) AS d 
+                      ON k.corpse = d.mm WHERE k.killer = '". $handle ."' GROUP BY corpse HAVING percentage > 0.4";
 
             $worstenemy = new orderedtable($query, 1);
             $worstenemy->setUrl("?mode=profile&h=".urlencode($handle));
@@ -96,14 +96,14 @@ if(strlen($_GET['h']) > 0){
             $worstenemy->setWidth('100%');
             $worstenemy->setClass('summary');
             $worstenemy->setColumndata(array('corpse' => array (array('corpse' => 1), $lang['th_player'], "40%", 0, "?mode=profile&amp;h="),
-                                            'ratio' => array (array('ratio' => 1, 'k' => 1), $lang['abb_kpd'], "15%"),
-                                            'k' => array (array('k' => 1, 'd' => 0), $lang['abb_kills'], "15%"),
-                                            'd' => array (array('d' => 1, 'k' => 0), $lang['abb_deaths'], "15%"),
-                                            'percentage' => array (array('percentage' => 1, 'k' => 1), $lang['abb_percentage'], "15%")                                                
+                                            'ratio' => array (array('ratio' => 1, 'killcount' => 1), $lang['abb_kpd'], "15%"),
+                                            'killcount' => array (array('killcount' => 1, 'deathcount' => 0), $lang['abb_kills'], "15%"),
+                                            'deathcount' => array (array('deathcount' => 1, 'killcount' => 0), $lang['abb_deaths'], "15%"),
+                                            'percentage' => array (array('percentage' => 1, 'killcount' => 1), $lang['abb_percentage'], "15%")                                                
                                        ));		
             $worstenemy->printTable();       
         echo "</tr>\n</table>";
-        */
+
         // FAVORITE WEAPON - MOST COMMON DEATH
         echo "<table width=\"100%\">\n<tr>\n<td valign=\"top\" width=\"50%\">";
         echo "<h2>" . $lang['tt_favoriteweapons'] . "</h2>";
