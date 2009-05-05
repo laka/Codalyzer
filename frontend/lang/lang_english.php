@@ -18,6 +18,7 @@ $lang['h_players']        = 'Players';
 $lang['h_weapons']        = 'Weapons';
 $lang['h_weapon']         = 'Weapon';
 $lang['h_profile']        = 'Profile';
+$lang['h_map']            = 'Map';
  
 // TABLE TITLES
 $lang['tt_bestplayers']    = 'Best Players';
