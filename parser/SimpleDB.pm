@@ -85,6 +85,7 @@ sub flushTable {
 	$dbh->do('TRUNCATE TABLE actions');
 	$dbh->do('TRUNCATE TABLE profiles');
 	$dbh->do('TRUNCATE TABLE loghist');
+	$dbh->do('TRUNCATE TABLE latest');
 }
 
 # subroutine: optimizeTable
@@ -98,6 +99,8 @@ sub optimizeTable {
 	$dbh->do('OPTIMIZE TABLE quotes');
 	$dbh->do('OPTIMIZE TABLE actions');
 	$dbh->do('OPTIMIZE TABLE profiles');
+	$dbh->do('OPTIMIZE TABLE loghist');
+	$dbh->do('OPTIMIZE TABLE latest');
 }
 
 END {

@@ -54,11 +54,9 @@ sub addNewGame {
 	# If it's a new game, insert the data accordingly 
 	my($sth, @bind) = $orm->insert('games', \%$args);
 	
-	#print $sth;
-	#print join("-", @bind);
-	#die();
 	$dbh->do($sth, undef, @bind)
 		or croak "CA (error): Couldn't add new game: " . DBI->errstr;
+		
 }
 
 # subroutine: addNewPlayer (%hash)
@@ -75,11 +73,6 @@ sub addNewPlayer {
 		my($sth, @bind) = $orm->insert('players', \%$args);
 		$dbh->do($sth, undef, @bind) 
 			or croak "CA (error): Couldn't add new player: " . DBI->errstr;
-
-		if(not(CA::Common::hasProfile($args->{handle}))) {
-			# Add a profile to the player
-			CA::Common::makeProfile($args->{handle});
-		}
 	}
 }
 
@@ -90,6 +83,9 @@ sub addNewPlayer {
 sub addDamageHit {
 	my($args) = @_;
 	$args->{mods} =~ s/MOD_//;
+	
+	if($args->{hitman} eq '') { $args->{hitman} = $args->{wounded} };
+	if($args->{wounded} eq '') { $args->{wounded} = $args->{hitman} };
 	
 	my($sth, @bind) = $orm->insert('hits', \%$args);
 	
@@ -109,10 +105,10 @@ sub addDamageHit {
 	
 	# Nick changes are not logged, so we have to double check
 	if(not(CA::Common::playerExist($args->{hitman}, $args->{gid}))) {
-		CA::Common::changeHandle($args->{killer}, $args->{h_hash}, $args->{gid});
+		CA::Common::changeHandle($args->{hitman}, $args->{h_hash}, $args->{gid});
 	}
 	if(not(CA::Common::playerExist($args->{wounded}, $args->{gid}))) {
-		CA::Common::changeHandle($args->{corpse}, $args->{w_hash}, $args->{gid});
+		CA::Common::changeHandle($args->{wounded}, $args->{w_hash}, $args->{gid});
 	}
 }
 
@@ -123,6 +119,9 @@ sub addDamageHit {
 sub addKill {
 	my($args) = @_;
 	$args->{mods} =~ s/MOD_//;
+	
+	if($args->{killer} eq '') { $args->{killer} = $args->{corpse} };
+	if($args->{corpse} eq '') { $args->{corpse} = $args->{killer} };
 	
 	# Convert mods to weapons (MELEE == Knife)
 	if(exists($CA::Config::Mods{$args->{mods}})) {
@@ -231,6 +230,8 @@ sub addGameResult {
 	
 	$dbh->do($sth, undef, @bind)
 		or croak "CA (error): Couldn't update game result: " . DBI->errstr;
+		
+	addExitLevel({id => $args->{id}});
 }
 
 # subroutine: addFinished (%hash)
@@ -281,9 +282,9 @@ sub addJoinTeam {
 sub addRoundStart {
 	my($args) = @_;
 	
-	if($args->{rcount} > 1) {
-		CA::Common::going2war($args->{id}, $args->{rcount});
-	}
+	#if($args->{rcount} > 1) {
+	#	CA::Common::going2war($args->{id}, $args->{rcount});
+	#}
 	
 	my %where = (id => $args->{id});
 	my($sth, @bind) = $orm->update('games', \%$args, \%where);

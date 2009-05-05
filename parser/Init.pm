@@ -19,7 +19,7 @@ my %config = CA::Config::readConfig();
 
 # Fetch command-line arguments
 my %cmd_args;
-getopt('i', \%cmd_args);
+getopt('ifd', \%cmd_args);
 
 if(exists($cmd_args{i})) {
     # Starting interactive mode
@@ -29,15 +29,22 @@ if(exists($cmd_args{i})) {
     }
 } else {
 	# Cronjob mode
-	my $logfile = $ARGV[0] || $config{logfile};
+	my $logfile = $cmd_args{f} || $config{logfile};
 	print "Using logfile: \"$logfile\"\n";
+	
+	# Clean out the changes table
+	$dbh->do('TRUNCATE TABLE latest');
 	
 	# Fetch latest log
 	#CA::Common::getLatestLog(
 	#	$logfile, $config{transfer_protocol}, 'cron');
 	
-	# Flush out tables
-	CA::SimpleDB::flushTable();
+	if(exists($cmd_args{d})) {
+		if($cmd_args{d} eq 'flush') {
+			# Flush out tables
+			CA::SimpleDB::flushTable();
+		}
+	}
 	
 	# Run the parser
 	CA::Parser::parser(
@@ -45,6 +52,13 @@ if(exists($cmd_args{i})) {
 	
 	# Run the main loop control and core operations
     CA::Core::handler();
+	
+	# Deletes profiles where games = 0 or kills AND deaths = 0
+	CA::Common::cleanUpProfiles();
+	
+	# Loops through all clans and updates profiles with no clan, 
+	# if their handle match the clantag
+	# CA::Common::searchClanTag();
 	
 	# Optimize tables
 	CA::SimpleDB::optimizeTable();
@@ -56,9 +70,6 @@ END {
 		int($somany / 3600), 
 		int(($somany % 3600) / 60), 
 		int($somany % 60));
-		
-    #my $somany = ((time - $^T) / 60);
-    #print "Generated in $somany minute(s)\n";
 }
 
 1;

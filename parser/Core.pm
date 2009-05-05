@@ -18,17 +18,16 @@ my $dbh = CA::SimpleDB::getDbh();
 # Starts a main loop control where we run a whole lot of core 
 # functions at once (inside the same loop, instead of one loop
 # for each function)
-sub handler {
-	
-	# Delete players with <= 1 kill
-	#CA::Common::killZombies();
-		
+sub handler {	
 	# GID LOOP
-	my $game_ids = $dbh->prepare('SELECT id FROM games ORDER BY id');
+	my $game_ids = $dbh->prepare('SELECT id FROM games WHERE parsed != 1 ORDER BY id');
 	$game_ids->execute();
 	
 	while(my $ref = $game_ids->fetchrow_hashref) {
-		# Delete short games or matches with 5 or less rounds
+		# Add game to latest record
+		CA::Common::isNewGame($ref->{id});
+		
+		# Delete short games with less then 5 kills
 		CA::Common::cleanUpGames($ref->{id});
 		
 		# Run our ranking system
@@ -40,23 +39,19 @@ sub handler {
 		# Set playtime to first kill and last kill
 		# We do this to make sure duration does not get fucked up if the server stalls
 		CA::Common::adjustPlayTime($ref->{id});
+		
+		# Mark game as parsed
+		CA::Common::isParsed($ref->{id});
 	}
 	
 	# PLAYERS LOOP 
-	my $players = $dbh->prepare('SELECT handle FROM players ORDER BY id');
+	my $players = $dbh->prepare('SELECT DISTINCT handle AS handle FROM players ORDER BY id');
 	$players->execute();
 	
 	while(my $ref = $players->fetchrow_hashref()) {
-		# Add player data to the profiles (kills, deaths, etc)
+		CA::Common::makeProfile($ref->{handle});
 		CA::Common::addProfileData($ref->{handle});
 	}
-	
-	# Deletes profiles where games = 0 or kills AND deaths = 0
-	CA::Common::cleanUpProfiles();
-	
-	# Loops through all clans and updates profiles with no clan, 
-	# if their handle match the clantag
-	#CA::Common::searchClanTag();
 }
 
 # subroutine: eloRating
@@ -72,6 +67,8 @@ sub eloRating {
 	$kills->execute($gid);
 	
 	while(my $ref = $kills->fetchrow_hashref()) {
+		next if $ref->{killer} eq '';
+		
 		if(!$scores{$ref->{killer}}) {
 			$scores{$ref->{killer}} = CA::Common::lastElo($ref->{killer});
 		}
@@ -86,7 +83,7 @@ sub eloRating {
 			$scores{$ref->{corpse}} -= $change;
 		}
 		elsif($ref->{killer} eq $ref->{corpse}) {
-			$scores{$ref->{corpse}} -= $change;
+			#$scores{$ref->{corpse}} -= $change;
 		}
 		
 		my $update = $dbh->prepare(

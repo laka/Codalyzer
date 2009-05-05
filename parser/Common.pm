@@ -157,18 +157,12 @@ sub assignTeam {
 sub playerExist {
 	my($player, $gid) = @_;
 	
-	#print "Checking $player in game $gid..\n";
-	
 	my $sth = $dbh->prepare("SELECT id FROM players WHERE handle=? AND gid=?");
     $sth->execute($player, $gid);
 	
 	if($sth->rows() == 0) {
-		#print "\tPlayer $player does NOT exist\n";
-		#sleepFor(1);
 		return;
 	} else {
-		#print "\tPlayer $player does exist\n";
-		#sleepFor(1);
 		return 1;
 	}
 }
@@ -208,29 +202,23 @@ sub changeHandle {
 		'SELECT handle AS old_handle FROM players WHERE hash=? AND gid=?',
 		undef, $hash, $gid);
 		
-	$dbh->do('UPDATE players SET handle=? WHERE hash=? AND gid=?',
+	$dbh->do('UPDATE players SET handle=? WHERE hash=?',
 		undef, $handle, $hash, $gid);
 		
-	$dbh->do('UPDATE kills SET killer=? WHERE killer=? AND gid=?',
+	$dbh->do('UPDATE kills SET killer=? WHERE killer=?',
 		undef, $handle, $row->{old_handle}, $gid);
 		
-	$dbh->do('UPDATE kills SET corpse=? WHERE corpse=? AND gid=?',
+	$dbh->do('UPDATE kills SET corpse=? WHERE corpse=?',
 		undef, $handle, $row->{old_handle}, $gid);
 		
-	$dbh->do('UPDATE hits SET hitman=? WHERE hitman=? AND gid=?',
+	$dbh->do('UPDATE hits SET hitman=? WHERE hitman=?',
 		undef, $handle, $row->{old_handle}, $gid);
 		
-	$dbh->do('UPDATE hits SET wounded=? WHERE wounded=? AND gid=?',
-		undef, $handle, $row->{old_handle}, $gid);
-		
-	$dbh->do('UPDATE hits SET hitman=? WHERE hitman=? AND gid=?',
+	$dbh->do('UPDATE hits SET wounded=? WHERE wounded=?',
 		undef, $handle, $row->{old_handle}, $gid);
 	
-	# Don't know what to do with profiles yet, so..
-	eval {
-		$dbh->do('UPDATE profiles SET handle=? WHERE handle=?',
-			undef, $handle, $row->{old_handle}, $gid);
-	};
+	#$dbh->do('UPDATE profiles SET handle=? WHERE handle=?',
+	#	undef, $handle, $row->{old_handle});
 }
 
 # subroutine: try2findTeam ($need_team, $has_team, $gid)
@@ -301,6 +289,7 @@ sub deleteGame {
 	$dbh->do('DELETE FROM quotes WHERE gid=?', undef, $gid);
 	$dbh->do('DELETE FROM players WHERE gid=?', undef, $gid);
 	$dbh->do('DELETE FROM streaks WHERE gid=?', undef, $gid);
+	$dbh->do('DELETE FROM latest WHERE gid=?', undef, $gid);
 }
 
 # subroutine: going2war ($gid, $rcount)
@@ -319,6 +308,7 @@ sub going2war {
 # 
 sub makeProfile {
 	my($player) = @_;
+	
 	$dbh->do('INSERT INTO profiles (handle) VALUES(?)',
 		undef, $player);
 }
@@ -419,6 +409,7 @@ sub niceString {
 		s///;
 		s/\s+$//;
 		s/^\s+//;
+		s/QUICKMESSAGE_.*//;
 	}
 	return $string;
 }
@@ -436,7 +427,6 @@ sub sleepFor {
 # Returns true if the given player exists in profiles
 sub hasProfile {
 	my($player) = @_;
-	
 	my $sth = $dbh->prepare('SELECT id FROM profiles WHERE handle=?');
     $sth->execute($player);
 	
@@ -609,6 +599,23 @@ sub logHist {
     $sth->execute($logfile);
     return $sth->fetchrow() 
 		or return "CA (warn): Couldn't find data on FILENAME $logfile";
+}
+
+# subroutine: isParsed
+# -------------------------------------------------------------
+sub isParsed {
+	my($gid) = @_;
+	$dbh->do('UPDATE games SET parsed=? WHERE id=?',
+		undef, 1, $gid)
+		or croak "CA (error): Couldn't set game parsed " . DBI->errstr;
+}
+
+# subroutine: isParsed
+# -------------------------------------------------------------
+sub isNewGame {
+	my($gid) = @_;
+	$dbh->do('INSERT INTO latest (gid) VALUES(?)',
+		undef, $gid);
 }
 
 1;

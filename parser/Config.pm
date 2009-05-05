@@ -15,7 +15,7 @@ use lib '/home/homer/ju/jussimik/CA-Parser/';
 
 sub readConfig {
     my %config;
-    my $config = "config";
+    my $config = "/home/homer/ju/jussimik/CA-Parser/CA/config";
     if(!(-r $config)) {
 		# Do something here
     }
