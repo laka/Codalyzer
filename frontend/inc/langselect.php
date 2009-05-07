@@ -6,7 +6,19 @@
 	**************************************************************
 */
 
-echo '<form action="index.php" method="post" name="langSelect"><select name="language" onchange="document.langSelect.submit();">';
+// Fetches query string parameters
+$i = 0;
+foreach($_GET as $key => $value){
+    // fetches only variables that makes no bugs in the HTML
+    if(ereg('^([0-9a-z]*)$', $key) && ereg('^[_a-z0-9]*$', $value)){
+        $querystring .= ($i == 0) ? '?' : '&amp;';
+        $querystring .= $key . '=' . $value;
+        $i++;
+    }
+}
+
+echo '<form action="index.php'. $querystring .'" method="post" name="langSelect"><select name="language" onchange="document.langSelect.submit();">';
+
 if ($handle = opendir(FRONTEND_PATH . '/lang')) {
     while (false !== ($file = readdir($handle))) {
         // just to make sure no thumbs.db etc gets interpreted as a new language.
