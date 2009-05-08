@@ -7,7 +7,7 @@
 */
 
 session_start();
-$start = (float) microtime();
+$start = microtime(true);
 
 include 'classes/config.php';
 $config = new config('../config.ini');
@@ -71,7 +71,9 @@ include_once 'inc/header.php';
 				<div class="footertext">
 					<div align="right">
 						<?php
-						echo "GENERATED IN ".round((float)microtime()-$start,5)." SEC";
+                        $end = microtime(true);
+                        $totaltime = round($end-$start, 4);
+						echo "GENERATED IN ".$totaltime." SEC";
 						?>
 					</div>
 				</div>					
