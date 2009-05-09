@@ -9,10 +9,12 @@
 session_start();
 $start = microtime(true);
 
-include 'classes/config.php';
-$config = new config('../config.ini');
-
+include_once '../config.php';
+include_once 'classes/database.php';	
 include_once 'inc/header.php';
+include_once 'classes/orderedtable.php';
+
+$db = database::getInstance();
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -55,11 +57,9 @@ include_once 'inc/header.php';
             
             <!-- RIGHT BAR START -->
             <div id="right">
-                <div class="tenmargin">
-                    <?php	
-                        include FRONTEND_PATH.'/inc/right.php'; 
-                    ?>
-                </div>
+                <?php	
+                    include FRONTEND_PATH.'/inc/right.php'; 
+                ?>
             </div>        
             <!-- RIGHT BAR END -->
   

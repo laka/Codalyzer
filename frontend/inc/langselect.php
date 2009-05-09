@@ -17,7 +17,7 @@ foreach($_GET as $key => $value){
     }
 }
 
-echo '<form action="index.php'. $querystring .'" method="post" name="langSelect"><select name="language" onchange="document.langSelect.submit();">';
+echo '<select name="language" onchange="document.selectors.submit();">';
 
 if ($handle = opendir(FRONTEND_PATH . '/lang')) {
     while (false !== ($file = readdir($handle))) {
@@ -34,5 +34,5 @@ if ($handle = opendir(FRONTEND_PATH . '/lang')) {
     }
 closedir($handle);
 }
-echo '</select></form>';
+echo '</select>';
 ?>

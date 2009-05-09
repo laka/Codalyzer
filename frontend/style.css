@@ -108,7 +108,7 @@ select, input, textarea {
 	color: #fff;
 	font-size: 14px;
 	font-family: Garamond, "times new roman", serif;
-	background-color: #4d4d4d;
+	background-color: #313738;
 	border: solid 1px #000; }
 .editlink {
 	text-align:right;
@@ -236,6 +236,7 @@ div#footer {
 	width:100%;
 	border-top:#dddaca 2px solid;
 	border-bottom:#dddaca 2px solid;
+    min-height:1.3em;
 }
 .allies{
 	background:#313738;
@@ -366,4 +367,21 @@ th a:link,th a:visited{
 	float: left;
 }
 .awtext{
+}
+.forms{
+    padding-top:5px;
+    padding-bottom:5px;
+    /* background-color:#212526; */
+    border-bottom: 2px solid #ffffff;
+}
+.forms h3{
+	font-size:0.9em;
+}
+.rightform{
+	width:100%;
+    padding-bottom:50px;
+    padding-top:30px;
+}
+.rightformelement{
+	float:left;
 }
