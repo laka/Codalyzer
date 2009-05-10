@@ -7,7 +7,7 @@ class toolbox {
 		$this->db = database::getInstance();
 	}	
 	public function gameData($data, $gid) {
-		$row = database::getinstance()->singlerow("SELECT $data FROM games WHERE id=\"$gid\"");
+		$row = database::getInstance()->singleRow("SELECT $data FROM games WHERE id=\"$gid\"");
 		return $row[$data];
 	}
 	public function ts2seconds($ts) {
@@ -24,8 +24,12 @@ class toolbox {
 		return $versions[strtolower($game)];
 	}
 	public function lastGid() {
-		$row = database::getinstance()->singlerow("SELECT id FROM games ORDER BY id DESC LIMIT 1");
+		$row = database::getInstance()->singleRow("SELECT id FROM games ORDER BY id DESC LIMIT 1");
 		return $row['id'];
+	}
+	public function playerInGame($hash, $handle, $gid) {
+		$result = database::getInstance()->sqlResult("SELECT id FROM players WHERE handle=\"$handle\" AND gid=\"$gid\"");
+		return mysql_num_rows($result);
 	}
 }
 
