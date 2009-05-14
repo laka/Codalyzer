@@ -22,6 +22,10 @@ class game extends toolbox {
 	#   [5] map
 	public function addNewGame($matches, $gid) {
 		if($this->game == 'cod') {
+
+			# Convert timestamp to seconds	
+			$matches[1] = $this->ts2seconds($matches[1]); 
+	
 			# Grabbing the game modification
 			$matches[2] = preg_replace
 				('/^.*fs_game\\\\.*\/(.*?)\\\\g_compass.*$/i',"$1", $matches[2]);
@@ -29,9 +33,10 @@ class game extends toolbox {
 			# Translate cod name to game version
 			$matches[4] = $this->getVersion($matches[4]);
 
-			# Convert timestamp to seconds	
-			$matches[1] = $this->ts2seconds($matches[1]); 
-			
+			# Strip trailing chars
+			$matches[5] = $this->sanitizeString($matches[5]);
+
+		
 			# TODO: We should have a 5th checkpoint
 			# Check to see if we have an ongoing game
 			if(is_numeric($gid)) {
@@ -58,11 +63,15 @@ class game extends toolbox {
 	#	[3] handle
 	public function addNewPlayer($matches, $gid) {
 		if($this->game == 'cod') {
-			# Leaving 8 last chars of the hash
-			$matches[2] = substr($matches[2], -8);
-			
+
 			# Convert timestamp to seconds	
 			$matches[1] = $this->ts2seconds($matches[1]); 
+			
+			# Leaving 8 last chars of the hash
+			$matches[2] = substr($matches[2], -8);
+
+			# Strip trailing chars
+			$matches[3] = $this->sanitizeString($matches[3]);
 			
 			# Is the player allready in the game?
 			if($this->playerInGame($matches[2], $matches[3], $gid)) {

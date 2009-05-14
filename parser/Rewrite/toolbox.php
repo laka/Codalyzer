@@ -31,6 +31,13 @@ class toolbox {
 		$result = database::getInstance()->sqlResult("SELECT id FROM players WHERE handle=\"$handle\" AND gid=\"$gid\"");
 		return mysql_num_rows($result);
 	}
+	public function sanitizeString($input) {
+		$input = preg_replace('//','',$input);
+		$input = preg_replace('//','',$input);
+		$input = preg_replace('/\s+$/','',$input);
+		$input = preg_replace('/^\s+/','',$input);
+		$input = preg_replace('/QUICKMESSAGE_.*/','',$input);			
+	}
 }
 
 ?>
