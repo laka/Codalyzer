@@ -36,7 +36,6 @@ class game extends toolbox {
 			# Strip trailing chars
 			$matches[5] = $this->sanitizeString($matches[5]);
 
-		
 			# TODO: We should have a 5th checkpoint
 			# Check to see if we have an ongoing game
 			if(is_numeric($gid)) {
