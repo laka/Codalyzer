@@ -87,11 +87,24 @@ class toolbox {
 		database::getInstance()->sqlResult("TRUNCATE TABLE players");
 		database::getInstance()->sqlResult("TRUNCATE TABLE kills");
 		database::getInstance()->sqlResult("TRUNCATE TABLE hits");
+		database::getInstance()->sqlResult("TRUNCATE TABLE quotes");
+		database::getInstance()->sqlResult("TRUNCATE TABLE alias");
+		database::getInstance()->sqlResult("TRUNCATE TABLE actions");
 	}
 	
 	# Put the player on the team parsed from damage hits or kills
 	public function addTeamMember($handle, $team, $gid) {
 		database::getInstance()->sqlResult("UPDATE players SET team=\"$team\" WHERE handle=\"$handle\" AND gid=\"$gid\"");
+	}
+	
+	# Add aliases ($owner = hash)
+	public function addNewAlias($alias, $owner) {
+		$result = database::getInstance()->sqlResult("SELECT id FROM alias WHERE owner=\"$owner\" AND alias=\"$alias\"");
+		if(mysql_num_rows($result)) {
+			return 0;
+		} else {
+			database::getInstance()->sqlResult("INSERT INTO alias (owner, alias) VALUES(\"$owner\", \"$alias\")");
+		}
 	}
 }
 

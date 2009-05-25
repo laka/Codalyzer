@@ -4,8 +4,8 @@ require_once('toolbox.php');
 class game extends toolbox {
 	private $game;
 
-	# Class constructor
-	# --------------------------------------------------------------------------------------------------------
+	/* Class constructor
+	--------------------------------------------------------------------------------------------------------*/
 	public function __construct($game) {
 		# Check for game support
 		# NOTE: We will probably be keeping all supported games in a table
@@ -18,8 +18,8 @@ class game extends toolbox {
 		}
 	}
 
-	# Add a new game ($matches: [1] timestamp [2] modification [3] gametype [4] game version [5] map)
-	# --------------------------------------------------------------------------------------------------------
+	/* Add a new game ($matches: [1] timestamp [2] modification [3] gametype [4] game version [5] map)
+	--------------------------------------------------------------------------------------------------------*/
 	public function addNewGame($matches, $gid) {
 		# Convert timestamp to seconds	
 		$matches[1] = $this->ts2seconds($matches[1]); 
@@ -50,8 +50,8 @@ class game extends toolbox {
 			VALUES(\"$matches[1]\", \"$matches[2]\", \"$matches[3]\", \"$matches[4]\", \"$matches[5]\")");
 	}
 	
-	# Add players to a game ($matches: [1] timestamp [2] hash [3] handle)
-	# --------------------------------------------------------------------------------------------------------
+	/* Add players to a game ($matches: [1] timestamp [2] hash [3] handle)
+	--------------------------------------------------------------------------------------------------------*/
 	public function addNewPlayer($matches, $gid) {
 		# Get correct hash/pid depending on game version
 		$pid = explode(';', $matches[2]);
@@ -67,7 +67,7 @@ class game extends toolbox {
 		$matches[1] = $this->ts2seconds($matches[1]); 
 
 		# Is the player allready in the game?
-		if($this->playerInGame($matches[2], $matches[3], $gid)) {
+		if($this->playerInGame($matches[3], $gid)) {
 			return 0;
 		} else {
 			database::getInstance()->sqlResult("INSERT INTO players (gid, ts, hash, handle)
