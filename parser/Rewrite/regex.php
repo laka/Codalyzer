@@ -25,7 +25,7 @@ $regexlib =
 				# COD50		0:04 J;896080436;0;laka
 				# MOD		4:04 J;0;0;Laka
 				# ----------------------------------------------------------------------------------------------------------------------------------------------------------------
-				"all" => '/(\d+:\d+)\sJ;(\w+);\d+;(.*)/'),
+				"all" => '/(\d+:\d+)\sJ;(\w+;\d+);(.*)/'),
 
 			"damageHit" => array(
 				# VERSION	LOGPRINT	STATUS: WORKS ON EVERY VERSION EXCEPT COD20 (UNTESTED)
@@ -37,7 +37,7 @@ $regexlib =
 				# COD50		1:51 D;896080436;0;axis;laka;290206053;1;allies;Patrio;thompson_mp;40;MOD_RIFLE_BULLET;left_arm_upper
 				# MOD		10989:10 D;626e9e18;4;axis;norsof | Patrio;8db75fb1;8;allies;WFP James;m4_silencer_mp;28;MOD_RIFLE_BULLET;torso_lower		
 				# ----------------------------------------------------------------------------------------------------------------------------------------------------------------
-				"all" => '/(\d+:\d+)\sD;\w+;\d+;(.*);(.*);.*;.*;(.*);(.*);(.*);(.*);(.*);(.*)/'),
+				"all" => '/(\d+:\d+)\sD;(\w+);\d+;(.*);(.*);(.*);.*;(.*);(.*);(.*);(.*);(.*);(.*)/'),
 			
 			"kills" => array(
 				# VERSION	LOGPRINT	STATUS: WORKS ON EVERY VERSION EXCEPT COD20 (UNTESTED)
@@ -49,7 +49,7 @@ $regexlib =
 				# COD50		1:05 K;896080436;0;;laka;290206053;1;;Patrio;thompson_mp;40;MOD_RIFLE_BULLET;torso_lower
 				# MOD		10997:16 K;48c83a32;7;allies;WFP Dr.K;a1fde843;0;axis;norsof | CptLaz;ak47_reflex_mp;56;MOD_RIFLE_BULLET;right_arm_upper		
 				# ----------------------------------------------------------------------------------------------------------------------------------------------------------------
-				"all" => '/(\d+:\d+)\sK;.*;.*;(.*);(.*);.*;.*;(.*);(.*);(.*);(.*);(.*);(.*)/'),
+				"all" => '/(\d+:\d+)\sK;(.*);.*;(.*);(.*);(.*);.*;(.*);(.*);(.*);(.*);(.*);(.*)/'),
 
 			"statusGame" => array(
 				# VERSION	LOGPRINT	STATUS: WORKS ON EVERY VERSION
