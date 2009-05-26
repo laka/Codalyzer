@@ -119,9 +119,9 @@ $regexlib =
 				# VERSION	LOGPRINT	STATUS: UNCONFIRMED
 				"cod10" => '/(\d+:\d+)\s(Weapon|Item);0;(\d);.*;(.*)/'),
 			
-			"gameResult" => array(
+			"teamScore" => array(
 				# VERSION   LOGPRINT    STATUS: UNCONFIRMED
-				"cod40" => '/\d+:\d+\sMO;(.*?);(.*?);(.*)/'),					
+				"all" => '/\d+:\d+\sMO;(.*?);(.*?);(.*)/'),					
 		)
 	);
 ?>

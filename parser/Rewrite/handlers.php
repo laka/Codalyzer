@@ -16,6 +16,21 @@ class handler extends toolbox {
 		database::getInstance()->sqlResult("INSERT INTO actions (gid, ts, action, handle) 
 			VALUES(\"$gid\", \"$matches[1]\", \"$matches[2]\", \"$matches[3]\")");
 	}
+	public function addTeamScore($matches, $gid) {
+		$highscore = max($matches[2], $matches[3]);
+		$lowbirdzz = min($matches[2], $matches[3]);
+		
+		if($matches[1] == 'axis') {
+			$axisscore = $highscore;
+			$alliesscore = $lowbirdzz;
+		} else {
+			$alliesscore = $highscore;
+			$axisscore = $lowbirdzz;
+		}
+		
+		database::getInstance()->sqlResult("UPDATE games SET axisscore=\"$axisscore\", 
+			alliesscore=\"$alliesscore\" WHERE id=\"$gid\"");
+	}
 }
 
 ?>

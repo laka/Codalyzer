@@ -50,6 +50,11 @@ foreach ($logarray as $linenr => $line) {
 	elseif(preg_match($regexlib[$gamename]["actions"]['cod40'], $line, $matches)) {
 		$handler->addAction($matches, $gid);
 	}
+	/* Add team score
+	--------------------------------------------------------------------------------------------------------*/
+	elseif(preg_match($regexlib[$gamename]["teamScore"]['all'], $line, $matches)) {
+		$handler->addTeamScore($matches, $gid);
+	}
 }
 
 ?>
