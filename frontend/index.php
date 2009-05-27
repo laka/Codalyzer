@@ -57,9 +57,23 @@ $db = database::getInstance();
             
             <!-- RIGHT BAR START -->
             <div id="right">
-                <?php	
-                    include FRONTEND_PATH.'/inc/right.php'; 
-                ?>
+                <div class="tenmargin">
+                    <div class="rightform">
+                        <div class="rightformelement">
+                            <?php	
+                                include FRONTEND_PATH.'/inc/serverselect.php'; 
+                            ?>
+                        </div>
+                        <div class="rightformelement">
+                        <?php	
+                            include FRONTEND_PATH.'/inc/langselect.php'; 
+                        ?>
+                        </div>
+                    </div>
+                    <?php	
+                        include FRONTEND_PATH.'/inc/right.php'; 
+                    ?>
+                </div>
             </div>        
             <!-- RIGHT BAR END -->
   

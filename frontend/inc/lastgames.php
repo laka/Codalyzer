@@ -6,7 +6,8 @@
 	**************************************************************
 */
 if(is_object($db) && class_exists(orderedtable)){
-	$query 	= "SELECT id, map, type, (SELECT count(distinct handle) FROM players WHERE players.gid =  games.id) as t, stop, start FROM games WHERE (SELECT count('') from kills where gid=games.id) >= 5 ORDER BY id desc";
+	$query 	= "SELECT id, map, type, (SELECT COUNT(DISTINCT handle) FROM players WHERE players.gid =  games.id) AS t, stop, start FROM games 
+               WHERE (SELECT COUNT('') from kills WHERE gid=games.id) >= 5 ORDER BY id DESC";
 	$tenlast = new orderedtable($query);
 	$tenlast->setWidth('100%');
 	$tenlast->setClass( CLASS_LAST_GAMES );

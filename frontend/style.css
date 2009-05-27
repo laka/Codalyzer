@@ -366,8 +366,6 @@ th a:link,th a:visited{
 	margin: 5px;
 	float: left;
 }
-.awtext{
-}
 .forms{
     padding-top:5px;
     padding-bottom:5px;
@@ -379,8 +377,8 @@ th a:link,th a:visited{
 }
 .rightform{
 	width:100%;
-    padding-bottom:50px;
     padding-top:30px;
+    padding-bottom:30px;
 }
 .rightformelement{
 	float:left;

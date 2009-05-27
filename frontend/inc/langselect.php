@@ -7,17 +7,28 @@
 */
 
 // Fetches query string parameters
-$i = 0;
-foreach($_GET as $key => $value){
-    // fetches only variables that makes no bugs in the HTML
-    if(ereg('^([0-9a-z]*)$', $key) && ereg('^[_a-z0-9]*$', $value)){
-        $querystring .= ($i == 0) ? '?' : '&amp;';
-        $querystring .= $key . '=' . $value;
-        $i++;
+if(count($_GET) > 0 || strlen(QUERY_STRING_FIRST_ELEMENT) > 0){
+    if(strlen(QUERY_STRING_FIRST_ELEMENT) > 0){
+        $s_querystring[] = QUERY_STRING_FIRST_ELEMENT;
     }
+
+    foreach($_GET as $key => $value){
+        // fetches only variables that makes no bugs in the HTML
+        if(ereg('^([0-9a-z]*)$', $key) && ereg('^[_a-z0-9]*$', $value)){
+            $cand = (count($s_querystring) == 0) ? QUERY_STRING_FIRST_SEPARATOR : '&amp;';
+            $cand .= $key . '=' . $value;
+            // cumbersome method to prevent the query string from growing...
+            if(substr($cand, 5) != substr(QUERY_STRING_FIRST_ELEMENT,1)){
+                $s_querystring[$i] = $cand;
+                $i++;    
+            }
+        }
+    }
+    $sqstring = @implode('', $s_querystring);
 }
 
-echo '<select name="language" onchange="document.selectors.submit();">';
+echo '<form action="index.php'. $sqstring .'" method="post" name="langselect">';    
+echo '<select name="language" onchange="document.langselect.submit();">';
 
 if ($handle = opendir(FRONTEND_PATH . '/lang')) {
     while (false !== ($file = readdir($handle))) {
@@ -35,4 +46,5 @@ if ($handle = opendir(FRONTEND_PATH . '/lang')) {
 closedir($handle);
 }
 echo '</select>';
+echo '</form>';
 ?>
