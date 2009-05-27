@@ -9,7 +9,7 @@ class handler extends toolbox {
 		database::getInstance()->sqlResult("INSERT INTO quotes (gid, ts, handle, quote) 
 			VALUES(\"$gid\", \"$matches[1]\", \"$matches[2]\", \"$matches[3]\")");
 	}
-	public function addAction($matches, $gid) {
+	public function addPlayerAction($matches, $gid) {
 		# Convert timestamp to seconds	
 		$matches[1] = $this->ts2seconds($matches[1]); 
 		
@@ -30,6 +30,12 @@ class handler extends toolbox {
 		
 		database::getInstance()->sqlResult("UPDATE games SET axisscore=\"$axisscore\", 
 			alliesscore=\"$alliesscore\" WHERE id=\"$gid\"");
+	}
+	public function addGameStopTime($matches, $gid) {
+		database::getInstance()->sqlResult("UPDATE games SET stop=\"$matches[1]\" WHERE id=\"$gid\"");
+	}
+	public function addExitGame($matches, $gid) {
+		database::getInstance()->sqlResult("UPDATE games SET finish=\"1\" WHERE id=\"$gid\"");
 	}
 }
 

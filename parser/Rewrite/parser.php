@@ -30,6 +30,11 @@ foreach ($logarray as $linenr => $line) {
 	elseif(preg_match($regexlib[$gamename]["joinPlayer"]["all"], $line, $matches)) {
 		$game->addNewPlayer($matches, $gid);
 	}
+	/* Add join team
+	--------------------------------------------------------------------------------------------------------*/
+	elseif(preg_match($regexlib[$gamename]["joinTeam"]["all"], $line, $matches)) {
+		$game->addTeamMember($matches, $gid);
+	}
 	/* Add new hits
 	--------------------------------------------------------------------------------------------------------*/
 	elseif(preg_match($regexlib[$gamename]["damageHit"]["all"], $line, $matches)) {
@@ -48,13 +53,24 @@ foreach ($logarray as $linenr => $line) {
 	/* Add new actions
 	--------------------------------------------------------------------------------------------------------*/
 	elseif(preg_match($regexlib[$gamename]["actions"]['cod40'], $line, $matches)) {
-		$handler->addAction($matches, $gid);
+		$handler->addPlayerAction($matches, $gid);
 	}
 	/* Add team score
 	--------------------------------------------------------------------------------------------------------*/
 	elseif(preg_match($regexlib[$gamename]["teamScore"]['all'], $line, $matches)) {
 		$handler->addTeamScore($matches, $gid);
 	}
+	/* Add game stop time
+	--------------------------------------------------------------------------------------------------------*/
+	elseif(preg_match($regexlib[$gamename]["gameStopTime"]['all'], $line, $matches)) {
+		$handler->addGameStopTime($matches, $gid);
+	}
+	/* Add confirmed shutdown of a game
+	--------------------------------------------------------------------------------------------------------*/
+	elseif(preg_match($regexlib[$gamename]["exitLevel"]['all'], $line, $matches)) {
+		$handler->addExitGame($matches, $gid);
+	}
+	
 }
 
 ?>

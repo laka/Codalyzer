@@ -74,6 +74,27 @@ class game extends toolbox {
 				VALUES(\"$gid\", \"$matches[1]\", \"$matches[2]\", \"$matches[3]\")");
 		}		
 	}
+	/* Add team to a player ($matches: [1] timestamp [2] hash [3] team [4] handle)
+	--------------------------------------------------------------------------------------------------------*/
+	public function addNewPlayer($matches, $gid) {
+		# Convert timestamp to seconds	
+		$matches[1] = $this->ts2seconds($matches[1]);
+		
+		# Leaving 8 last chars of the hash
+		$matches[2] = substr($matches[2], -8);
+		
+		# We don't need to assign new teams if the game allready is running
+		if($this->gameData('rcount', $gid) > 5) {
+			return 0;
+		} else {
+			# We flip the teams because they change side after 10 
+			# rounds - so we get the last team the player was on
+			$matches[3] = ($matches[3] == 'axis') ? 'allies' : 'axis';
+			
+			database::getInstance()->sqlResult("UPDATE players SET team=\"$matches[3]\" 
+				WHERE handle=\"$matches[4]\" AND gid=\"$gid\"");
+		}		
+	}
 }
 
 ?>
