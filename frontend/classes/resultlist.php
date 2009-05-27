@@ -24,7 +24,7 @@ class resultlist extends orderedtable {
 		$sql = "SELECT * FROM games WHERE id={$this->gid}";
 		$this->gamedata = database::getInstance()->singleRow ($sql);	
 		$this->setClass('summary');	
-		$this->setUrl("?mode=single&amp;gid={$this->gid}");
+		$this->setUrl(URL_BASE . "mode=single&amp;gid={$this->gid}");
 		$this->setUrlVars(array('mode', 'gid'));
 		$this->setTotalSum(1);
 		
@@ -62,7 +62,7 @@ class resultlist extends orderedtable {
 					(SELECT COUNT('') FROM kills WHERE corpse=p.handle AND killer = corpse AND gid=p.gid) AS suicides,
 					(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as prevelo
 					FROM players as p WHERE gid={$this->gid}";
-			$this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "40%", '', '?mode=profile&amp;h='),
+			$this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "40%", '', URL_BASE .'mode=profile&amp;h='),
                                        'kills' 	    =>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "12%","sum"),
 								       'deaths' 	=>  array (array('deaths' => 1, 'sucides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "12%","sum"),
 									   'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "12%", "sum"),
@@ -82,7 +82,7 @@ class resultlist extends orderedtable {
 					FROM players as p WHERE gid={$this->gid} AND team='$team'";
             // for mods where teamdata is logged for each kill
             if($this->teamdata){
-                $this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', '?mode=profile&amp;h='),
+                $this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', URL_BASE .'mode=profile&amp;h='),
                                         'kills' 	=>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "8%","sum"),
                                         'deaths' 	=>  array (array('deaths' => 1, 'suicides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "8%","sum"),
                                         'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "8%", "sum"),
@@ -94,7 +94,7 @@ class resultlist extends orderedtable {
             } else {
                 // for mods where teamdata is not logged for each kill (teamkills are ignored)   
                 if($this->gamedata['type'] != 'war'){
-                    $this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', '?mode=profile&amp;h='),
+                    $this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', URL_BASE .'mode=profile&amp;h='),
                                             'kills' 	=>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "8%","sum"),
                                             'deaths' 	=>  array (array('deaths' => 1, 'suicides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "8%","sum"),
                                             'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "8%", "sum"),
@@ -103,7 +103,7 @@ class resultlist extends orderedtable {
                                             'elodiff'   =>  array (array('elodiff' => 1), "+", "13%", "sum", '', '0')
                                             ));
                 } else {
-                    $this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', '?mode=profile&amp;h='),
+                    $this->setColumnData(array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', URL_BASE .'mode=profile&amp;h='),
                                             'kills' 	=>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "8%","sum"),
                                             'deaths' 	=>  array (array('deaths' => 1, 'suicides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "8%","sum"),
                                             'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "8%", "sum"),

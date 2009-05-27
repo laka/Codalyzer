@@ -10,18 +10,19 @@
 
 class orderedtable {
 
-	private $totalsum		= 0;              // true or false, sums up the values (or averages etc) and prints the totals (default:sum)
-	private $columndata;                      // array('dbcolumnname' => array(orderarray, Frontendname,  width,  summationtype, URL-prefix, compareto));	
-	private $limit			= 10;             // rows per page/totally
+	private $totalsum		= 0;                            // true or false, sums up the values (or averages etc) and prints the totals (default:sum)
+	private $columndata;                                    // array('dbcolumnname' => array(orderarray, Frontendname,  width,  summationtype, URL-prefix, compareto));	
+	private $limit			= 10;                           // rows per page/totally
 	private $total			= 1;
-	private $tablewidth		= '100%';         // the width of the table
-	private $tableclass		= 'summary';      // CSS-class of the table
-	private $totalclass		= 'sum';          // CSS-class of the sum (if enabled)
-	private $order			= 'DESC';         // DESC or ASC
-	private $firstprefix	= '&amp;';        // first prefix in the query string
-	private $url;						      // base url of the page with the tables
-	private $urlvars		= array('mode');  // variables from the url (to prevent it from occurring twice in the url) (should be done automatically)
-	private $currentpage	= 1;              // current page
+	private $tablewidth		= '100%';                       // the width of the table
+	private $tableclass		= 'summary';                    // CSS-class of the table
+	private $totalclass		= 'sum';                        // CSS-class of the sum (if enabled)
+	private $order			= 'DESC';                       // DESC or ASC
+	private $firstprefix	= QUERY_STRING_FIRST_SEPARATOR; // first prefix in the query string
+	private $url;                                           // base url of the page with the tables
+    private $frontendurl    = FRONTEND_URL;
+	private $urlvars		= array('mode');                // variables from the url (to prevent it from occurring twice in the url) (should be done automatically)
+	private $currentpage	= 1;                            // current page
 	private $orderby, $query, $sortable, $result, $tableheaders, $db, $lang;
 	
 	static protected $urlprefix;              // handles the prefixes (if more than one sortable table is printed)
@@ -36,7 +37,12 @@ class orderedtable {
 		
 		// should do some validation here
 		$this->sortable = $sortable;
-		$this->query = $query;
+		$this->query = $query;   
+        
+        // adds elements from QUERY_STRING_KEYS to $urlvars
+        foreach(explode(',', QUERY_STRING_KEYS) as $element){
+            $this->urlvars[] = $element;
+        }
 	}
 	
 	// Set-functions
@@ -57,7 +63,7 @@ class orderedtable {
 	// setUrl - sets the base url for the table
 	public function setUrl($url) { $this->url = $url; }
 	// setUrlVars - stores the variables already in the url (should probably be done automatically)
-	public function setUrlVars($urlVars) { $this->urlvars = $urlVars; }	
+	public function setUrlVars($urlVars) { $this->urlvars = array_merge($this->urlvars,$urlVars); }	
 	// setTotalRows - sets the number of rows totally
 	public function setTotalRows($total){ $this->total = $total; }		
 	// setColumnData - set detailed information on the columns
@@ -117,7 +123,7 @@ class orderedtable {
 		$this->currentPage();
 		// if we are ordering by that certain column, we make a link to sort the other way
 		if($this->orderby == $column){
-			return "<img src=\"img/".$this->oppositeOrder().".gif\" alt=\"".$this->oppositeOrder()."\"> <a href=\"".$this->url.$this->otherElements()."&amp;".self::$urlprefix."o=$column&amp;".self::$urlprefix."a=".$this->oppositeOrder()."&amp;".self::$urlprefix."p=".$this->currentpage."\">";		
+			return "<img src=\"". FRONTEND_URL ."img/".$this->oppositeOrder().".gif\" alt=\"".$this->oppositeOrder()."\"> <a href=\"".$this->url.$this->otherElements()."&amp;".self::$urlprefix."o=$column&amp;".self::$urlprefix."a=".$this->oppositeOrder()."&amp;".self::$urlprefix."p=".$this->currentpage."\">";		
 		}
 		// if not, we just print out a link to the default order
 		else{
@@ -126,7 +132,7 @@ class orderedtable {
 			} else {
 				$defaultorder = 'DESC';
 			}
-			return "<img src=\"img/none.gif\" alt=\"none\"> <a href=\"".$this->url.$this->otherElements()."&amp;".self::$urlprefix."o=$column&amp;".self::$urlprefix."a=$defaultorder&amp;".self::$urlprefix."p=".$this->currentpage."\">";			
+			return "<img src=\"". FRONTEND_URL ."img/none.gif\" alt=\"none\"> <a href=\"".$this->url.$this->otherElements()."&amp;".self::$urlprefix."o=$column&amp;".self::$urlprefix."a=$defaultorder&amp;".self::$urlprefix."p=".$this->currentpage."\">";			
 		}
 	}
 
@@ -218,7 +224,7 @@ class orderedtable {
 			$change = 'down';
 		elseif(($diff == $current) || ($diff == 0))
 			$change = 'statusquo';
-		return "<img src=\"img/$change.gif\" class=\"change\" alt=\"$change\"> ";
+		return "<img src=\"". FRONTEND_URL ."img/$change.gif\" class=\"change\" alt=\"$change\"> ";
 	}	
 	
 	// prints out a navigation bar

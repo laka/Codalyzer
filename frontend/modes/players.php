@@ -22,11 +22,11 @@
     }
 	$players = new orderedtable($query, 1);
 	$players->setClass('summary');
-	$players->setUrl('?mode=players');
+	$players->setUrl(URL_BASE . 'mode=players');
 	$players->setLimit(50); 	
     $players->setOrderBy('elo'); 	
     $players->setOrder('DESC'); 	
-	$players->setColumnData(array('handle' 		=> array (array('handle' => 1), $lang['th_player'], "15%", 0, "?mode=profile&h="),
+	$players->setColumnData(array('handle' 		=> array (array('handle' => 1), $lang['th_player'], "15%", 0, URL_BASE . "mode=profile&h="),
 								 'kills' 		=> array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $lang['th_kills'], "6%"),
 								 'deaths' 		=> array (array('deaths' => 1, 'suicides' => 0, 'kills' => 0), $lang['th_deaths'], "6%"),
 								 'suicides' 	=> array (array('suicides' => 1), $lang['th_suicides'], "6%"),	

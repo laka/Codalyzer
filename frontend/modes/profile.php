@@ -74,7 +74,7 @@ if(strlen($_GET['h']) > 0){
             $easiestprey->setLimit('15');
             $easiestprey->setWidth('100%');
             $easiestprey->setClass('summary');
-            $easiestprey->setColumndata(array('corpse' => array (array('corpse' => 1), $lang['th_player'], "40%", 0, "?mode=profile&amp;h="),
+            $easiestprey->setColumndata(array('corpse' => array (array('corpse' => 1), $lang['th_player'], "40%", 0, URL_BASE . "mode=profile&amp;h="),
                                             'ratio' => array (array('ratio' => 1, 'killcount' => 1), $lang['abb_kpd'], "15%"),
                                             'killcount' => array (array('killcount' => 1, 'deathcount' => 0), $lang['abb_kills'], "15%"),
                                             'deathcount' => array (array('deathcount' => 1, 'killcount' => 0), $lang['abb_deaths'], "15%"),
@@ -88,14 +88,14 @@ if(strlen($_GET['h']) > 0){
                       ON k.corpse = d.mm WHERE k.killer = '". $handle ."' GROUP BY corpse HAVING percentage > 0.4";
 
             $worstenemy = new orderedtable($query, 1);
-            $worstenemy->setUrl("?mode=profile&h=".urlencode($handle));
+            $worstenemy->setUrl(URL_BASE . "mode=profile&h=".urlencode($handle));
             $worstenemy->setUrlVars(array('mode', 'h'));
             $worstenemy->setOrderBy('ratio');
             $worstenemy->setOrder('ASC');
             $worstenemy->setLimit('15');
             $worstenemy->setWidth('100%');
             $worstenemy->setClass('summary');
-            $worstenemy->setColumndata(array('corpse' => array (array('corpse' => 1), $lang['th_player'], "40%", 0, "?mode=profile&amp;h="),
+            $worstenemy->setColumndata(array('corpse' => array (array('corpse' => 1), $lang['th_player'], "40%", 0, URL_BASE . "mode=profile&amp;h="),
                                             'ratio' => array (array('ratio' => 1, 'killcount' => 1), $lang['abb_kpd'], "15%"),
                                             'killcount' => array (array('killcount' => 1, 'deathcount' => 0), $lang['abb_kills'], "15%"),
                                             'deathcount' => array (array('deathcount' => 1, 'killcount' => 0), $lang['abb_deaths'], "15%"),
@@ -112,7 +112,7 @@ if(strlen($_GET['h']) > 0){
             $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as k, round(count('')*100/{$data['kills']},2) as percentage
                       FROM weapons, kills WHERE kills.weapon=weapons.name AND killer='$handle' AND corpse != '$handle' GROUP BY weapon";
             $favoriteweapon = new orderedtable($query, 1);
-            $favoriteweapon->setUrl("?mode=profile&h=".urlencode($handle));
+            $favoriteweapon->setUrl(URL_BASE . "mode=profile&h=".urlencode($handle));
             $favoriteweapon->setUrlVars(array('mode', 'h'));
             $favoriteweapon->setOrderBy('k');
             $favoriteweapon->setOrder('DESC');
@@ -120,7 +120,7 @@ if(strlen($_GET['h']) > 0){
             $favoriteweapon->setWidth('100%');
             $favoriteweapon->setClass('summary');
             $favoriteweapon->setColumndata(array(
-                                            'weaponfull' => array(array('weaponfull'=>1), $lang['th_weapon'], '40%', 0, "?mode=weapon&amp;w=*id*"),
+                                            'weaponfull' => array(array('weaponfull'=>1), $lang['th_weapon'], '40%', 0, URL_BASE . "mode=weapon&amp;w=*id*"),
                                             'k' => array(array('k'=>1), $lang['th_kills'], '30%'),
                                             'percentage' => array(array('percentage'=>1), $lang['abb_percentage'], '30%'),
                                            ));
@@ -134,7 +134,7 @@ if(strlen($_GET['h']) > 0){
                       FROM weapons, kills WHERE kills.weapon=weapons.name AND corpse='$handle' AND killer != '$handle' GROUP BY weapon";
 
             $frequentdeath = new orderedtable($query, 1);
-            $frequentdeath->setUrl("?mode=profile&h=".urlencode($handle));
+            $frequentdeath->setUrl(URL_BASE . "mode=profile&h=".urlencode($handle));
             $frequentdeath->setUrlVars(array('mode', 'h'));
             $frequentdeath->setOrderBy('d');
             $frequentdeath->setOrder('DESC');
@@ -142,7 +142,7 @@ if(strlen($_GET['h']) > 0){
             $frequentdeath->setWidth('100%');
             $frequentdeath->setClass('summary');
             $frequentdeath->setColumndata(array(
-                                            'weaponfull' => array(array('weaponfull'=>1), $lang['th_weapon'], '40%', 0, "?mode=weapon&w=*id*"),
+                                            'weaponfull' => array(array('weaponfull'=>1), $lang['th_weapon'], '40%', 0, URL_BASE . "mode=weapon&w=*id*"),
                                             'd' => array(array('d'=>1), $lang['th_deaths'], '30%'),
                                             'percentage' => array(array('percentage'=>1), $lang['abb_percentage'], '30%'),
                                            ));
@@ -154,7 +154,7 @@ if(strlen($_GET['h']) > 0){
         echo "<h2>" . $lang['tt_randomquotes'] . "</h2>";
             $query = "SELECT quote, gid FROM quotes WHERE (handle='$handle' AND length(quote)>5)";
             $randomchat = new orderedtable($query, 0);
-            $randomchat->setUrl("?mode=profile&h=".urlencode($handle));
+            $randomchat->setUrl(URL_BASE . "mode=profile&h=".urlencode($handle));
             $randomchat->setUrlVars(array('mode', 'h'));
             $randomchat->setOrderBy('RAND()');
             $randomchat->setLimit('10');
@@ -162,7 +162,7 @@ if(strlen($_GET['h']) > 0){
             $randomchat->setClass('summary');
             $randomchat->setColumnData(array(
                                         'quote' => array(array('quote'=>1), $lang['th_quote'], "70%"),
-                                        'gid' =>   array(array('gid'=>1), $lang['th_gid'], "30%", 0, "?mode=single&amp;gid=")
+                                        'gid' =>   array(array('gid'=>1), $lang['th_gid'], "30%", 0, URL_BASE . "mode=single&amp;gid=")
                                         ));
 
             $randomchat->printTable();	
@@ -170,7 +170,7 @@ if(strlen($_GET['h']) > 0){
         echo "<h2>" . $lang['tt_lastgames'] . "</h2>";
             $query = "SELECT gid, map, type FROM players, games WHERE handle='$handle' AND players.gid=games.id";
             $lastgames = new orderedtable($query, 0);
-            $lastgames->setUrl("?mode=profile&h=".urlencode($handle));
+            $lastgames->setUrl(URL_BASE . "mode=profile&h=".urlencode($handle));
             $lastgames->setUrlVars(array('mode', 'h'));
             $lastgames->setOrderBy('gid');
             $lastgames->setOrder('DESC');
@@ -178,9 +178,9 @@ if(strlen($_GET['h']) > 0){
             $lastgames->setWidth('100%');
             $lastgames->setClass('summary');
             $lastgames->setColumnData(array(
-                                        'map' => array(array('map'=>1), $lang['th_map'], "50%", 0, "?mode=map&amp;m="),
+                                        'map' => array(array('map'=>1), $lang['th_map'], "50%", 0, URL_BASE . "mode=map&amp;m="),
                                         'type' => array(array('type'=>1), $lang['th_mode'], "25%"),
-                                        'gid' =>   array(array('gid'=>1), $lang['th_gid'], "25%", 0, "?mode=single&amp;gid=")
+                                        'gid' =>   array(array('gid'=>1), $lang['th_gid'], "25%", 0, URL_BASE . "mode=single&amp;gid=")
                                         ));
 
             $lastgames->printTable();	
@@ -202,7 +202,7 @@ if(strlen($_GET['h']) > 0){
             $brightest->setWidth('100%');
             $brightest->setClass('summary');
             $brightest->setColumnData(array(
-                                        'gid' => array(array('map'=>1), $lang['th_gid'], "50%", 0, "?mode=single&amp;gid="),
+                                        'gid' => array(array('map'=>1), $lang['th_gid'], "50%", 0, URL_BASE . "mode=single&amp;gid="),
                                         'elo' => array(array('elo'=>1), $lang['th_elo'], "25%"),
                                         'elochange' =>   array(array('elochange'=>1), $lang['th_elochange'], "25%", 0, "", '0')
                                         ));
@@ -214,7 +214,7 @@ if(strlen($_GET['h']) > 0){
             $query = "SELECT gid, elo, (elo-previous) as elochange FROM(
                       SELECT *, @prev as previous, @prev:=elo FROM players WHERE handle = '$handle' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";
             $darkest = new orderedtable($query);
-            $darkest->setUrl("?mode=profile&h=".urlencode($handle));
+            $darkest->setUrl(URL_BASE . "mode=profile&h=".urlencode($handle));
             $darkest->setUrlVars(array('mode', 'h'));
             $darkest->setOrderBy('elochange');
             $darkest->setOrder('ASC');
@@ -222,7 +222,7 @@ if(strlen($_GET['h']) > 0){
             $darkest->setWidth('100%');
             $darkest->setClass('summary');
             $darkest->setColumnData(array(
-                                        'gid' => array(array('map'=>1), $lang['th_gid'], "50%", 0, "?mode=single&amp;gid="),
+                                        'gid' => array(array('map'=>1), $lang['th_gid'], "50%", 0, URL_BASE . "mode=single&amp;gid="),
                                         'elo' => array(array('elo'=>1), $lang['th_elo'], "25%"),
                                         'elochange' =>   array(array('elochange'=>1), $lang['th_elochange'], "25%", 0, "", '0')
                                         ));

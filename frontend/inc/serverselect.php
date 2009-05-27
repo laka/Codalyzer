@@ -32,7 +32,7 @@ if(mysql_num_rows($result) > 0){
     }
     
     
-    echo '<form action="index.php'. $lqstring .'" method="post" name="serverselect">';    
+    echo '<form action="'. $lqstring .'" method="post" name="serverselect">';    
     echo '<select name="server" onchange="document.serverselect.submit();">';
     
     while($line = mysql_fetch_assoc($result)){

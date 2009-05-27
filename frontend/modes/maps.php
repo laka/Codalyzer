@@ -12,12 +12,12 @@
     
 	$maps = new orderedtable($query, 1);
 	$maps->setClass('summary');
-	$maps->setUrl('?mode=maps');    
+	$maps->setUrl(URL_BASE . 'mode=maps');    
     
 	$maps->setLimit(50); 	
     $maps->setOrderBy('map'); 	
     $maps->setOrder('ASC'); 	
-	$maps->setColumnData(array('map' 	 => array (array('map' => 1), $lang['th_map'], "30%", 0, "?mode=map&m="),		
+	$maps->setColumnData(array('map' 	 => array (array('map' => 1), $lang['th_map'], "30%", 0, URL_BASE . "mode=map&m="),		
                               'numgames' => array (array('numgames' => 1, 'map' => 1), $lang['th_games'], "30%"),	
 								));		
 

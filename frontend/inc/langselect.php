@@ -27,7 +27,7 @@ if(count($_GET) > 0 || strlen(QUERY_STRING_FIRST_ELEMENT) > 0){
     $sqstring = @implode('', $s_querystring);
 }
 
-echo '<form action="index.php'. $sqstring .'" method="post" name="langselect">';    
+echo '<form action="'. $sqstring .'" method="post" name="langselect">';    
 echo '<select name="language" onchange="document.langselect.submit();">';
 
 if ($handle = opendir(FRONTEND_PATH . '/lang')) {

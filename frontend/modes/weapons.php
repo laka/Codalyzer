@@ -23,7 +23,7 @@
 	$weapons->setLimit(50); 	
     $weapons->setOrderBy('category'); 	
     $weapons->setOrder('ASC'); 	
-	$weapons->setColumnData(array('full' 	=> array (array('full' => 1), $lang['th_weapon'], "30%", 0, "?mode=weapon&w=*mother*"),
+	$weapons->setColumnData(array('full' 	=> array (array('full' => 1), $lang['th_weapon'], "30%", 0, URL_BASE . "mode=weapon&w=*mother*"),
 								  'category' => array (array('category' => 1, 'full' => 1), $lang['th_weapontype'], "30%"),			
                                   'totalkills' => array (array('totalkills' => 1, 'full' => 1), $lang['th_kills'], "30%"),	
 								));		

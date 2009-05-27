@@ -39,7 +39,7 @@
         $id = $row['id'];
         
         echo "<table class=\"summary\" width=\"100%\"><tr><th width=\"25%\">" . $lang['th_map'] . ":</th><th width=\"25%\">" . $lang['th_mode'] . ":</th><th width=\"25%\">" . $lang['th_players'] . ":</th><th width=\"25%\">" . $lang['th_duration'] . "</th></tr>";
-        echo "<tr class=\"keynumbers\"><td width=\"25%\"><a href=\"?mode=map&amp;m={$row['map']}\">{$row['map']}</a></td><td width=\"25%\">{$row['type']}</td><td width=\"25%\">{$row['t']}</td><td width=\"25%\">$duration</td></tr></table>";
+        echo "<tr class=\"keynumbers\"><td width=\"25%\"><a href=\"" .URL_BASE . "mode=map&amp;m={$row['map']}\">{$row['map']}</a></td><td width=\"25%\">{$row['type']}</td><td width=\"25%\">{$row['t']}</td><td width=\"25%\">$duration</td></tr></table>";
         
         // prints out resultlists
         $result = new resultlist($gid);
@@ -49,7 +49,7 @@
             
         // prints out the development graph
         echo "<h2>" . $lang['tt_development'] . "</h2>";
-        echo "<img src=\"graphs/gamegraph.php?gid=$gid\" alt=\"" . $lang['tt_development'] . "\">";		
+        echo "<img src=\"". FRONTEND_URL ."graphs/gamegraph.php?gid=$gid\" alt=\"" . $lang['tt_development'] . "\">";		
     } else {
         echo "<p><strong>Error:</strong> No games in the database.</p>";
     }

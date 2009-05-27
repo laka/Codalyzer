@@ -50,4 +50,7 @@ if(is_file(FRONTEND_PATH . '/lang/lang_' . $_SESSION['language'] . '.php')){
 } else {
     include FRONTEND_PATH . '/lang/lang_' . strtolower(LANGUAGE) . '.php';
 }
+
+// defines a url base for all links
+define("URL_BASE", QUERY_STRING_FIRST_ELEMENT . QUERY_STRING_FIRST_SEPARATOR);
 ?>

@@ -26,20 +26,18 @@ if(is_numeric($_GET['w'])){
             $result = $db->sqlResult($attachmentsql);
             
             if(mysql_num_rows($result) > 0){
-                echo '<form action="index.php" method="get">';
+                echo '<form action="" method="GET">';
                 echo '<input type="hidden" name="mode" value="weapon">';
                 echo '<input type="hidden" name="w" value="'. $weaponid  .'">';
                 
                  // makes sure we don't lose any variables from the query string
-                if(isset($_GET['update'])){
-                    foreach($_GET as $key => $value){
-                        if(ereg('^att_([0-9]*)$', $key) && ereg('^[_a-z0-9]*$', $value)){
-                            $att[] = $value;
-                        } elseif($key != 'w' && $key != 'mode' && $key != 'update') {
-                            echo '<input type="hidden" name="'. $key .'" value="'. $value .'">';                         
-                        }
+                foreach($_GET as $key => $value){
+                    if(ereg('^att_([0-9]*)$', $key) && ereg('^[_a-z0-9]*$', $value)){
+                        $att[] = $value;
+                    } elseif($key != 'w' && $key != 'mode' && $key != 'update') {
+                        echo '<input type="hidden" name="'. $key .'" value="'. $value .'">';                         
                     }
-                }               
+                }          
 
                 echo '<table class="summary" width="100%"><tr><th width="30%">'. $lang['m_attachments'] .'</th><td>';
 
@@ -86,7 +84,7 @@ if(is_numeric($_GET['w'])){
             $mostkillswith->setUrl('?mode=weapon&w=' . $weaponid);		 
             $mostkillswith->setLimit(20);  
             $mostkillswith->setOrderBy('killcount');
-            $mostkillswith->setColumnData(array('killer' 		=> array (array('killer' => 1), $lang['th_player'], "30%", 0, "?mode=profile&amp;h="),
+            $mostkillswith->setColumnData(array('killer' 		=> array (array('killer' => 1), $lang['th_player'], "30%", 0, URL_BASE . "mode=profile&amp;h="),
                                                 'killcount' 	=> array (array('killcount' => 1, 'percentage' => 1), $lang['th_kills'], "30%"),
                                                 'percentage' 	=> array (array('percentage' => 1), $lang['th_percentage'], "30%")
                                                 ));	
@@ -103,7 +101,7 @@ if(is_numeric($_GET['w'])){
             $mostdeathsby->setUrl('?mode=weapon&w=' . $weaponid);		 
             $mostdeathsby->setLimit(20);  
             $mostdeathsby->setOrderBy('deathcount');
-            $mostdeathsby->setColumnData(array('corpse' 		=> array (array('corpse' => 1), $lang['th_player'], "30%", 0, "?mode=profile&amp;h="),
+            $mostdeathsby->setColumnData(array('corpse' 		=> array (array('corpse' => 1), $lang['th_player'], "30%", 0, URL_BASE . "mode=profile&amp;h="),
                                                 'deathcount' 	=> array (array('deathcount' => 1, 'percentage' => 1), $lang['th_deaths'], "30%"),
                                                 'percentage' 	=> array (array('percentage' => 1), $lang['th_percentage'], "30%")
                                                 ));	

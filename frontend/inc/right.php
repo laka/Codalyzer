@@ -10,7 +10,7 @@ switch($_GET['mode']){
     case 'profile':
         echo "<h2>Development</h2>";
         echo "<p>" . $lang['m_elodesc'] . "</p>";
-        echo "<p><img src=\"graphs/development.php?h=". urlencode($data['handle']) ."\"></p>";
+        echo "<p><img src=\"" .FRONTEND_URL . "graphs/development.php?h=". urlencode($data['handle']) ."\"></p>";
     break;
     
     default:
