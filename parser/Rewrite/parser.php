@@ -1,7 +1,7 @@
 <?php
 require_once('load.php');
 
-$logfile = new logfile('testlog');
+$logfile = new logfile('pam4.log');
 $logarray = $logfile->returnArray();
 $gamename = $logfile->getGameName();
 
@@ -68,9 +68,13 @@ foreach ($logarray as $linenr => $line) {
 	/* Add confirmed shutdown of a game
 	--------------------------------------------------------------------------------------------------------*/
 	elseif(preg_match($regexlib[$gamename]["exitLevel"]['all'], $line, $matches)) {
-		$handler->addExitGame($matches, $gid);
+		$handler->addExitGame($gid);
 	}
-	
+	/* Add game round count
+	--------------------------------------------------------------------------------------------------------*/
+	elseif(preg_match($regexlib[$gamename]["roundStart"]['all'], $line, $matches)) {
+		$handler->addRoundCount($matches, $gid);
+	}
 }
 
 ?>

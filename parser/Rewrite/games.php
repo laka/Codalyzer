@@ -76,7 +76,7 @@ class game extends toolbox {
 	}
 	/* Add team to a player ($matches: [1] timestamp [2] hash [3] team [4] handle)
 	--------------------------------------------------------------------------------------------------------*/
-	public function addNewPlayer($matches, $gid) {
+	public function addTeamMember($matches, $gid) {
 		# Convert timestamp to seconds	
 		$matches[1] = $this->ts2seconds($matches[1]);
 		

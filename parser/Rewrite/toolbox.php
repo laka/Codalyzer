@@ -2,15 +2,14 @@
 
 class toolbox {
 	private $db;
-	public $mods;
-
 	public function __construct() {
 		$this->db = database::getInstance();
 	}
 	
 	# Returns gamedata upon request
 	public function gameData($data, $gid) {
-		$row = database::getInstance()->singleRow("SELECT $data FROM games WHERE id=\"$gid\"");
+		$row = database::getInstance()->singleRow(
+			"SELECT $data FROM games WHERE id=\"$gid\"");
 		return $row[$data];
 	}
 	
@@ -33,7 +32,8 @@ class toolbox {
 	
 	# Returns the last game id in the games-table
 	public function lastGid() {
-		$row = database::getInstance()->singleRow("SELECT id FROM games ORDER BY id DESC LIMIT 1");
+		$row = database::getInstance()->singleRow(
+			"SELECT id FROM games ORDER BY id DESC LIMIT 1");
 		return $row['id'];
 	}
 	
@@ -51,7 +51,8 @@ class toolbox {
 	
 	# Returns true if x player is playing
 	public function playerInGame($handle, $gid) {
-		$result = database::getInstance()->sqlResult("SELECT id FROM players WHERE handle=\"$handle\" AND gid=\"$gid\"");
+		$result = database::getInstance()->sqlResult(
+			"SELECT id FROM players WHERE handle=\"$handle\" AND gid=\"$gid\"");
 		return mysql_num_rows($result);
 	}
 	
@@ -74,11 +75,16 @@ class toolbox {
 		$row = database::getInstance()->singleRow(
 			"SELECT handle AS old_handle FROM players WHERE hash=\"$hash\" AND gid=\"$gid\"");
 		
-			database::getInstance()->sqlResult("UPDATE players SET handle=\"$handle\" WHERE hash=\"$hash\" AND gid=\"$gid\"");
-			database::getInstance()->sqlResult("UPDATE kills SET killer=\"$handle\" WHERE killer=\"$row[old_handle]\" AND gid=\"$gid\"");
-			database::getInstance()->sqlResult("UPDATE kills SET corpse=\"$handle\" WHERE corpse=\"$row[old_handle]\" AND gid=\"$gid\"");
-			database::getInstance()->sqlResult("UPDATE hits SET hitman=\"$handle\" WHERE hitman=\"$row[old_handle]\" AND gid=\"$gid\"");
-			database::getInstance()->sqlResult("UPDATE hits SET wounded=\"$handle\" WHERE wounded=\"$row[old_handle]\" AND gid=\"$gid\"");
+			database::getInstance()->sqlResult(
+				"UPDATE players SET handle=\"$handle\" WHERE hash=\"$hash\" AND gid=\"$gid\"");
+			database::getInstance()->sqlResult(
+				"UPDATE kills SET killer=\"$handle\" WHERE killer=\"$row[old_handle]\" AND gid=\"$gid\"");
+			database::getInstance()->sqlResult(
+				"UPDATE kills SET corpse=\"$handle\" WHERE corpse=\"$row[old_handle]\" AND gid=\"$gid\"");
+			database::getInstance()->sqlResult(
+				"UPDATE hits SET hitman=\"$handle\" WHERE hitman=\"$row[old_handle]\" AND gid=\"$gid\"");
+			database::getInstance()->sqlResult(
+				"UPDATE hits SET wounded=\"$handle\" WHERE wounded=\"$row[old_handle]\" AND gid=\"$gid\"");
 	}
 	
 	# Truncate tables
@@ -94,16 +100,19 @@ class toolbox {
 	
 	# Put the player on the team parsed from damage hits or kills
 	public function addTeamMember($handle, $team, $gid) {
-		database::getInstance()->sqlResult("UPDATE players SET team=\"$team\" WHERE handle=\"$handle\" AND gid=\"$gid\"");
+		database::getInstance()->sqlResult(
+			"UPDATE players SET team=\"$team\" WHERE handle=\"$handle\" AND gid=\"$gid\"");
 	}
 	
 	# Add aliases ($owner = hash)
 	public function addNewAlias($alias, $owner) {
-		$result = database::getInstance()->sqlResult("SELECT id FROM alias WHERE owner=\"$owner\" AND alias=\"$alias\"");
+		$result = database::getInstance()->sqlResult(
+			"SELECT id FROM alias WHERE owner=\"$owner\" AND alias=\"$alias\"");
 		if(mysql_num_rows($result)) {
 			return 0;
 		} else {
-			database::getInstance()->sqlResult("INSERT INTO alias (owner, alias) VALUES(\"$owner\", \"$alias\")");
+			database::getInstance()->sqlResult(
+				"INSERT INTO alias (owner, alias) VALUES(\"$owner\", \"$alias\")");
 		}
 	}
 }
