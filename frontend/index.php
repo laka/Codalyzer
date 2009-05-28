@@ -10,9 +10,7 @@ session_start();
 $start = microtime(true);
 
 include_once '../config.php';
-include_once 'classes/database.php';	
 include_once 'inc/header.php';
-include_once 'classes/orderedtable.php';
 
 $db = database::getInstance();
 ?>

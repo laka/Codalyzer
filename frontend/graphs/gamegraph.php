@@ -7,7 +7,6 @@
 */
 
 include '../../config.php';
-include '../classes/database.php';
 include '../classes/graph.php';
 include '../inc/header.php';
 

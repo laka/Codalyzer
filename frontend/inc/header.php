@@ -6,14 +6,22 @@
 	**************************************************************
 */
 
-$db = database::getInstance();
+// fetches config data from the database, we don't use the database-class here, since we aren't able to include it some times without knowing FRONTEND_PATH.
+$connection = @mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS) or die ('<strong>Error:</strong> Could not connect to the database.');
+mysql_select_db(MYSQL_DB, $connection);
 
-// fetches config data from the database
 $sql = "SELECT * FROM config";
-$result = $db->sqlResult($sql);
+$result = mysql_query($sql);
 while($line = mysql_fetch_assoc($result)){
     define(strtoupper($line['key']), $line['value']);
 }
+
+// includes the database class
+include FRONTEND_PATH . '/classes/database.php';
+$db = database::getInstance();
+
+// includes the orderedtable class
+include FRONTEND_PATH . '/classes/orderedtable.php';
 
 // handles language changes
 if($_POST['language']){
