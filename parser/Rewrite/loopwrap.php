@@ -16,10 +16,17 @@ class loopwrap extends toolbox {
 	}
 	public function playersLoop() {
 		$result = database::getInstance()->sqlResult(
-			"SELECT DISTINCT hash AS puid ORDER BY id ASC");
+			"SELECT DISTINCT hash AS puid FROM players ORDER BY id ASC");
 		
 		while($row = mysql_fetch_assoc($result)) {
-	
+			# Create a profile for the player
+			$this->makePlayerProfile($row['puid']);
+		
+			# Add stats to the profile
+			$this->addProfileData($row['puid']);
+			
+			# Fetch all aliases to the player
+			$this->getEveryAlias($row['puid']);
 		}
 	}
 }

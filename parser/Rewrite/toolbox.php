@@ -87,6 +87,13 @@ class toolbox {
 				"UPDATE hits SET wounded=\"$handle\" WHERE wounded=\"$row[old_handle]\" AND gid=\"$gid\"");
 	}
 	
+	# Fetch the players most used alias based on hash
+	public function mostUsedHandle($puid) {
+		$row = database::getInstance()->singleRow(
+			"SELECT handle, COUNT(handle) AS num FROM players WHERE hash=\"$puid\" GROUP BY handle ORDER BY num DESC LIMIT 1");
+		return $row['handle'];
+	}
+	
 	# Truncate tables
 	public function truncateTables($limit) {
 		database::getInstance()->sqlResult("TRUNCATE TABLE games");
@@ -96,6 +103,7 @@ class toolbox {
 		database::getInstance()->sqlResult("TRUNCATE TABLE quotes");
 		database::getInstance()->sqlResult("TRUNCATE TABLE alias");
 		database::getInstance()->sqlResult("TRUNCATE TABLE actions");
+		database::getInstance()->sqlResult("TRUNCATE TABLE profiles");
 	}
 	
 	# Put the player on the team parsed from damage hits or kills
@@ -114,6 +122,37 @@ class toolbox {
 			database::getInstance()->sqlResult(
 				"INSERT INTO alias (owner, alias) VALUES(\"$owner\", \"$alias\")");
 		}
+	}
+	
+	# Add all aliases of a player
+	public function getEveryAlias($puid) {
+		$most_used = $this->mostUsedHandle($puid);
+		$result = database::getInstance()->sqlResult(
+			"SELECT DISTINCT handle AS alias FROM players WHERE hash=\"$puid\" AND handle != \"$most_used\" ORDER BY id");
+		
+		while($row = mysql_fetch_assoc($result)) {
+			$this->addNewAlias($row['alias'], $puid);
+		}
+	}
+	
+	# Create a player profile
+	public function makePlayerProfile($puid) {
+		$result = database::getInstance()->sqlResult(
+			"SELECT id FROM profiles WHERE hash=\"$puid\"");
+		if(mysql_num_rows($result)) {
+			$this->setMostUsedHandle($puid);
+		} else {
+			$handle = $this->mostUsedHandle($puid);
+			database::getInstance()->sqlResult(
+				"INSERT INTO profiles (handle, hash) VALUES(\"$handle\", \"$puid\")");
+		}
+	}
+	
+	# Update a profile handle to the most used one
+	public function setMostUsedHandle($puid) {
+		$most_used = $this->mostUsedHandle($puid);
+		database::getInstance()->sqlResult(
+			"UPDATE profiles SET handle=\"$most_used\" WHERE hash=\"$puid\"");
 	}
 }
 

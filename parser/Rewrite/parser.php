@@ -1,7 +1,7 @@
 <?php
 require_once('load.php');
 
-$logfile = new logfile('pam4.log');
+$logfile = new logfile('testlog');
 $logarray = $logfile->returnArray();
 $gamename = $logfile->getGameName();
 
@@ -76,6 +76,9 @@ foreach ($logarray as $linenr => $line) {
 		$handler->addRoundCount($matches, $gid);
 	}
 }
+
+$loop = new loopwrap();
+$loop->playersLoop();
 
 ?>
 	
