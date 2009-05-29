@@ -67,7 +67,7 @@ if(strlen($_GET['h']) > 0){
                       ON k.corpse = d.mm WHERE k.killer = '". $handle ."' GROUP BY corpse HAVING percentage > 0.4";
                       
             $easiestprey = new orderedtable($query, 1);
-            $easiestprey->setUrl("?mode=profile&h=".urlencode($handle));
+            $easiestprey->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($handle));
             $easiestprey->setUrlVars(array('mode', 'h'));
             $easiestprey->setOrderBy('ratio');
             $easiestprey->setOrder('DESC');
@@ -88,7 +88,7 @@ if(strlen($_GET['h']) > 0){
                       ON k.corpse = d.mm WHERE k.killer = '". $handle ."' GROUP BY corpse HAVING percentage > 0.4";
 
             $worstenemy = new orderedtable($query, 1);
-            $worstenemy->setUrl(URL_BASE . "mode=profile&h=".urlencode($handle));
+            $worstenemy->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($handle));
             $worstenemy->setUrlVars(array('mode', 'h'));
             $worstenemy->setOrderBy('ratio');
             $worstenemy->setOrder('ASC');
@@ -112,7 +112,7 @@ if(strlen($_GET['h']) > 0){
             $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as k, round(count('')*100/{$data['kills']},2) as percentage
                       FROM weapons, kills WHERE kills.weapon=weapons.name AND killer='$handle' AND corpse != '$handle' GROUP BY weapon";
             $favoriteweapon = new orderedtable($query, 1);
-            $favoriteweapon->setUrl(URL_BASE . "mode=profile&h=".urlencode($handle));
+            $favoriteweapon->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($handle));
             $favoriteweapon->setUrlVars(array('mode', 'h'));
             $favoriteweapon->setOrderBy('k');
             $favoriteweapon->setOrder('DESC');
@@ -134,7 +134,7 @@ if(strlen($_GET['h']) > 0){
                       FROM weapons, kills WHERE kills.weapon=weapons.name AND corpse='$handle' AND killer != '$handle' GROUP BY weapon";
 
             $frequentdeath = new orderedtable($query, 1);
-            $frequentdeath->setUrl(URL_BASE . "mode=profile&h=".urlencode($handle));
+            $frequentdeath->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($handle));
             $frequentdeath->setUrlVars(array('mode', 'h'));
             $frequentdeath->setOrderBy('d');
             $frequentdeath->setOrder('DESC');
@@ -154,7 +154,7 @@ if(strlen($_GET['h']) > 0){
         echo "<h2>" . $lang['tt_randomquotes'] . "</h2>";
             $query = "SELECT quote, gid FROM quotes WHERE (handle='$handle' AND length(quote)>5)";
             $randomchat = new orderedtable($query, 0);
-            $randomchat->setUrl(URL_BASE . "mode=profile&h=".urlencode($handle));
+            $randomchat->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($handle));
             $randomchat->setUrlVars(array('mode', 'h'));
             $randomchat->setOrderBy('RAND()');
             $randomchat->setLimit('10');
@@ -170,7 +170,7 @@ if(strlen($_GET['h']) > 0){
         echo "<h2>" . $lang['tt_lastgames'] . "</h2>";
             $query = "SELECT gid, map, type FROM players, games WHERE handle='$handle' AND players.gid=games.id";
             $lastgames = new orderedtable($query, 0);
-            $lastgames->setUrl(URL_BASE . "mode=profile&h=".urlencode($handle));
+            $lastgames->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($handle));
             $lastgames->setUrlVars(array('mode', 'h'));
             $lastgames->setOrderBy('gid');
             $lastgames->setOrder('DESC');
@@ -194,7 +194,7 @@ if(strlen($_GET['h']) > 0){
             $query = "SELECT gid, elo, (elo-previous) as elochange FROM(
                       SELECT *, @prev as previous, @prev:=elo FROM players WHERE handle = '$handle' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";
             $brightest = new orderedtable($query);
-            $brightest->setUrl("?mode=profile&h=".urlencode($handle));
+            $brightest->setUrl("?mode=profile&amp;h=".urlencode($handle));
             $brightest->setUrlVars(array('mode', 'h'));
             $brightest->setOrderBy('elochange');
             $brightest->setOrder('DESC');
@@ -214,7 +214,7 @@ if(strlen($_GET['h']) > 0){
             $query = "SELECT gid, elo, (elo-previous) as elochange FROM(
                       SELECT *, @prev as previous, @prev:=elo FROM players WHERE handle = '$handle' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";
             $darkest = new orderedtable($query);
-            $darkest->setUrl(URL_BASE . "mode=profile&h=".urlencode($handle));
+            $darkest->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($handle));
             $darkest->setUrlVars(array('mode', 'h'));
             $darkest->setOrderBy('elochange');
             $darkest->setOrder('ASC');

@@ -17,15 +17,15 @@ if(mysql_num_rows($result) > 0){
         }
 
         foreach($_GET as $key => $value){
-            // fetches only variables that makes no bugs in the HTML
-            if(ereg('^([0-9a-z]*)$', $key) && ereg('^[_a-z0-9]*$', $value)){
-                $cand = (count($l_querystring) == 0) ? QUERY_STRING_FIRST_SEPARATOR : '&amp;';
-                $cand .= $key . '=' . $value;
-                // cumbersome method to prevent the query string from growing...
-                if(substr($cand, 5) != substr(QUERY_STRING_FIRST_ELEMENT,1)){
-                    $l_querystring[$i] = $cand;
-                    $i++;    
-                }
+            $key = stripslashes($key);
+            $value = stripslashes($value);
+            
+            $cand = (count($l_querystring) == 0) ? QUERY_STRING_FIRST_SEPARATOR : '&amp;';
+            $cand .= urlencode($key) . '=' . urlencode($value);
+            // cumbersome method to prevent the query string from growing...
+            if(substr($cand, 5) != substr(QUERY_STRING_FIRST_ELEMENT,1)){
+                $l_querystring[$i] = $cand;
+                $i++;    
             }
         }
         $lqstring = @implode('', $l_querystring);    
