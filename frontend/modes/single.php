@@ -28,7 +28,7 @@
 
     if(is_numeric($gid)){
         //  we try to decide if the game is ongoing
-        $sql = "SELECT *, (SELECT count(distinct handle) FROM players WHERE players.gid =  games.id) as t FROM games WHERE id = '$gid' LIMIT 1";
+        $sql = "SELECT *, (SELECT COUNT(DISTINCT handle) FROM players WHERE players.gid =  games.id) AS t FROM games WHERE id = '$gid' LIMIT 1";
         $row = $db->singleRow($sql);	
         if($row['stop'] != '00:00') {
             $duration = round((($row['stop']-$row['start'])/60),0) . ' min';
