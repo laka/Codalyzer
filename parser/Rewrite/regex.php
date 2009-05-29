@@ -113,7 +113,7 @@ $regexlib =
 				# VERSION	LOGPRINT	STATUS: UNCONFIRMED
 				"cod10" => '/(\d+:\d+)\sA;\d;(\d);(allies|axis);.*;(bomb_(plant|defuse))/',
 				"cod15" => '/(\d+:\d+)\sA;\d;(\d);(allies|axis);.*;(bomb_(plant|defuse))/',
-				"cod40" => '/(\d+:\d+)\sA;(bomb_planted|bomb_defused|hq_captured|hq_destroyed|captured_a|captured_b|captured_c);.*;(.*)/'),
+				"cod40" => '/(\d+:\d+)\sA;(bomb_planted|bomb_defused|hq_captured|hq_destroyed|captured_a|captured_b|captured_c);(.*);(.*)/'),
 			
 			"pickups" => array(
 				# VERSION	LOGPRINT	STATUS: UNCONFIRMED

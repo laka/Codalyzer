@@ -26,6 +26,13 @@ class toolbox {
 	/* Convert functions
 	--------------------------------------------------------------------------------------------------------*/
 	
+	# Common round function
+	public function round($num, $dec) {
+		$number = $num || 0;
+		#$dec = 10 ($dec || 0);
+		return int($dec * $number + .5 * ($number <=> 0)) / $dec;
+	}
+	
 	# Returns timestamp (min:sec) converted to seconds 
 	public function ts2seconds($ts) {
 		$t = explode(':', $ts);
@@ -147,7 +154,7 @@ class toolbox {
 		$this->sumPlayerDeaths($puid);
 		$this->sumPlayerSuicides($puid);
 		$this->sumPlayerGames($puid);
-		$this->getPlayerElo($puid);
+		$this->getPlayerElo($puid, 'add');
 	}
 	
 	# Update a profile handle to the most used one
@@ -200,14 +207,23 @@ class toolbox {
 	}
 	
 	# Get a players last ELO-rating
-	public function getPlayerElo($puid) {
+	public function getPlayerElo($puid, $method) {
 		$row = database::getInstance()->singleRow(
 			"SELECT elo FROM players WHERE hash=\"$puid\" AND elo IS NOT NULL ORDER BY id DESC LIMIT 1");
 		
-		$elo = ($row[elo]) ? $row[elo] : 1000;
+		if(isset($row[elo])) {
+			$elo = $row[elo];
+		} else {
+			$elo = 1000;
+		}
+		#$elo = ($row[elo]) ? $row[elo] : 1000;
 		
-		database::getInstance()->sqlResult(
-			"UPDATE profiles SET elo=\"$elo\" WHERE hash=\"$puid\"");
+		if($method == 'return') {
+			return $elo . "\n";
+		} else {
+			database::getInstance()->sqlResult(
+				"UPDATE profiles SET elo=\"$elo\" WHERE hash=\"$puid\"");
+		}
 	}
 	
 	/* Database functions

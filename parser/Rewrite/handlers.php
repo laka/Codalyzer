@@ -17,8 +17,10 @@ class handler extends toolbox {
 		# Convert timestamp to seconds	
 		$matches[1] = $this->ts2seconds($matches[1]); 
 		
-		database::getInstance()->sqlResult("INSERT INTO actions (gid, ts, action, handle) 
-			VALUES(\"$gid\", \"$matches[1]\", \"$matches[2]\", \"$matches[3]\")");
+		$matches[3] = preg_replace('/axis;|allies;/','',$matches[3]);
+		
+		database::getInstance()->sqlResult("INSERT INTO actions (gid, ts, action, hash, handle) 
+			VALUES(\"$gid\", \"$matches[1]\", \"$matches[2]\", \"$matches[3]\", \"$matches[4]\")");
 	}
 	public function addTeamScore($matches, $gid) {
 		$highscore = max($matches[2], $matches[3]);
