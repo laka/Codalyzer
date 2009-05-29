@@ -78,7 +78,10 @@ foreach ($logarray as $linenr => $line) {
 }
 
 $loop = new loopwrap();
+$loop->gamesLoop();
 $loop->playersLoop();
+
+$toolbox->cleanUpProfiles();
 
 ?>
 	

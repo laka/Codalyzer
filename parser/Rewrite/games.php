@@ -35,7 +35,7 @@ class game extends toolbox {
 		# Check to see if we have an ongoing game
 		if(is_numeric($gid)) {
 			# Check for modes where InitGame restarts
-			if(preg_match('/sd|sab/', $this->gameData('type', $gid))) {
+			if(preg_match('/sd|sab|koth|dom/', $this->gameData('type', $gid))) {
 				if(($this->gameData('map', $gid) == $matches[5]) && 
 					($this->gameData('type', $gid) == $matches[3]) &&
 					($this->gameData('finish', $gid) == 0)) {
@@ -67,8 +67,8 @@ class game extends toolbox {
 		$matches[1] = $this->ts2seconds($matches[1]); 
 
 		# Is the player allready in the game?
-		if($this->playerInGame($matches[3], $gid)) {
-			return 0;
+		if($this->playerInGame($matches[2], $gid)) {
+			#return 0;
 		} else {
 			database::getInstance()->sqlResult("INSERT INTO players (gid, ts, hash, handle)
 				VALUES(\"$gid\", \"$matches[1]\", \"$matches[2]\", \"$matches[3]\")");

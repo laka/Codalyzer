@@ -17,9 +17,9 @@ class toolbox {
 	}
 	
 	# Returns true if x player is playing
-	public function playerInGame($handle, $gid) {
+	public function playerInGame($hash, $gid) {
 		$result = database::getInstance()->sqlResult(
-			"SELECT id FROM players WHERE handle=\"$handle\" AND gid=\"$gid\"");
+			"SELECT id FROM players WHERE hash=\"$hash\" AND gid=\"$gid\"");
 		return mysql_num_rows($result);
 	}
 	
@@ -223,6 +223,46 @@ class toolbox {
 		database::getInstance()->sqlResult("TRUNCATE TABLE alias");
 		database::getInstance()->sqlResult("TRUNCATE TABLE actions");
 		database::getInstance()->sqlResult("TRUNCATE TABLE profiles");
+	}
+	
+	/* Cleanup functions
+	--------------------------------------------------------------------------------------------------------*/
+	
+	# Delete profiles with 0 k&d and games <= 1
+	public function cleanUpProfiles() {
+		$result = database::getInstance()->sqlResult(
+			"SELECT hash FROM profiles WHERE (kills=0 OR deaths=0) AND games <= 1");
+		
+		while($row = mysql_fetch_assoc($result)) {
+			database::getInstance()->sqlResult("DELETE FROM profiles WHERE hash=\"$row[hash]\"");
+			database::getInstance()->sqlResult("DELETE FROM players WHERE hash=\"$row[hash]\"");
+		}
+	}
+	
+	# Find games with kills < 5 or players <= 1 
+	public function cleanUpGames($gid) {
+		$row = database::getInstance()->singleRow(
+			"SELECT id, 
+				(SELECT COUNT(*) FROM kills WHERE gid=a.id) AS kills, 
+				(SELECT COUNT(*) FROM players WHERE gid=a.id) AS players 
+			FROM games AS a WHERE id=\"$gid\"");
+		
+		if($row[kills] < 5) {
+			$this->dropGame($gid);
+		} 
+		elseif($row[players] <= 1) {
+			$this->dropGame($gid);
+		}
+	}
+	
+	# ..and then delete them
+	public function dropGame($gid) {
+		database::getInstance()->sqlResult("DELETE FROM games WHERE id=\"$gid\"");
+		database::getInstance()->sqlResult("DELETE FROM actions WHERE gid=\"$gid\"");
+		database::getInstance()->sqlResult("DELETE FROM kills WHERE gid=\"$gid\"");
+		database::getInstance()->sqlResult("DELETE FROM hits WHERE gid=\"$gid\"");
+		database::getInstance()->sqlResult("DELETE FROM quotes WHERE gid=\"$gid\"");
+		database::getInstance()->sqlResult("DELETE FROM players WHERE gid=\"$gid\"");
 	}
 }
 

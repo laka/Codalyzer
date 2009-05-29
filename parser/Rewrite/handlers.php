@@ -34,6 +34,8 @@ class handler extends toolbox {
 		
 		database::getInstance()->sqlResult(
 			"UPDATE games SET axisscore=\"$axisscore\", alliesscore=\"$alliesscore\" WHERE id=\"$gid\"");
+		
+		$this->addExitGame($gid);
 	}
 	public function addGameStopTime($matches, $gid) {
 		database::getInstance()->sqlResult(

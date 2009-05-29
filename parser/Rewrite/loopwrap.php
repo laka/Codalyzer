@@ -8,10 +8,11 @@ class loopwrap extends toolbox {
 	}
 	public function gamesLoop() {
 		$result = database::getInstance()->sqlResult(
-			"SELECT id FROM games AS gid WHERE parsed != 1 ORDER BY id ASC");
+			"SELECT id FROM games WHERE parsed != 1 ORDER BY id ASC");
 		
 		while($row = mysql_fetch_assoc($result)) {
-		
+			# Remove short games
+			$this->cleanUpGames($row['id']);
 		}
 	}
 	public function playersLoop() {
@@ -27,9 +28,6 @@ class loopwrap extends toolbox {
 			
 			# Fetch all aliases of the player
 			$this->getEveryAlias($row['puid']);
-			
-			# Clean up in players and profiles
-			$this->dropPlayers($row['puid']);
 		}
 	}
 }
