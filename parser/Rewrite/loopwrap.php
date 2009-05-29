@@ -25,7 +25,7 @@ class loopwrap extends toolbox {
 			# Add stats to the profile
 			$this->addProfileData($row['puid']);
 			
-			# Fetch all aliases to the player
+			# Fetch all aliases of the player
 			$this->getEveryAlias($row['puid']);
 		}
 	}

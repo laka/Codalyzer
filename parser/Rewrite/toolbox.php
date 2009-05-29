@@ -6,12 +6,25 @@ class toolbox {
 		$this->db = database::getInstance();
 	}
 	
+	/* Lookup functions
+	--------------------------------------------------------------------------------------------------------*/
+	
 	# Returns gamedata upon request
 	public function gameData($data, $gid) {
 		$row = database::getInstance()->singleRow(
 			"SELECT $data FROM games WHERE id=\"$gid\"");
 		return $row[$data];
 	}
+	
+	# Returns true if x player is playing
+	public function playerInGame($handle, $gid) {
+		$result = database::getInstance()->sqlResult(
+			"SELECT id FROM players WHERE handle=\"$handle\" AND gid=\"$gid\"");
+		return mysql_num_rows($result);
+	}
+	
+	/* Convert functions
+	--------------------------------------------------------------------------------------------------------*/
 	
 	# Returns timestamp (min:sec) converted to seconds 
 	public function ts2seconds($ts) {
@@ -49,13 +62,6 @@ class toolbox {
 		return $input;
 	}
 	
-	# Returns true if x player is playing
-	public function playerInGame($handle, $gid) {
-		$result = database::getInstance()->sqlResult(
-			"SELECT id FROM players WHERE handle=\"$handle\" AND gid=\"$gid\"");
-		return mysql_num_rows($result);
-	}
-	
 	# Returns an abbr weapon name based on modification
 	public function weaponMods($weapon, $mod) {
 		$mods = array(
@@ -69,6 +75,9 @@ class toolbox {
 			return $weapon;
 		}
 	}
+	
+	/* Handle functions
+	--------------------------------------------------------------------------------------------------------*/
 
 	# Change the handle of a player
 	public function setNewHandle($handle, $hash, $gid) {
@@ -87,30 +96,14 @@ class toolbox {
 				"UPDATE hits SET wounded=\"$handle\" WHERE wounded=\"$row[old_handle]\" AND gid=\"$gid\"");
 	}
 	
-	# Fetch the players most used alias based on hash
-	public function mostUsedHandle($puid) {
-		$row = database::getInstance()->singleRow(
-			"SELECT handle, COUNT(handle) AS num FROM players WHERE hash=\"$puid\" GROUP BY handle ORDER BY num DESC LIMIT 1");
-		return $row['handle'];
-	}
-	
-	# Truncate tables
-	public function truncateTables($limit) {
-		database::getInstance()->sqlResult("TRUNCATE TABLE games");
-		database::getInstance()->sqlResult("TRUNCATE TABLE players");
-		database::getInstance()->sqlResult("TRUNCATE TABLE kills");
-		database::getInstance()->sqlResult("TRUNCATE TABLE hits");
-		database::getInstance()->sqlResult("TRUNCATE TABLE quotes");
-		database::getInstance()->sqlResult("TRUNCATE TABLE alias");
-		database::getInstance()->sqlResult("TRUNCATE TABLE actions");
-		database::getInstance()->sqlResult("TRUNCATE TABLE profiles");
-	}
-	
 	# Put the player on the team parsed from damage hits or kills
 	public function addTeamMember($handle, $team, $gid) {
 		database::getInstance()->sqlResult(
 			"UPDATE players SET team=\"$team\" WHERE handle=\"$handle\" AND gid=\"$gid\"");
 	}
+	
+	/* Profile & Alias functions
+	--------------------------------------------------------------------------------------------------------*/
 	
 	# Add aliases ($owner = hash)
 	public function addNewAlias($alias, $owner) {
@@ -148,11 +141,51 @@ class toolbox {
 		}
 	}
 	
+	# Add stats to a players profile
+	public function addProfileData($puid) {
+		$this->sumPlayerKills($puid);
+		$this->sumPlayerDeaths($puid);
+		$this->sumPlayerSuicides($puid);
+		$this->sumPlayerGames($puid);
+		$this->getPlayerElo($puid);
+		$this->getPlayerClan($puid);
+	}
+	
 	# Update a profile handle to the most used one
 	public function setMostUsedHandle($puid) {
 		$most_used = $this->mostUsedHandle($puid);
 		database::getInstance()->sqlResult(
 			"UPDATE profiles SET handle=\"$most_used\" WHERE hash=\"$puid\"");
+	}
+	
+	# Fetch the players most used alias based on hash
+	public function mostUsedHandle($puid) {
+		$row = database::getInstance()->singleRow(
+			"SELECT handle, COUNT(handle) AS num FROM players WHERE hash=\"$puid\" GROUP BY handle ORDER BY num DESC LIMIT 1");
+		return $row['handle'];
+	}
+	
+	/* Player stats functions
+	--------------------------------------------------------------------------------------------------------*/
+	
+	# Sum all kills of a player
+	public function sumPlayerKills($puid) {
+		
+	}
+	
+	/* Database functions
+	--------------------------------------------------------------------------------------------------------*/
+	
+	# Truncate tables
+	public function truncateTables($limit) {
+		database::getInstance()->sqlResult("TRUNCATE TABLE games");
+		database::getInstance()->sqlResult("TRUNCATE TABLE players");
+		database::getInstance()->sqlResult("TRUNCATE TABLE kills");
+		database::getInstance()->sqlResult("TRUNCATE TABLE hits");
+		database::getInstance()->sqlResult("TRUNCATE TABLE quotes");
+		database::getInstance()->sqlResult("TRUNCATE TABLE alias");
+		database::getInstance()->sqlResult("TRUNCATE TABLE actions");
+		database::getInstance()->sqlResult("TRUNCATE TABLE profiles");
 	}
 }
 
