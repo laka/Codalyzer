@@ -27,6 +27,9 @@ class loopwrap extends toolbox {
 			
 			# Fetch all aliases of the player
 			$this->getEveryAlias($row['puid']);
+			
+			# Clean up in players and profiles
+			$this->dropPlayers($row['puid']);
 		}
 	}
 }

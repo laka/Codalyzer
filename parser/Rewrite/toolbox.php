@@ -148,7 +148,6 @@ class toolbox {
 		$this->sumPlayerSuicides($puid);
 		$this->sumPlayerGames($puid);
 		$this->getPlayerElo($puid);
-		$this->getPlayerClan($puid);
 	}
 	
 	# Update a profile handle to the most used one
@@ -170,7 +169,45 @@ class toolbox {
 	
 	# Sum all kills of a player
 	public function sumPlayerKills($puid) {
+		$row = database::getInstance()->singleRow(
+			"SELECT COUNT(*) AS sum FROM kills WHERE k_hash=\"$puid\" AND c_hash!=\"$puid\"");
+		database::getInstance()->sqlResult(
+			"UPDATE profiles SET kills=\"$row[sum]\" WHERE hash=\"$puid\"");
+	}
+	
+	# Sum all deaths of a player
+	public function sumPlayerDeaths($puid) {
+		$row = database::getInstance()->singleRow(
+			"SELECT COUNT(*) AS sum FROM kills WHERE c_hash=\"$puid\" AND k_hash!=\"$puid\"");
+		database::getInstance()->sqlResult(
+			"UPDATE profiles SET deaths=\"$row[sum]\" WHERE hash=\"$puid\"");
+	}
+	
+	# Sum all suicides of a player
+	public function sumPlayerSuicides($puid) {
+		$row = database::getInstance()->singleRow(
+			"SELECT COUNT(*) AS sum FROM kills WHERE k_hash=\"$puid\" AND c_hash=\"$puid\"");
+		database::getInstance()->sqlResult(
+			"UPDATE profiles SET suicides=\"$row[sum]\" WHERE hash=\"$puid\"");
+	}
+	
+	# Sum all games of a player
+	public function sumPlayerGames($puid) {
+		$row = database::getInstance()->singleRow(
+			"SELECT COUNT(DISTINCT gid) AS sum FROM players WHERE hash=\"$puid\"");
+		database::getInstance()->sqlResult(
+			"UPDATE profiles SET games=\"$row[sum]\" WHERE hash=\"$puid\"");
+	}
+	
+	# Get a players last ELO-rating
+	public function getPlayerElo($puid) {
+		$row = database::getInstance()->singleRow(
+			"SELECT elo FROM players WHERE hash=\"$puid\" AND elo IS NOT NULL ORDER BY id DESC LIMIT 1");
 		
+		$elo = ($row[elo]) ? $row[elo] : 1000;
+		
+		database::getInstance()->sqlResult(
+			"UPDATE profiles SET elo=\"$elo\" WHERE hash=\"$puid\"");
 	}
 	
 	/* Database functions

@@ -1,5 +1,5 @@
 <?php
-require_once('load.php');
+require_once('codalyzer.php');
 
 $logfile = new logfile('testlog');
 $logarray = $logfile->returnArray();
