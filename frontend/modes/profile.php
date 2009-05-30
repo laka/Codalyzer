@@ -18,11 +18,11 @@ if(strlen($_GET['h']) > 0){
                 FROM profiles where handle='$id' LIMIT 1";
     } else {
         $sql = "SELECT *, ROUND((kills/(deaths+1)),2) as kpd,
-            (SELECT elo FROM players WHERE hash = '$id' ORDER BY gid DESC LIMIT 1) AS elo, 
-            (SELECT elo FROM players WHERE hash = '$id' ORDER BY gid DESC LIMIT 1,1) AS prevelo,
-            (SELECT streak FROM streaks WHERE hash = '$id' AND type='kill' ORDER BY streak DESC LIMIT 1) as killstreak,
-            (SELECT streak FROM streaks WHERE hash = '$id' AND type='death' ORDER BY streak DESC LIMIT 1) as deathstreak
-            FROM profiles where hash='$id' LIMIT 1";  
+            (SELECT elo FROM players WHERE hash = profiles.hash ORDER BY gid DESC LIMIT 1) AS elo, 
+            (SELECT elo FROM players WHERE hash = profiles.hash ORDER BY gid DESC LIMIT 1,1) AS prevelo,
+            (SELECT streak FROM streaks WHERE hash = profiles.hash AND type='kill' ORDER BY streak DESC LIMIT 1) as killstreak,
+            (SELECT streak FROM streaks WHERE hash = profiles.hash AND type='death' ORDER BY streak DESC LIMIT 1) as deathstreak
+            FROM profiles where id='$id' LIMIT 1";  
     }
     $data = $db->singleRow ($sql);
 
@@ -35,7 +35,7 @@ if(strlen($_GET['h']) > 0){
 	elseif(($diff == $data['elo']) || ($diff == 0))
 		$change = 'statusquo';	    
     // prints out main data...
-    if(count($data) > 0 && class_exists(orderedtable)){
+    if(count($data) > 1 && class_exists(orderedtable)){
         echo '<h1>' . $lang['h_profile'] .': '. $data['handle'] .'</h1>';     
         echo '<table class="summary" width="100%">';
         echo '<tr>';
@@ -74,8 +74,8 @@ if(strlen($_GET['h']) > 0){
                           FROM kills AS k LEFT JOIN (SELECT killer AS mm, COUNT('')  AS deathcount FROM kills WHERE corpse = '". $handle ."' GROUP BY killer) AS d 
                           ON k.corpse = d.mm WHERE k.killer = '". $handle ."' GROUP BY corpse HAVING percentage > 0.4";
             } else {
-                $query = "SELECT d.handle as corpse, c_hash, COUNT('') AS killcount, d.deathcount, round(COUNT('')*100/". $data['kills'] .",2) as percentage, (COUNT('')/d.deathcount) AS ratio FROM kills as k
-                          LEFT JOIN (SELECT k_hash, profiles.handle, COUNT('') AS deathcount FROM kills LEFT JOIN profiles ON k_hash = profiles.hash WHERE c_hash='". $data['hash'] ."' GROUP BY k_hash) as d 
+                $query = "SELECT d.handle as corpse, c_hash, d.id, COUNT('') AS killcount, d.deathcount, round(COUNT('')*100/". $data['kills'] .",2) as percentage, (COUNT('')/d.deathcount) AS ratio FROM kills as k
+                          LEFT JOIN (SELECT k_hash, profiles.handle, profiles.id, COUNT('') AS deathcount FROM kills LEFT JOIN profiles ON k_hash = profiles.hash WHERE c_hash='". $data['hash'] ."' GROUP BY k_hash) as d 
                           ON d.k_hash = c_hash  WHERE k.k_hash = '". $data['hash'] ."' GROUP BY c_hash HAVING percentage > 0.4";
             }   
             
@@ -95,7 +95,7 @@ if(strlen($_GET['h']) > 0){
                                        );
             // uses the hash in the url instead of the handle, if DISTINGUISH_BY_HASH is set.
             if(DISTINGUISH_BY_HASH){
-                $preycoldata['corpse'][4] .= "*c_hash*";
+                $preycoldata['corpse'][4] .= "*id*";
             }
             $easiestprey->setColumndata($preycoldata);
             $easiestprey->printTable();	
@@ -107,8 +107,8 @@ if(strlen($_GET['h']) > 0){
                           FROM kills AS k LEFT JOIN (SELECT killer AS mm, COUNT('')  AS deathcount FROM kills WHERE corpse = '". $handle ."' GROUP BY killer) AS d 
                           ON k.corpse = d.mm WHERE k.killer = '". $handle ."' GROUP BY corpse HAVING percentage > 0.4";
             } else {
-                $query = "SELECT d.handle as corpse, c_hash, COUNT('') AS killcount, d.deathcount, round(COUNT('')*100/". $data['kills'] .",2) as percentage, (COUNT('')/d.deathcount) AS ratio FROM kills as k
-                          LEFT JOIN (SELECT k_hash, profiles.handle, COUNT('') AS deathcount FROM kills LEFT JOIN profiles ON k_hash = profiles.hash WHERE c_hash='". $data['hash'] ."' GROUP BY k_hash) as d 
+                $query = "SELECT d.handle as corpse, c_hash, d.id, COUNT('') AS killcount, d.deathcount, round(COUNT('')*100/". $data['kills'] .",2) as percentage, (COUNT('')/d.deathcount) AS ratio FROM kills as k
+                          LEFT JOIN (SELECT k_hash, profiles.handle, profiles.id, COUNT('') AS deathcount FROM kills LEFT JOIN profiles ON k_hash = profiles.hash WHERE c_hash='". $data['hash'] ."' GROUP BY k_hash) as d 
                           ON d.k_hash = c_hash  WHERE k.k_hash = '". $data['hash'] ."' GROUP BY c_hash HAVING percentage > 0.4";
             }   
 
@@ -128,7 +128,7 @@ if(strlen($_GET['h']) > 0){
                                        );		
             // uses the hash in the url instead of the handle, if DISTINGUISH_BY_HASH is set.
             if(DISTINGUISH_BY_HASH){
-                $enemycoldata['corpse'][4] .= "*c_hash*";
+                $enemycoldata['corpse'][4] .= "*id*";
             }
             $worstenemy->setColumndata($enemycoldata);                       
             $worstenemy->printTable();       

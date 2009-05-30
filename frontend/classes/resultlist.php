@@ -65,6 +65,7 @@ class resultlist extends orderedtable {
                         FROM players as p WHERE gid={$this->gid}";
             } else {
                 $this->query = "SELECT handle, hash, elo,
+                        (SELECT id FROM profiles WHERE hash=p.hash LIMIT 1) AS id,
                         (SELECT COUNT('') FROM kills WHERE k_hash=p.hash AND gid=p.gid AND k_hash != c_hash) AS kills,
                         (SELECT COUNT('') FROM kills WHERE c_hash=p.hash AND gid=p.gid AND k_hash != c_hash) AS deaths,
                         (SELECT COUNT('') FROM kills WHERE c_hash=p.hash AND k_hash = c_hash AND gid=p.gid) AS suicides,
@@ -78,7 +79,7 @@ class resultlist extends orderedtable {
 									   'elo' 		=>  array (array('elo' => 1), $this->lang['th_elo'], "12%", "avg", '', 'prevelo')
 									   );
             if(DISTINGUISH_BY_HASH){
-                $thiscoldata['handle'][4] .= "*hash*";
+                $thiscoldata['handle'][4] .= "*id*";
             }
             $this->setColumnData($thiscoldata);
             
@@ -103,6 +104,7 @@ class resultlist extends orderedtable {
                         FROM players as p WHERE gid={$this->gid} AND team='$team'";
             } else {
                 $this->query = "SELECT handle, hash, elo,
+                        (SELECT id FROM profiles WHERE hash=p.hash LIMIT 1) AS id,
                         (SELECT COUNT('') FROM kills WHERE k_hash=p.hash AND gid=p.gid) AS kills,
                         (SELECT COUNT('') FROM kills WHERE c_hash=p.hash AND gid=p.gid) AS deaths,
                         (SELECT COUNT('') FROM kills WHERE c_hash=p.hash AND k_hash = c_hash AND gid=p.gid) AS suicides, $teamdataquery
@@ -123,7 +125,7 @@ class resultlist extends orderedtable {
                                         'elodiff'   =>  array (array('elodiff' => 1), "+", "13%", "sum", '', '0')
                                         );
                 if(DISTINGUISH_BY_HASH){
-                    $thiscoldata['handle'][4] .= "*hash*";
+                    $thiscoldata['handle'][4] .= "*id*";
                 }
                 $this->setColumnData($thiscoldata);
             } else {
@@ -147,7 +149,7 @@ class resultlist extends orderedtable {
                                             );
                 }
                 if(DISTINGUISH_BY_HASH){
-                    $thiscoldata['handle'][4] .= "*hash*";
+                    $thiscoldata['handle'][4] .= "*id*";
                 }
                 $this->setColumnData($thiscoldata);
             }

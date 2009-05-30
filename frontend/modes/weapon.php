@@ -80,13 +80,13 @@ if(is_numeric($_GET['w'])){
                 $sql = "SELECT handle, COUNT('') as killcount, (COUNT('')/profiles.kills*100) AS percentage FROM kills, games, profiles
                         WHERE killer != corpse AND kills.gid = games.id AND games.version='". $row['version'] ."' AND ($weaponsql) AND profiles.handle=kills.killer GROUP BY killer";
             } else {
-                $sql = "SELECT handle, hash, COUNT('') as killcount, (COUNT('')/profiles.kills*100) AS percentage FROM kills, games, profiles
+                $sql = "SELECT profiles.id, handle, hash, COUNT('') as killcount, (COUNT('')/profiles.kills*100) AS percentage FROM kills, games, profiles
                         WHERE k_hash != c_hash AND kills.gid = games.id AND games.version='". $row['version'] ."' AND ($weaponsql) AND profiles.hash=k_hash GROUP BY k_hash";
             }
 
             $mostkillswith = new orderedtable($sql, 1);               
             $mostkillswith->setClass('summary');
-            $mostkillswith->setUrl('?mode=weapon&w=' . $weaponid);		 
+            $mostkillswith->setUrl(URL_BASE . 'mode=weapon&w=' . $weaponid);		 
             $mostkillswith->setLimit(20);  
             $mostkillswith->setOrderBy('killcount');
             $mostkillswithcoldata =       array('handle' 		=> array (array('killer' => 1), $lang['th_player'], "30%", 0, URL_BASE . "mode=profile&amp;h="),
@@ -94,7 +94,7 @@ if(is_numeric($_GET['w'])){
                                                 'percentage' 	=> array (array('percentage' => 1), $lang['th_percentage'], "30%")
                                                 );	
             if(DISTINGUISH_BY_HASH){
-                $mostkillswithcoldata['handle'][4] .= "*hash*";
+                $mostkillswithcoldata['handle'][4] .= "*id*";
             }
             $mostkillswith->setColumnData($mostkillswithcoldata);                
             $mostkillswith->printTable();
@@ -107,13 +107,13 @@ if(is_numeric($_GET['w'])){
                 $sql = "SELECT handle, COUNT('') as deathcount, (COUNT('')/profiles.deaths*100) AS percentage FROM kills, games, profiles
                         WHERE killer != corpse AND kills.gid = games.id AND games.version='". $row['version'] ."' AND ($weaponsql) AND profiles.handle=kills.corpse GROUP BY corpse";
             } else {
-                $sql = "SELECT handle, hash, COUNT('') as deathcount, (COUNT('')/profiles.deaths*100) AS percentage FROM kills, games, profiles
+                $sql = "SELECT profiles.id, handle, hash, COUNT('') as deathcount, (COUNT('')/profiles.deaths*100) AS percentage FROM kills, games, profiles
                         WHERE k_hash != c_hash AND kills.gid = games.id AND games.version='". $row['version'] ."' AND ($weaponsql) AND profiles.hash=c_hash GROUP BY c_hash";
             }
 
             $mostdeathsby = new orderedtable($sql, 1);               
             $mostdeathsby->setClass('summary');
-            $mostdeathsby->setUrl('?mode=weapon&w=' . $weaponid);		 
+            $mostdeathsby->setUrl(URL_BASE . 'mode=weapon&w=' . $weaponid);		 
             $mostdeathsby->setLimit(20);  
             $mostdeathsby->setOrderBy('deathcount');
             $mostdeathsbycoldata =        array('handle' 		=> array (array('corpse' => 1), $lang['th_player'], "30%", 0, URL_BASE . "mode=profile&amp;h="),
@@ -121,7 +121,7 @@ if(is_numeric($_GET['w'])){
                                                 'percentage' 	=> array (array('percentage' => 1), $lang['th_percentage'], "30%")
                                                 );	
             if(DISTINGUISH_BY_HASH){
-                $mostdeathsbycoldata['handle'][4] .= "*hash*";
+                $mostdeathsbycoldata['handle'][4] .= "*id*";
             }
             $mostdeathsby->setColumnData($mostdeathsbycoldata);                
             $mostdeathsby->printTable();     

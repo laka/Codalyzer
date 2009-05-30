@@ -23,7 +23,7 @@ if(strlen($_GET['m']) > 0){
                      AND kills.gid=games.id AND games.map='". $mapname ."' GROUP BY profiles.handle) AS d ON profiles.handle=d.handle WHERE profiles.handle=kills.killer AND 
                      kills.gid=games.id AND games.map='". $mapname ."' AND kills.killer != kills.corpse AND gamesplayed>1 GROUP BY profiles.handle";
             } else {
-                $query = "SELECT profiles.hash, profiles.handle, d.d, COUNT('') AS k, (COUNT('')/d.d) as ratio, d.gamesplayed, (COUNT('')/gamesplayed) as kpg FROM kills, games, profiles 
+                $query = "SELECT profiles.id, profiles.hash, profiles.handle, d.d, COUNT('') AS k, (COUNT('')/d.d) as ratio, d.gamesplayed, (COUNT('')/gamesplayed) as kpg FROM kills, games, profiles 
                          JOIN (SELECT profiles.hash, COUNT('') AS d, numplayedtable.gamesplayed FROM kills, games, profiles 
                          JOIN (SELECT profiles.hash, COUNT('') as gamesplayed FROM profiles, players, games WHERE profiles.hash=players.hash AND games.id=players.gid 
                          AND games.map='". $mapname ."' GROUP BY profiles.hash) AS numplayedtable ON profiles.hash = numplayedtable.hash WHERE profiles.hash=kills.c_hash 
@@ -44,7 +44,7 @@ if(strlen($_GET['m']) > 0){
                                            'gamesplayed' 	=> array (array('gamesplayed' => 1), $lang['th_games'], "18%")
                                            );
             if(DISTINGUISH_BY_HASH){                                           
-                $mapcoldata['handle'][4] .= "*hash*";
+                $mapcoldata['handle'][4] .= "*id*";
             }
             $mapstats->setColumnData($mapcoldata);             
             $mapstats->printTable();                      

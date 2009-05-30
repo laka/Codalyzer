@@ -40,7 +40,7 @@
 
     // IF PLAYERS ARE DISTINGUISHED BY HASH, THEIR HASHES SHOULD BE USED IN THE PROFILE URL AS WELL
     if(DISTINGUISH_BY_HASH){
-        $columndata['handle'][4] .= "*hash*";
+        $columndata['handle'][4] .= "*id*";
     }
     
     $players->setColumnData($columndata);
