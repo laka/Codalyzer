@@ -21,7 +21,7 @@ class loopwrap extends toolbox {
 			$this->rating->eloRating($row['id']);
 			
 			# Fix start&stop times
-			$this->adjustGameDuration($row['id']);
+			$this->adjustGameDuration($row['id'], 0);
 		}
 	}
 	public function playersLoop() {

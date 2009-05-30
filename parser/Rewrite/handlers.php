@@ -10,8 +10,11 @@ class handler extends toolbox {
 		# Convert timestamp to seconds	
 		$matches[1] = $this->ts2seconds($matches[1]); 
 		
-		database::getInstance()->sqlResult("INSERT INTO quotes (gid, ts, handle, quote) 
-			VALUES(\"$gid\", \"$matches[1]\", \"$matches[2]\", \"$matches[3]\")");
+		# Leaving 8 last chars of the hash
+			$matches[2] = substr($matches[2], -8);
+		
+		database::getInstance()->sqlResult("INSERT INTO quotes (gid, ts, hash, handle, quote) 
+			VALUES(\"$gid\", \"$matches[1]\", \"$matches[2]\", \"$matches[3]\", \"$matches[4]\")");
 	}
 	public function addPlayerAction($matches, $gid) {
 		# Convert timestamp to seconds	

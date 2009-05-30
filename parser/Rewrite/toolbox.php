@@ -285,8 +285,22 @@ class toolbox {
 	}
 
 	# Adjust game duration (start/stop)
-	public function adjustGameDuration($gid) {
+	public function adjustGameDuration($gid, $limit) {
+		$start = database::getInstance()->singleRow(
+			"SELECT ts FROM kills WHERE killer!=corpse AND gid=\"$gid\" ORDER BY id ASC LIMIT $limit,1");
+		$stop = database::getInstance()->singleRow(
+			"SELECT ts FROM kills WHERE killer!=corpse AND gid=\"$gid\" ORDER BY id DESC LIMIT $limit,1");
 		
+		$duration = round(($stop[ts] - $start[ts])/60);
+		
+		# Should we have a $max_duration?
+		if($duration > 60) {
+			++$limit;
+			$this->adjustGameDuration($gid, $limit);
+		} else {
+			database::getInstance()->sqlResult(
+				"UPDATE games SET start=\"$start[ts]\", stop=\"$stop[ts]\" WHERE id=\"$gid\"");
+		}
 	}
 }
 
