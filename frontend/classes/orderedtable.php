@@ -234,7 +234,7 @@ class orderedtable {
         
 		// fetches the current page number... SHOULD be done in the constructor, but then it wouldn't happen in resultlist
 		$this->currentPage();
-		$pageselector .= "<table class=\"summary\" width=\"100%\"><tr><th width=\"50%\">" . $lang['m_page'] . ":</th><td>";
+		$pageselector .= "<table class=\"summary\" width=\"100%\"><tr><th width=\"50%\" class=\"verticalth\">" . $lang['m_page'] . ":</th><td>";
 		for($i = 1; $i<=$this->numPages (); $i++){
 			if($this->currentpage == $i){
 				$pageselector .= "<strong>$i</strong>  ";
@@ -243,7 +243,7 @@ class orderedtable {
 				$pageselector .= "<a href=\"".$this->urlGenerator ($i)."\">$i</a>  ";
 			}
 		}
-		$pageselector .= "</td></tr></table>";
+		$pageselector .= "</td></tr></table>"; 
 		return $pageselector;
 	}
 

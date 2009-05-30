@@ -39,7 +39,7 @@ if(is_numeric($_GET['w'])){
                     }
                 }          
 
-                echo '<table class="summary" width="100%"><tr><th width="30%">'. $lang['m_attachments'] .'</th><td>';
+                echo '<table class="summary" width="100%"><tr><th width="30%" class="verticalth">'. $lang['m_attachments'] .'</th><td>';
 
                 $a = 0;
                 $i = 0;
