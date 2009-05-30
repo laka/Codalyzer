@@ -38,10 +38,10 @@ class damage extends toolbox {
 		}
 		
 		if(!$this->playerInGame($matches[4], $gid)) {
-			$this->addNewAlias($matches[4], $matches[2]);
+			$this->addNewAlias($matches[4], $matches[2], $gid);
 		}
 		if(!$this->playerInGame($matches[7], $gid)) {
-			$this->addNewAlias($matches[7], $matches[5]);
+			$this->addNewAlias($matches[7], $matches[5], $gid);
 		}
 			
 		database::getInstance()->sqlResult(
@@ -79,10 +79,10 @@ class damage extends toolbox {
 		$matches[8] = $this->weaponMods($matches[8], $matches[10]);
 		
 		if(!$this->playerInGame($matches[4], $gid)) {
-			$this->addNewAlias($matches[4], $matches[2]);
+			$this->addNewAlias($matches[4], $matches[2], $gid);
 		}
 		if(!$this->playerInGame($matches[7], $gid)) {
-			$this->addNewAlias($matches[7], $matches[5]);
+			$this->addNewAlias($matches[7], $matches[5], $gid);
 		}
 		
 		database::getInstance()->sqlResult(

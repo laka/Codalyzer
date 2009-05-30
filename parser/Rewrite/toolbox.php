@@ -17,9 +17,9 @@ class toolbox {
 	}
 	
 	# Returns true if x player is playing
-	public function playerInGame($hash, $gid) {
+	public function playerInGame($handle, $gid) {
 		$result = database::getInstance()->sqlResult(
-			"SELECT id FROM players WHERE hash=\"$hash\" AND gid=\"$gid\"");
+			"SELECT id FROM players WHERE handle=\"$handle\" AND gid=\"$gid\"");
 		return mysql_num_rows($result);
 	}
 	
@@ -113,7 +113,7 @@ class toolbox {
 	--------------------------------------------------------------------------------------------------------*/
 	
 	# Add aliases ($owner = hash)
-	public function addNewAlias($alias, $owner) {
+	public function addNewAlias($alias, $owner, $gid) {
 		$result = database::getInstance()->sqlResult(
 			"SELECT id FROM alias WHERE owner=\"$owner\" AND alias=\"$alias\"");
 		if(mysql_num_rows($result)) {
@@ -121,6 +121,14 @@ class toolbox {
 		} else {
 			database::getInstance()->sqlResult(
 				"INSERT INTO alias (owner, alias) VALUES(\"$owner\", \"$alias\")");
+		}
+		if(is_numeric($gid)) {
+			$row = database::getInstance()->singleRow(
+				"SELECT handle AS old_handle FROM players WHERE hash=\"$owner\" AND gid=\"$gid\"");
+			$this->addNewAlias($row[old_handle], $owner, '');
+			
+			database::getInstance()->sqlResult(
+				"UPDATE players SET handle=\"$alias\" WHERE hash=\"$owner\" AND gid=\"$gid\"");
 		}
 	}
 	
@@ -131,7 +139,7 @@ class toolbox {
 			"SELECT DISTINCT handle AS alias FROM players WHERE hash=\"$puid\" AND handle != \"$most_used\" ORDER BY id");
 		
 		while($row = mysql_fetch_assoc($result)) {
-			$this->addNewAlias($row['alias'], $puid);
+			$this->addNewAlias($row['alias'], $puid, '');
 		}
 	}
 	

@@ -67,7 +67,7 @@ class game extends toolbox {
 		$matches[1] = $this->ts2seconds($matches[1]); 
 
 		# Is the player allready in the game?
-		if($this->playerInGame($matches[2], $gid)) {
+		if($this->playerInGame($matches[3], $gid)) {
 			#return 0;
 		} else {
 			database::getInstance()->sqlResult("INSERT INTO players (gid, ts, hash, handle)
