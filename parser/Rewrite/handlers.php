@@ -40,6 +40,9 @@ class handler extends toolbox {
 		$this->addExitGame($gid);
 	}
 	public function addGameStopTime($matches, $gid) {
+		# Convert timestamp to seconds	
+		$matches[1] = $this->ts2seconds($matches[1]); 
+		
 		database::getInstance()->sqlResult(
 			"UPDATE games SET stop=\"$matches[1]\" WHERE id=\"$gid\"");
 	}

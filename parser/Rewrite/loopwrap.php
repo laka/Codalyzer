@@ -19,6 +19,9 @@ class loopwrap extends toolbox {
 			
 			# Run our ELO-rating system
 			$this->rating->eloRating($row['id']);
+			
+			# Fix start&stop times
+			$this->adjustGameDuration($row['id']);
 		}
 	}
 	public function playersLoop() {

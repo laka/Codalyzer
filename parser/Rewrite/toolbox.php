@@ -283,6 +283,11 @@ class toolbox {
 		database::getInstance()->sqlResult("DELETE FROM quotes WHERE gid=\"$gid\"");
 		database::getInstance()->sqlResult("DELETE FROM players WHERE gid=\"$gid\"");
 	}
+
+	# Adjust game duration (start/stop)
+	public function adjustGameDuration($gid) {
+		
+	}
 }
 
 ?>
