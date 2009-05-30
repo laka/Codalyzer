@@ -11,6 +11,10 @@ switch($_GET['mode']){
         echo "<h2>Development</h2>";
         echo "<p>" . $lang['m_elodesc'] . "</p>";
         echo "<p><img src=\"" .FRONTEND_URL . "graphs/development.php?h=". urlencode($data['handle']) ."\"></p>";
+        
+        echo "<h2>Hit diagram</h2>";
+        include FRONTEND_PATH . '/inc/hitdiagram.php';
+        
     break;
     
     default:

@@ -10,7 +10,7 @@ include '../../config.php';
 include '../classes/graph.php';
 include '../inc/header.php';
 
-//header ('Content-type: image/png');
+header ('Content-type: image/png');
 
 $colors = array('f0c04c', 'e4e4e4', '6077c3', 'da6060', '9cd69a', '88b822', 'ff00c0', 'ff0000', '22ffee');
 
