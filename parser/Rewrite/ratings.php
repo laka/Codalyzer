@@ -6,9 +6,11 @@ class rating extends toolbox {
 		$result = database::getInstance()->sqlResult(
 			"SELECT k_hash, c_hash FROM kills WHERE gid=\"$gid\" ORDER BY id");
 		
+		echo "GAME ID $gid\n";
 		$scores = array();
 		while($row = mysql_fetch_assoc($result)) {
 			
+			echo "\t$row[k_hash] - $row[c_hash]\n";
 			if(!isset($scores[$row['k_hash']])) {
 				$scores[$row['k_hash']] = $this->getPlayerElo($row['k_hash'], 'return');
 			}
@@ -19,8 +21,8 @@ class rating extends toolbox {
 			$change =  1/(1+pow(10,(($scores[$row['k_hash']] - $scores[$row['c_hash']])/400)));
 			
 			if($row['c_hash'] != $row['k_hash']) {
-				$scores[$row['k_hash']] += $change;
-				$scores[$row['c_hash']] -= $change;
+				$scores{$row['k_hash']} += $change;
+				$scores{$row['c_hash']} -= $change;
 			}
 			
 			while(list($key, $value) = each($scores)) {
