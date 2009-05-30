@@ -34,7 +34,6 @@ if(strlen($_GET['h']) > 0){
 		$change = 'down';
 	elseif(($diff == $data['elo']) || ($diff == 0))
 		$change = 'statusquo';	    
-    
     // prints out main data...
     if(count($data) > 0 && class_exists(orderedtable)){
         echo '<h1>' . $lang['h_profile'] .': '. $data['handle'] .'</h1>';     
@@ -143,7 +142,7 @@ if(strlen($_GET['h']) > 0){
                           FROM weapons, kills WHERE kills.weapon=weapons.name AND killer='$handle' AND corpse != '$handle' GROUP BY weapon";
             } else {
                 $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as k, round(count('')*100/{$data['kills']},2) as percentage
-                          FROM weapons, kills WHERE kills.weapon=weapons.name AND k_hash='$hash' AND c_hash != '$hash' GROUP BY weapon";            
+                          FROM weapons, kills WHERE kills.weapon=weapons.name AND k_hash='". $data['hash'] ."' AND c_hash != '". $data['hash'] ."' GROUP BY weapon";            
             }
             $favoriteweapon = new orderedtable($query, 1);
             $favoriteweapon->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($id));
@@ -167,7 +166,7 @@ if(strlen($_GET['h']) > 0){
                         FROM weapons, kills WHERE kills.weapon=weapons.name AND corpse='$handle' AND killer != '$handle' GROUP BY weapon";
             } else {
                 $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as d, round(count('')*100/{$data['deaths']},2) as percentage
-                        FROM weapons, kills WHERE kills.weapon=weapons.name AND c_hash='$hash' AND k_hash != '$hash' GROUP BY weapon";            
+                        FROM weapons, kills WHERE kills.weapon=weapons.name AND c_hash='". $data['hash'] ."' AND k_hash != '". $data['hash'] ."' GROUP BY weapon";            
             }
 
             $frequentdeath = new orderedtable($query, 1);
@@ -189,7 +188,12 @@ if(strlen($_GET['h']) > 0){
         // RANDOM CHAT MESSAGES - LAST GAMES
         echo "<table width=\"100%\">\n<tr>\n<td valign=\"top\" width=\"50%\">";
         echo "<h2>" . $lang['tt_randomquotes'] . "</h2>";
-            $query = "SELECT quote, gid FROM quotes WHERE (handle='$handle' AND length(quote)>5)";
+            
+            if(!DISTINGUISH_BY_HASH){
+                $query = "SELECT quote, gid FROM quotes WHERE (handle='$handle' AND length(quote)>5)";
+            } else {
+                $query = "SELECT quote, gid FROM quotes WHERE (hash='". $data['hash'] ."' AND length(quote)>5)";
+            }
             $randomchat = new orderedtable($query, 0);
             $randomchat->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($id));
             $randomchat->setUrlVars(array('mode', 'h'));
@@ -205,7 +209,12 @@ if(strlen($_GET['h']) > 0){
             $randomchat->printTable();	
         echo "</td>\n<td valign=\"top\">\n";  
         echo "<h2>" . $lang['tt_lastgames'] . "</h2>";
-            $query = "SELECT gid, map, type FROM players, games WHERE handle='$handle' AND players.gid=games.id";
+        
+            if(!DISTINGUISH_BY_HASH){
+                $query = "SELECT gid, map, type FROM players, games WHERE handle='$handle' AND players.gid=games.id";
+            } else {
+                $query = "SELECT gid, map, type FROM players, games WHERE hash='". $data['hash'] ."' AND players.gid=games.id";
+            }
             $lastgames = new orderedtable($query, 0);
             $lastgames->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($id));
             $lastgames->setUrlVars(array('mode', 'h'));
@@ -233,7 +242,7 @@ if(strlen($_GET['h']) > 0){
                           SELECT *, @prev as previous, @prev:=elo FROM players WHERE handle = '$handle' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";
             } else {
                 $query = "SELECT gid, elo, (elo-previous) as elochange FROM(
-                          SELECT *, @prev as previous, @prev:=elo FROM players WHERE hash = '$hash' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";            
+                          SELECT *, @prev as previous, @prev:=elo FROM players WHERE hash = '". $data['hash'] ."' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";            
             }
             $brightest = new orderedtable($query);
             $brightest->setUrl("?mode=profile&amp;h=".urlencode($id));
@@ -258,7 +267,7 @@ if(strlen($_GET['h']) > 0){
                           SELECT *, @prev as previous, @prev:=elo FROM players WHERE handle = '$handle' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";
             } else {
                 $query = "SELECT gid, elo, (elo-previous) as elochange FROM(
-                          SELECT *, @prev as previous, @prev:=elo FROM players WHERE hash = '$hash' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";            
+                          SELECT *, @prev as previous, @prev:=elo FROM players WHERE hash = '". $data['hash'] ."' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";            
             }
             $darkest = new orderedtable($query);
             $darkest->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($id));
