@@ -17,22 +17,15 @@ class toolbox {
 	}
 	
 	# Returns true if x player is playing
-	public function playerInGame($handle, $gid) {
+	public function playerInGame($type, $sql, $gid) {
 		$result = database::getInstance()->sqlResult(
-			"SELECT id FROM players WHERE handle=\"$handle\" AND gid=\"$gid\"");
+			"SELECT id FROM players WHERE $type=\"$sql\" AND gid=\"$gid\"");
 		return mysql_num_rows($result);
 	}
 	
 	/* Convert functions
 	--------------------------------------------------------------------------------------------------------*/
-	
-	# Common round function
-	public function round($num, $dec) {
-		#$number = $num || 0;
-		#$dec = 10 ($dec || 0);
-		#return int($dec * $number + .5 * ($number <=> 0)) / $dec;
-	}
-	
+
 	# Returns timestamp (min:sec) converted to seconds 
 	public function ts2seconds($ts) {
 		$t = explode(':', $ts);
@@ -116,19 +109,18 @@ class toolbox {
 	public function addNewAlias($alias, $owner, $gid) {
 		$result = database::getInstance()->sqlResult(
 			"SELECT id FROM alias WHERE owner=\"$owner\" AND alias=\"$alias\"");
-		if(mysql_num_rows($result)) {
-			return 0;
-		} else {
+		if(!mysql_num_rows($result)) {
 			database::getInstance()->sqlResult(
 				"INSERT INTO alias (owner, alias) VALUES(\"$owner\", \"$alias\")");
 		}
 		if(is_numeric($gid)) {
 			$row = database::getInstance()->singleRow(
 				"SELECT handle AS old_handle FROM players WHERE hash=\"$owner\" AND gid=\"$gid\"");
-			$this->addNewAlias($row[old_handle], $owner, '');
 			
 			database::getInstance()->sqlResult(
 				"UPDATE players SET handle=\"$alias\" WHERE hash=\"$owner\" AND gid=\"$gid\"");
+			
+			$this->addNewAlias($row[old_handle], $owner, '');
 		}
 	}
 	
@@ -262,9 +254,15 @@ class toolbox {
 	public function cleanUpGames($gid) {
 		$row = database::getInstance()->singleRow(
 			"SELECT id, 
-				(SELECT COUNT(*) FROM kills WHERE gid=a.id) AS kills, 
+				(SELECT COUNT(*) FROM kills WHERE gid=a.id AND killer!=corpse) AS kills, 
 				(SELECT COUNT(*) FROM players WHERE gid=a.id) AS players 
 			FROM games AS a WHERE id=\"$gid\"");
+		
+		$allies = database::getInstance()->sqlResult(
+			"SELECT id FROM players WHERE gid=\"153\" AND team=\"allies\"");
+		
+		$axis = database::getInstance()->sqlResult(
+			"SELECT id FROM players WHERE gid=\"153\" AND team=\"axis\"");
 		
 		if($row[kills] < 5) {
 			$this->dropGame($gid);

@@ -37,10 +37,10 @@ class damage extends toolbox {
 			$this->addTeamMember($matches[7], $matches[6], $gid);
 		}
 		
-		if(!$this->playerInGame($matches[4], $gid)) {
+		if(!$this->playerInGame('handle', $matches[4], $gid)) {
 			$this->addNewAlias($matches[4], $matches[2], $gid);
 		}
-		if(!$this->playerInGame($matches[7], $gid)) {
+		if(!$this->playerInGame('handle', $matches[7], $gid)) {
 			$this->addNewAlias($matches[7], $matches[5], $gid);
 		}
 			
@@ -78,10 +78,10 @@ class damage extends toolbox {
 		# Convert mods to weapons 
 		$matches[8] = $this->weaponMods($matches[8], $matches[10]);
 		
-		if(!$this->playerInGame($matches[4], $gid)) {
+		if(!$this->playerInGame('handle', $matches[4], $gid)) {
 			$this->addNewAlias($matches[4], $matches[2], $gid);
 		}
-		if(!$this->playerInGame($matches[7], $gid)) {
+		if(!$this->playerInGame('handle', $matches[7], $gid)) {
 			$this->addNewAlias($matches[7], $matches[5], $gid);
 		}
 		
