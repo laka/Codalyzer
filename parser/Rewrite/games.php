@@ -27,7 +27,11 @@ class game extends toolbox {
 		# Grabbing the game modification
 		$matches[2] = preg_replace
 			('/^.*fs_game\\\\.*\/(.*?)\\\\g_compass.*$/i',"$1", $matches[2]);
-			
+		
+		if(preg_match('/pam/i', $matches[2])) {
+			$matches[2] = 'pam4';
+		}
+		
 		# Translate cod name to game version
 		$matches[4] = $this->getVersion($matches[4]);
 
@@ -46,8 +50,8 @@ class game extends toolbox {
 			}
 		}
 		# If it's a new game - insert the data accordingly
-		database::getInstance()->sqlResult("INSERT INTO games (start, mods, type, version, map)
-			VALUES(\"$matches[1]\", \"$matches[2]\", \"$matches[3]\", \"$matches[4]\", \"$matches[5]\")");
+		database::getInstance()->sqlResult("INSERT INTO games (timeparsed, start, mods, type, version, map)
+			VALUES(NOW(), \"$matches[1]\", \"$matches[2]\", \"$matches[3]\", \"$matches[4]\", \"$matches[5]\")");
 	}
 	
 	/* Add players to a game ($matches: [1] timestamp [2] hash [3] handle)
