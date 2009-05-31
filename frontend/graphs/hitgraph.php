@@ -10,7 +10,7 @@ include '../../config.php';
 include '../classes/graph.php';
 include '../inc/header.php';
 
-header ('Content-type: image/png');
+//header ('Content-type: image/png');
 
 // validates $_GET-input
 if(strlen($_GET['h']) > 0){
@@ -49,6 +49,8 @@ if(mysql_num_rows($result) == 1 && (strlen($_GET['t']) > 0)){
 
         $right_foot			= array (80, 255, 0);
         $left_foot			= array (135, 255, 0);
+        
+        $none               = array (0, 170, 0);
     } else {
         $figure 		= '../img/soldatdiagram_small.png';
         $max_diameter	= '250'; 
@@ -77,6 +79,8 @@ if(mysql_num_rows($result) == 1 && (strlen($_GET['t']) > 0)){
 
         $right_foot			= array (72, 223, 0);
         $left_foot			= array (118, 223, 0);
+        
+        $none               = array (0, 170, 0);
     }
     
 	$im = imagecreatefrompng ($figure);
@@ -84,7 +88,7 @@ if(mysql_num_rows($result) == 1 && (strlen($_GET['t']) > 0)){
 	$bordercolor = imagecolorallocate($im, 33, 0, 1);
     
     $bodyparts = array('head', 'neck', 'torso_upper', 'torso_lower', 'left_hand', 'right_hand', 'right_arm_upper', 'left_arm_upper', 
-    'right_arm_lower', 'left_arm_lower', 'right_leg_lower', 'left_leg_lower', 'right_leg_upper', 'left_leg_upper', 'right_foot', 'left_foot');
+    'right_arm_lower', 'left_arm_lower', 'right_leg_lower', 'left_leg_lower', 'right_leg_upper', 'left_leg_upper', 'right_foot', 'left_foot', 'none');
     
 	$hitarray = explode(',', $_GET['t']);
     
@@ -98,7 +102,7 @@ if(mysql_num_rows($result) == 1 && (strlen($_GET['t']) > 0)){
 		}	
 	}	
     
-	$circles = array ($head, $neck, $torso_upper, $torso_lower, $left_hand, $right_hand, $right_arm_upper, $left_arm_upper, $right_arm_lower, $left_arm_lower, $right_leg_upper, $left_leg_upper, $right_leg_lower, $left_leg_lower, $right_foot, $left_foot);
+	$circles = array ($head, $neck, $torso_upper, $torso_lower, $left_hand, $right_hand, $right_arm_upper, $left_arm_upper, $right_arm_lower, $left_arm_lower, $right_leg_upper, $left_leg_upper, $right_leg_lower, $left_leg_lower, $right_foot, $left_foot, $none);
 
     // loop through the circles
 	foreach ($circles as $element){

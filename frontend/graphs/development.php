@@ -40,6 +40,8 @@ if($db->isPlayer($_GET['h']) > 0){
     $t->legend=0;
     $t->valuesy = 1;
     $t->valuesx = 0;
+	$t->squarebkg = ELODEV_SQUAREBKG;			
+	$t->bkg = ELODEV_BKG;	
     $t->numvaluesy = 5;
     $t->decimalsvaluesy = 1;
     $t->valuesywidth = 40;

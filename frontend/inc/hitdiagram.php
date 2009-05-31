@@ -21,12 +21,12 @@ if(strlen($_GET['h']) > 0){
         // a list of all weapons this player has used
         if(!DISTINGUISH_BY_HASH){
             $handle = $db->sqlQuote($data['handle']); 
-            $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as k
-                      FROM weapons, kills WHERE kills.weapon=weapons.name AND killer='$handle' AND corpse != '$handle' GROUP BY weapon";
+            $query = "SELECT mother, (SELECT full FROM weapons WHERE id=w.mother) as weaponfull FROM weapons as w, kills WHERE killer='$handle'
+                      AND corpse != '$handle' AND w.name=kills.weapon GROUP BY mother";
         } else {
             $hash = $db->sqlQuote($data['hash']);  
-            $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as k
-                      FROM weapons, kills WHERE kills.weapon=weapons.name AND k_hash='$hash' AND c_hash != '$hash' GROUP BY weapon";            
+            $query = "SELECT mother, (SELECT full FROM weapons WHERE id=w.mother) as weaponfull FROM weapons as w, kills WHERE k_hash='$hash' 
+                      AND c_hash != '$hash' AND w.name=kills.weapon GROUP BY mother";
         }
 
         $result = $db->sqlResult($query);
@@ -35,7 +35,7 @@ if(strlen($_GET['h']) > 0){
         echo '<form name="weaponselector" id="weaponselector">';
         echo '<select name="weapon" id="weapon"><option value="0">All weapons</option>';
         while ($row = mysql_fetch_assoc($result)) {		
-            echo '<option value="'. $row['id'] .'">' . $row['weaponfull'] . '</option>';
+            echo '<option value="'. $row['mother'] .'">' . $row['weaponfull'] . '</option>';
         }
         echo "</select></form>";
 
