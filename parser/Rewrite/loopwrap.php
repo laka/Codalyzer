@@ -1,4 +1,5 @@
 <?php
+
 require_once('toolbox.php');
 require_once('ratings.php');
 
@@ -15,7 +16,9 @@ class loopwrap extends toolbox {
 		
 		while($row = mysql_fetch_assoc($result)) {
 			# Remove short games
-			$this->cleanUpGames($row['id']);
+			if($this->cleanUpGames($row['id'])) {
+				continue;
+			}
 			
 			# Run our ELO-rating system
 			$this->rating->eloRating($row['id']);

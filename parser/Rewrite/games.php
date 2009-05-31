@@ -1,9 +1,10 @@
 <?php
+
 require_once('toolbox.php');
 
 class game extends toolbox {
 	private $game;
-
+	
 	/* Class constructor
 	--------------------------------------------------------------------------------------------------------*/
 	public function __construct($game) {

@@ -1,4 +1,5 @@
 <?php
+
 require_once('toolbox.php');
 
 class damage extends toolbox {
