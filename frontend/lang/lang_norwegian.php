@@ -21,6 +21,8 @@ $lang['h_profile']        = 'Spillerprofil';
 $lang['h_map']            = 'Bane';
  
 // TABLE TITLES
+$lang['tt_aliases']        = 'Også kjent som...';
+$lang['tt_hitdiagram']     = 'Treffsted';
 $lang['tt_bestplayers']    = 'Beste spillere';
 $lang['tt_lastgames']      = 'Siste runder';
 $lang['tt_development']    = 'Utvikling';
@@ -58,12 +60,14 @@ $lang['th_percentage']     = 'Andel';
 $lang['th_quote']          = 'Sitat';
 $lang['th_gid']            = 'Rundenr.';
 $lang['th_elochange']      = 'Elo-endring';
+$lang['th_hits']           = 'Treff';
+$lang['th_location']       = 'Treffsted';
 
 //ABBREVIATIONS
 $lang['abb_kills']         = 'K';
 $lang['abb_deaths']        = 'D';
 $lang['abb_suicides']      = 'S';
-$lang['abb_teamkills']     = 'TK';
+$lang['abb_teamkills']     = 'T';
 $lang['abb_actions']       = 'A';
 $lang['abb_kpd']           = 'K/D';
 $lang['abb_hspercentage']  = 'HS%';

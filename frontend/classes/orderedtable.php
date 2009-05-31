@@ -217,7 +217,7 @@ class orderedtable {
 
 	// compares two numbers, and returns a HTML-tag, containing a picture of the conclusion...
 	private function compare ($current, $prev){
-		$diff = $current-$prev;
+        $diff = $current-$prev;
 		if($diff > 0)
 			$change = 'up';
 		elseif($diff < 0)
@@ -284,7 +284,7 @@ class orderedtable {
                     // loops through the columns
                     foreach($this->columndata as $header=>$d){
                         echo "\t\t<td>";
-                        
+                        // if the column is to be compared to another column
                         if(isset($d[5])){
                             echo $this->compare($row[$header], $row[$d[5]]);
                         }
@@ -322,10 +322,12 @@ class orderedtable {
                                 
                                 default:
                                 case 'sum':
-                                    if(is_numeric($row[$header]))
+                                    if(is_numeric($row[$header])){
                                         $totals[$header] += $row[$header];
-                                    else 
+                                    }
+                                    else {
                                         $totals[$header] = '';
+                                    }
                                 break;					
                             }
                             // if it is compared to something
@@ -334,7 +336,8 @@ class orderedtable {
                                     $comparesum[$header] += $row[$header]-($row[$this->columndata[$header][5]]);
                             }
                         }
-                    }				
+                    }		
+                // IF NOT columndata
                 } else {
                     for($i=0; $i<count($row); $i++){
                         // if we want to print out the sum...
@@ -358,7 +361,7 @@ class orderedtable {
                     if(isset($this->columndata[$header][5])){
                         echo "\t\t<td class=\"{$this->totalclass}\">";
                         echo $this->compare($comparesum[$header], 0);
-                        echo "$sum</td>\n";
+                        echo round($sum,2) . "</td>\n";
                     } else {
                         echo "\t\t<td class=\"{$this->totalclass}\">$sum</td>\n";
                     }

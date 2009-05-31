@@ -48,6 +48,20 @@ class database
     {
 		return mysql_query($sql);
     }
+    
+    public function isPlayer($lookup)
+    {
+        if(strlen($lookup) > 0){
+            $lookup = $this->sqlQuote($lookup);
+            if(!DISTINGUISH_BY_HASH){
+                $query = "SELECT id FROM profiles WHERE handle='$lookup'";
+            } else {
+                $query = "SELECT id FROM profiles WHERE id='$lookup'";
+            }
+            $row = $this->singleRow($query);
+        }
+		return $row['id'];
+    }    
 	
     public function singleRow($sql)
     {

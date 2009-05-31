@@ -294,6 +294,7 @@ th a:link,th a:visited{
 	background-color:#dddaca;
 }
 .tiny{
+    width:100%;
 	border-collapse:collapse;
 	font-size:0.8em;
 	margin-top: 10px;
@@ -382,4 +383,7 @@ th a:link,th a:visited{
 }
 .rightformelement{
 	float:left;
+}
+#hittable{
+    width:250px;
 }

@@ -38,6 +38,21 @@
         }
         $id = $row['id'];
         
+        // PREVIOUS GAME
+        $sql = "SELECT id FROM games WHERE id<$gid ORDER BY id DESC LIMIT 1";
+        $prev = $db->singleRow($sql);
+        if(is_numeric($prev['id'])){
+            echo "<a href=\"" .URL_BASE . "mode=single&amp;gid={$prev['id']}\">< Prev</a>";
+        }
+        
+        // NEXT GAME
+        $sql = "SELECT id FROM games WHERE id>$gid ORDER BY id ASC LIMIT 1";
+        $next = $db->singleRow($sql);
+        if(is_numeric($next['id'])){
+            echo " <a href=\"" .URL_BASE . "mode=single&amp;gid={$next['id']}\">Next ></a>";
+        }
+        
+        
         echo "<table class=\"summary\" width=\"100%\"><tr><th width=\"25%\">" . $lang['th_map'] . ":</th><th width=\"25%\">" . $lang['th_mode'] . ":</th><th width=\"25%\">" . $lang['th_players'] . ":</th><th width=\"25%\">" . $lang['th_duration'] . "</th></tr>";
         echo "<tr class=\"keynumbers\"><td width=\"25%\"><a href=\"" .URL_BASE . "mode=map&amp;m={$row['map']}\">{$row['map']}</a></td><td width=\"25%\">{$row['type']}</td><td width=\"25%\">{$row['t']}</td><td width=\"25%\">$duration</td></tr></table>";
         

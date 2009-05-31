@@ -27,7 +27,7 @@ class resultlist extends orderedtable {
 		$this->setUrl(URL_BASE . "mode=single&amp;gid={$this->gid}");
 		$this->setUrlVars(array('mode', 'gid'));
 		$this->setTotalSum(1);
-		
+
 		switch($this->gamedata['type']){
 			case 'dm':
 				$this->teams 	= 0;
@@ -41,9 +41,9 @@ class resultlist extends orderedtable {
 				$this->teams 	= 1;
 				$this->actions	= 1;
 		}
-        
-        switch($this->gametype['mods']){
-            case 'pam40':
+
+        switch($this->gamedata['mods']){
+            case 'pam4':
             case 'promod':
                 $this->teamdata = 1;
             break;
@@ -57,26 +57,27 @@ class resultlist extends orderedtable {
         // For modes with no teams
 		if(!$this->teams){
             if(!DISTINGUISH_BY_HASH){
-                $this->query = "SELECT handle, elo,
+                $this->query = "SELECT handle, IFNULL(elo,(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1)) as elo,
                         (SELECT COUNT('') FROM kills WHERE killer=p.handle AND gid=p.gid AND killer != corpse) AS kills,
                         (SELECT COUNT('') FROM kills WHERE corpse=p.handle AND gid=p.gid AND killer != corpse) AS deaths,
                         (SELECT COUNT('') FROM kills WHERE corpse=p.handle AND killer = corpse AND gid=p.gid) AS suicides,
-                        (SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as prevelo
+                        IFNULL(elo-IFNULL((SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1),1000),0) as elodiff
                         FROM players as p WHERE gid={$this->gid}";
             } else {
-                $this->query = "SELECT handle, hash, elo,
+                $this->query = "SELECT handle, hash, IFNULL(elo,(SELECT elo FROM players WHERE hash=p.hash AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1)) as elo,
                         (SELECT id FROM profiles WHERE hash=p.hash LIMIT 1) AS id,
                         (SELECT COUNT('') FROM kills WHERE k_hash=p.hash AND gid=p.gid AND k_hash != c_hash) AS kills,
                         (SELECT COUNT('') FROM kills WHERE c_hash=p.hash AND gid=p.gid AND k_hash != c_hash) AS deaths,
                         (SELECT COUNT('') FROM kills WHERE c_hash=p.hash AND k_hash = c_hash AND gid=p.gid) AS suicides,
-                        (SELECT elo FROM players WHERE hash=p.hash AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as prevelo
+                        IFNULL(elo-IFNULL((SELECT elo FROM players WHERE hash=p.hash AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1),1000),0) as elodiff
                         FROM players as p WHERE gid={$this->gid}";
             }            
-			$thiscoldata =       array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "40%", '', URL_BASE .'mode=profile&amp;h='),
+			$thiscoldata =       array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "40%", 'totalstring', URL_BASE .'mode=profile&amp;h='),
                                        'kills' 	    =>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "12%","sum"),
 								       'deaths' 	=>  array (array('deaths' => 1, 'sucides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "12%","sum"),
 									   'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "12%", "sum"),
-									   'elo' 		=>  array (array('elo' => 1), $this->lang['th_elo'], "12%", "avg", '', 'prevelo')
+									   'elo' 		=>  array (array('elo' => 1), $this->lang['th_elo'], "12%", "avg"),
+                                       'elodiff'    =>  array (array('elodiff' => 1), "+", "15%", "sum", '', '0')
 									   );
             if(DISTINGUISH_BY_HASH){
                 $thiscoldata['handle'][4] .= "*id*";
@@ -87,30 +88,28 @@ class resultlist extends orderedtable {
 		} else {
             if($this->teamdata){
                 if(!DISTINGUISH_BY_HASH){
-                    $teamdataquery = "(SELECT COUNT('') FROM kills WHERE killer=p.handle AND k_team = c_team AND gid=p.gid) AS teamkills,";
+                    $teamdataquery = "(SELECT COUNT('') FROM kills WHERE killer=p.handle AND killer != corpse AND k_team = c_team AND gid=p.gid) AS teamkills,";
                 } else {
-                    $teamdataquery = "(SELECT COUNT('') FROM kills WHERE k_hash=p.hash AND k_team = c_team AND gid=p.gid) AS teamkills,";                
+                    $teamdataquery = "(SELECT COUNT('') FROM kills WHERE k_hash=p.hash AND k_hash != c_hash  AND k_team = c_team AND gid=p.gid) AS teamkills,";                
                 }
             }
             
             if(!DISTINGUISH_BY_HASH){            
-                $this->query = "SELECT handle, elo,
+                $this->query = "SELECT handle, IFNULL(elo,(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1)) as elo,
                         (SELECT COUNT('') FROM kills WHERE killer=p.handle AND gid=p.gid) AS kills,
                         (SELECT COUNT('') FROM kills WHERE corpse=p.handle AND gid=p.gid) AS deaths,
                         (SELECT COUNT('') FROM kills WHERE corpse=p.handle AND killer = corpse AND gid=p.gid) AS suicides, $teamdataquery
                         (SELECT COUNT('') FROM actions WHERE handle=p.handle AND gid=p.gid) AS actions,
-                        (SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as prevelo,
-                        elo-(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as elodiff
+                        IFNULL(elo-IFNULL((SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1),1000),0) as elodiff
                         FROM players as p WHERE gid={$this->gid} AND team='$team'";
             } else {
-                $this->query = "SELECT handle, hash, elo,
+                $this->query = "SELECT handle, hash, IFNULL(elo,(SELECT elo FROM players WHERE hash=p.hash AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1)) as elo,
                         (SELECT id FROM profiles WHERE hash=p.hash LIMIT 1) AS id,
                         (SELECT COUNT('') FROM kills WHERE k_hash=p.hash AND gid=p.gid) AS kills,
                         (SELECT COUNT('') FROM kills WHERE c_hash=p.hash AND gid=p.gid) AS deaths,
                         (SELECT COUNT('') FROM kills WHERE c_hash=p.hash AND k_hash = c_hash AND gid=p.gid) AS suicides, $teamdataquery
                         (SELECT COUNT('') FROM actions WHERE hash=p.hash AND gid=p.gid) AS actions,
-                        (SELECT elo FROM players WHERE hash=p.hash AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as prevelo,
-                        elo-(SELECT elo FROM players WHERE hash=p.hash AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1) as elodiff
+                        IFNULL(elo-IFNULL((SELECT elo FROM players WHERE hash=p.hash AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1),1000),0) as elodiff
                         FROM players as p WHERE gid={$this->gid} AND team='$team'";
             }
             // for mods where teamdata is logged for each kill
@@ -118,11 +117,11 @@ class resultlist extends orderedtable {
                $thiscoldata =     array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', URL_BASE .'mode=profile&amp;h='),
                                         'kills' 	=>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "8%","sum"),
                                         'deaths' 	=>  array (array('deaths' => 1, 'suicides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "8%","sum"),
-                                        'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "8%", "sum"),
-                                        'teamkills' =>  array (array('teamkills' => 1), $this->lang['abb_teamkills'], "10%", "sum"),
-                                        'actions' 	=>  array (array('actions' => 1), $this->lang['abb_actions'], "8%", "sum"),
+                                        'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "7%", "sum"),
+                                        'teamkills' =>  array (array('teamkills' => 1), $this->lang['abb_teamkills'], "7%", "sum"),
+                                        'actions' 	=>  array (array('actions' => 1), $this->lang['abb_actions'], "7%", "sum"),
                                         'elo' 		=>  array (array('elo' => 1), $this->lang['th_elo'], "12%", "avg"),
-                                        'elodiff'   =>  array (array('elodiff' => 1), "+", "13%", "sum", '', '0')
+                                        'elodiff'   =>  array (array('elodiff' => 1), "+", "15%", "sum", '', '0')
                                         );
                 if(DISTINGUISH_BY_HASH){
                     $thiscoldata['handle'][4] .= "*id*";
@@ -134,10 +133,10 @@ class resultlist extends orderedtable {
                     $thiscoldata =    array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', URL_BASE .'mode=profile&amp;h='),
                                             'kills' 	=>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "8%","sum"),
                                             'deaths' 	=>  array (array('deaths' => 1, 'suicides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "8%","sum"),
-                                            'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "8%", "sum"),
-                                            'actions' 	=>  array (array('actions' => 1), $this->lang['abb_actions'], "8%", "sum"),
+                                            'suicides' 	=>  array (array('suicides' => 1), $this->lang['abb_suicides'], "7%", "sum"),
+                                            'actions' 	=>  array (array('actions' => 1), $this->lang['abb_actions'], "7%", "sum"),
                                             'elo' 		=>  array (array('elo' => 1), $this->lang['th_elo'], "12%", "avg"),
-                                            'elodiff'   =>  array (array('elodiff' => 1), "+", "13%", "sum", '', '0')
+                                            'elodiff'   =>  array (array('elodiff' => 1), "+", "15%", "sum", '', '0')
                                             );
                 } else {
                     $thiscoldata =    array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', URL_BASE .'mode=profile&amp;h='),

@@ -25,7 +25,8 @@ if(strlen($_GET['h']) > 0){
             FROM profiles where id='$id' LIMIT 1";  
     }
     $data = $db->singleRow ($sql);
-
+    $handle = $db->sqlQuote($data['handle']);
+    
     // this functionality is almost the same as the compare-function in orderedtable
 	$diff = $data['elo'] - $data['prevelo'];
 	if($diff > 0)

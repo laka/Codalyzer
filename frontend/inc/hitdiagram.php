@@ -58,7 +58,8 @@ if(strlen($_GET['h']) > 0){
         }				
                 
         echo "<img src=\"". FRONTEND_URL ."/graphs/hitgraph.php?h=$uid&amp;t=". urlencode($hits) ."\" id=\"hitdiagram\">";
-        echo "<table class=\"tiny\" width=\"217\" id=\"hittable\"><tr><th>Location</th><th>Hits</th><th>Percentage</th></tr>";
+        
+        echo "<table class=\"tiny\" id=\"hittable\"><tr><th>". $lang['th_location'] ."</th><th>". $lang['th_hits'] ."</th><th>". $lang['abb_percentage'] ."</th></tr>";
         $a = 0;
         foreach($hitdata as $location => $hits){	
             if($a == 10){

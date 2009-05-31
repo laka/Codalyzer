@@ -21,6 +21,8 @@ $lang['h_profile']        = 'Profile';
 $lang['h_map']            = 'Map';
  
 // TABLE TITLES
+$lang['tt_aliases']        = 'Alias';
+$lang['tt_hitdiagram']     = 'Hit diagram';
 $lang['tt_bestplayers']    = 'Best Players';
 $lang['tt_lastgames']      = 'Last Games';
 $lang['tt_development']    = 'Development';
@@ -58,12 +60,14 @@ $lang['th_percentage']     = 'Percentage';
 $lang['th_quote']          = 'Quote';
 $lang['th_gid']            = 'Game id';
 $lang['th_elochange']      = 'Elo change';
+$lang['th_hits']           = 'Hits';
+$lang['th_location']       = 'Location';
 
 //ABBREVIATIONS
 $lang['abb_kills']         = 'K';
 $lang['abb_deaths']        = 'D';
 $lang['abb_suicides']      = 'S';
-$lang['abb_teamkills']     = 'TK';
+$lang['abb_teamkills']     = 'T';
 $lang['abb_actions']       = 'A';
 $lang['abb_kpd']           = 'K/D';
 $lang['abb_hspercentage']  = 'HS%';

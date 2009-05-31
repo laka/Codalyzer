@@ -8,11 +8,29 @@
 
 switch($_GET['mode']){
     case 'profile':
-        echo "<h2>Development</h2>";
+        include FRONTEND_PATH . '/inc/aliastable.php';
+    
+        echo "<h2>". $lang['tt_development'] ."</h2>";
         echo "<p>" . $lang['m_elodesc'] . "</p>";
-        echo "<p><img src=\"" .FRONTEND_URL . "graphs/development.php?h=". urlencode($data['handle']) ."\"></p>";
         
-        echo "<h2>Hit diagram</h2>";
+        if(strlen($_GET['h']) > 0){
+            $lookup = $db->sqlQuote($_GET['h']);
+            if(!DISTINGUISH_BY_HASH){
+                $query	= "SELECT id FROM profiles WHERE handle='$lookup'";
+            } else {
+                $query	= "SELECT id FROM profiles WHERE id='$lookup'";    
+            }
+            $row = $db->singleRow($query);
+            if(strlen($row['id']) > 0){
+                if(!DISTINGUISH_BY_HASH){
+                    echo "<p><img src=\"" .FRONTEND_URL . "graphs/development.php?h=". urlencode($lookup) ."\"></p>";
+                } else {
+                    echo "<p><img src=\"" .FRONTEND_URL . "graphs/development.php?h=". $lookup ."\"></p>";
+                }
+            }
+        }
+        
+        echo "<h2>". $lang['tt_hitdiagram'] ."</h2>";
         include FRONTEND_PATH . '/inc/hitdiagram.php';
         
     break;
