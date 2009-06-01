@@ -22,6 +22,10 @@ class damage extends toolbox {
 		# Convert timestamps to seconds
 		$matches[1] = $this->ts2seconds($matches[1]);
 		
+		# Leaving 8 last chars of the hash
+		$matches[2] = substr($matches[2], -8);
+		$matches[5] = substr($matches[5], -8);
+		
 		# Convert mods to weapons 
 		$matches[8] = $this->weaponMods($matches[8], $matches[10]);
 		
@@ -68,6 +72,10 @@ class damage extends toolbox {
 	public function addKill($matches, $gid) {
 		# Convert timestamps to seconds
 		$matches[1] = $this->ts2seconds($matches[1]);
+		
+		# Leaving 8 last chars of the hash
+		$matches[2] = substr($matches[2], -8);
+		$matches[5] = substr($matches[5], -8);
 		
 		# Fix world inflicts 
 		if(empty($matches[7])) { 

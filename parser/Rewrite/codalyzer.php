@@ -1,10 +1,10 @@
 <?php
-
+ini_set("memory_limit","1020M");
 $start = microtime(true);
 require_once('classes.php');
 
 $logfile = new logfile();
-$logfile->getLatestLog();
+#$logfile->getLatestLog();
 
 $logarray = $logfile->returnArray();
 $gamename = $logfile->getGameName();

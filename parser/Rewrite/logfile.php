@@ -1,10 +1,10 @@
 <?php
-
 class logfile {
 	private $logfile, $numlines, $path, $proto, $size;
 
 	public function __construct() {
 		$this->db = database::getInstance();
+		
 		$logfile = database::getInstance()->singleRow(
 			"SELECT value AS name FROM config WHERE ckey=\"logfile\"");
 		$log = database::getInstance()->singleRow(
@@ -14,7 +14,7 @@ class logfile {
 		$transfer = database::getInstance()->singleRow(
 			"SELECT value AS proto FROM config WHERE ckey=\"transfer_protocol\"");
 		$size = database::getInstance()->singleRow(
-				"SELECT filesize FROM loghist WHERE filename=\"$this->logfile\" ORDER BY id DESC LIMIT 1");
+			"SELECT filesize FROM loghist WHERE filename=\"$this->logfile\" ORDER BY id DESC LIMIT 1");
 		
 		$this->logfile  = $logfile[name];
 		$this->numlines = $log[numlines];
@@ -52,8 +52,8 @@ class logfile {
 	}
 	
 	public function returnArray() {
-		$logarray = file($this->logfile);
-		return array_slice($logarray, $this->numlines);
+		return file($this->logfile);
+#return array_slice($logarray, $this->numlines);
 	}
 
 	public function getGameName() {

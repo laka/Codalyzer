@@ -107,9 +107,11 @@ class toolbox {
 	
 	# Add aliases ($owner = hash)
 	public function addNewAlias($alias, $owner, $gid) {
+		$alias = database::getInstance()->sqlQuote($alias);
 		$result = database::getInstance()->sqlResult(
 			"SELECT id FROM alias WHERE owner=\"$owner\" AND alias=\"$alias\"");
-		if(!mysql_num_rows($result)) {
+		if(mysql_num_rows($result) == 0) {
+			echo "Couldn't find $alias ($owner) in game $gid\n";
 			database::getInstance()->sqlResult(
 				"INSERT INTO alias (owner, alias) VALUES(\"$owner\", \"$alias\")");
 		}

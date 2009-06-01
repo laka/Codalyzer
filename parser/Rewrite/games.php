@@ -29,8 +29,11 @@ class game extends toolbox {
 		$matches[2] = preg_replace
 			('/^.*fs_game\\\\.*\/(.*?)\\\\g_compass.*$/i',"$1", $matches[2]);
 		
+		# We do currently only support pam4
 		if(preg_match('/pam/i', $matches[2])) {
 			$matches[2] = 'pam4';
+		} else { 
+			$matches[2] = 'none';
 		}
 		
 		# Translate cod name to game version
@@ -72,7 +75,7 @@ class game extends toolbox {
 		$matches[1] = $this->ts2seconds($matches[1]); 
 
 		# Is the player allready in the game?
-		if($this->playerInGame('hash', $matches[2], $gid)) {
+		if($this->playerInGame('handle', $matches[3], $gid)) {
 			return 0;
 		} else {
 			database::getInstance()->sqlResult("INSERT INTO players (gid, ts, hash, handle)

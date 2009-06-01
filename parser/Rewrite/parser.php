@@ -10,7 +10,6 @@ class parser {
 	
 	public function parse($logarray, $regexlib, $gamename) {
 		foreach ($logarray as $linenr => $line) {
-	
 			# Fetch last game id
 			$gid = $this->toolbox->lastGid();
 	
