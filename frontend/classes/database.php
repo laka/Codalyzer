@@ -18,6 +18,7 @@ class database
 		$this->connection = @mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS)
             or die ('<strong>Error:</strong> Could not connect to the database.');
 		mysql_select_db(MYSQL_DB, $this->connection);
+        mysql_set_charset('utf8', $this->connection); 
     }
 
     // The singleton method

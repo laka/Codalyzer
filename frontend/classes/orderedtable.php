@@ -9,7 +9,7 @@
 */
 
 class orderedtable {
-
+    private $benchmark      = TRUE;
 	private $totalsum		= 0;                            // true or false, sums up the values (or averages etc) and prints the totals (default:sum)
 	private $columndata;                                    // array('dbcolumnname' => array(orderarray, Frontendname,  width,  summationtype, URL-prefix, compareto));	
 	private $limit			= 10;                           // rows per page/totally
@@ -262,8 +262,10 @@ class orderedtable {
 	
 		// we create the SQL-query
 		$this->createQuery ();
+        
+        $start = microtime(true);
 		$result = database::getInstance()->sqlResult($this->query);
-
+        
 		// loops through the rows
         if($result){
             // prints out the table...
@@ -295,6 +297,10 @@ class orderedtable {
                                 foreach($matches as $match){
                                     if(isset($row[$match])){
                                         $d[4] = str_replace("*$match*", urlencode($row[$match]), $d[4]);
+                                        $replaced = TRUE;
+                                    } else {
+                                        // this is to prevent the url from being for instance ?page=stats&mode=profile&h=*id*norsof+|+mikael
+                                        $d[4] = str_replace("*$match*", 0, $d[4]);
                                         $replaced = TRUE;
                                     }
                                 }
@@ -369,6 +375,13 @@ class orderedtable {
                 echo "\t</tr>\n";	
             }
             echo "</table>";
+            
+            $end = microtime(true);
+            $totaltime = round($end-$start, 4);
+            
+            if($this->benchmark){
+                echo $totaltime . ' sec';
+            }
         } else {
             echo "<p><strong>Error: </strong>Could not get data</p>";
         }

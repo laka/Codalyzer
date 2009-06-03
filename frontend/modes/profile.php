@@ -123,8 +123,8 @@ if(strlen($_GET['h']) > 0){
             $worstenemy->setClass('summary');
             $enemycoldata =           array('corpse' => array (array('corpse' => 1), $lang['th_player'], "40%", 0, URL_BASE . "mode=profile&amp;h="),
                                             'ratio' => array (array('ratio' => 1, 'killcount' => 1), $lang['abb_kpd'], "15%"),
-                                            'killcount' => array (array('killcount' => 1, 'deathcount' => 0), $lang['abb_kills'], "15%"),
-                                            'deathcount' => array (array('deathcount' => 1, 'killcount' => 0), $lang['abb_deaths'], "15%"),
+                                            'deathcount' => array (array('deathcount' => 1, 'killcount' => 0), $lang['abb_kills'], "15%"),
+                                            'killcount' => array (array('killcount' => 1, 'deathcount' => 0), $lang['abb_deaths'], "15%"),
                                             'percentage' => array (array('percentage' => 1, 'killcount' => 1), $lang['abb_percentage'], "15%")                                                
                                        );		
             // uses the hash in the url instead of the handle, if DISTINGUISH_BY_HASH is set.
@@ -140,10 +140,10 @@ if(strlen($_GET['h']) > 0){
         echo "<h2>" . $lang['tt_favoriteweapons'] . "</h2>";
             if(!DISTINGUISH_BY_HASH){
                 $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as k, round(count('')*100/{$data['kills']},2) as percentage
-                          FROM weapons, kills WHERE kills.weapon=weapons.name AND killer='$handle' AND corpse != '$handle' GROUP BY weapon";
+                          FROM weapons, kills, games WHERE kills.weapon=weapons.name AND kills.gid=games.id AND games.version=weapons.version AND killer='$handle' AND corpse != '$handle' GROUP BY weapon";
             } else {
                 $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as k, round(count('')*100/{$data['kills']},2) as percentage
-                          FROM weapons, kills WHERE kills.weapon=weapons.name AND k_hash='". $data['hash'] ."' AND c_hash != '". $data['hash'] ."' GROUP BY weapon";            
+                          FROM weapons, kills, games WHERE kills.weapon=weapons.name AND kills.gid=games.id AND games.version=weapons.version AND k_hash='". $data['hash'] ."' AND c_hash != '". $data['hash'] ."' GROUP BY weapon";            
             }
             $favoriteweapon = new orderedtable($query, 1);
             $favoriteweapon->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($id));

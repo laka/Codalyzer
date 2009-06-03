@@ -32,7 +32,6 @@ switch($_GET['mode']){
         
         echo "<h2>". $lang['tt_hitdiagram'] ."</h2>";
         include FRONTEND_PATH . '/inc/hitdiagram.php';
-        
     break;
     
     default:

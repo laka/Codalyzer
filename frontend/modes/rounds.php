@@ -6,7 +6,11 @@
 	**************************************************************
 */	
 	echo '<h1>' . $lang['h_rounds'] .'</h1>';
-	$query 	= "SELECT id, map, type, ROUND((stop-start)/60) as duration, (SELECT count(distinct handle) FROM players WHERE players.gid = games.id) as players FROM games";
+    if(!DISTINGUISH_BY_HASH){
+        $query 	= "SELECT id, map, type, ROUND((stop-start)/60) AS duration, (SELECT COUNT(DISTINCT handle) FROM players WHERE players.gid = games.id) AS players FROM games";
+    } else {
+        $query 	= "SELECT id, map, type, ROUND((stop-start)/60) AS duration, (SELECT COUNT(DISTINCT hash) FROM players WHERE players.gid = games.id) AS players FROM games";        
+    }
 	$rounds = new orderedtable($query, 1);
     
 	$rounds->setClass('summary');
@@ -22,7 +26,7 @@
 								 'players' 		=> array (array('players' => 1), $lang['th_players'], "20%")
 								));		
 				
-	$totalsql = "select count('') as c from games WHERE (SELECT count('') from kills where gid=games.id) >= 5";
+	$totalsql = "SELECT COUNT('') AS c FROM games";
 	$totalrow = $db->singleRow($totalsql);
 	$rounds->setTotalRows($totalrow['c']);
 						

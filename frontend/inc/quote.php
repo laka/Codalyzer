@@ -11,7 +11,7 @@ if(is_object($db)){
 		$row = database::getInstance()->singleRow($sql);	
 	} while (ereg('QUICKMESSAGE', $row['quote'])); 
 	
-	echo "<div class=\"quote\">" . utf8_encode($row['quote']) . "</div>";
+	echo "<div class=\"quote\">" . $row['quote'] . "</div>";
 	echo "<div class=\"quoted\">" . $row['handle'] . "</div>";		
 }	
 ?>	

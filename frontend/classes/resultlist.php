@@ -195,7 +195,9 @@ class resultlist extends orderedtable {
 		} else {
 			echo "<table width=\"100%\">\n\t<tr>\n\t\t<td>\n";
 			$this->setFunctiondata();
-			$this->printTable();			
+            $this->setOrderBy('kills');
+            $this->setOrder('DESC');      
+			$this->printTable();		      
 			echo "\t\t</td>\n\t</tr>\n</table>";		
 		}
 	}
