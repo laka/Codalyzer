@@ -19,7 +19,6 @@ class loopwrap extends toolbox {
 			if($this->cleanUpGames($row['id'])) {
 				continue;
 			}
-			
 			# Run our ELO-rating system
 			$this->rating->eloRating($row['id']);
 			
@@ -32,9 +31,6 @@ class loopwrap extends toolbox {
 			"SELECT DISTINCT hash AS puid FROM players ORDER BY id ASC");
 		
 		while($row = mysql_fetch_assoc($result)) {
-			# Create a profile for the player
-			$this->makePlayerProfile($row['puid']);
-		
 			# Add stats to the profile
 			$this->addProfileData($row['puid']);
 			

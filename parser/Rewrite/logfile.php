@@ -53,7 +53,7 @@ class logfile {
 	
 	public function returnArray() {
 		return file($this->logfile);
-#return array_slice($logarray, $this->numlines);
+		#return array_slice($logarray, $this->numlines);
 	}
 
 	public function getGameName() {

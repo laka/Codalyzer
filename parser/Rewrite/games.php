@@ -62,29 +62,39 @@ class game extends toolbox {
 	--------------------------------------------------------------------------------------------------------*/
 	public function addNewPlayer($matches, $gid) {
 		# Get correct hash/pid depending on game version
-		$pid = explode(';', $matches[2]);
-		if(strlen($pid[0]) > 7) {
-			$matches[2] = $pid[0];
-			# Leaving 8 last chars of the hash
-			$matches[2] = substr($matches[2], -8);
+		if(strlen($matches[2]) > 0) {
+			$pid = explode(';', $matches[2]);
+			if(strlen($pid[0]) > 7) {
+				$matches[2] = $pid[0];
+				# Leaving 8 last chars of the hash
+				$matches[2] = substr($matches[2], -8);
+			} else {
+				$matches[2] = $pid[1];
+			}
 		} else {
-			$matches[2] = $pid[1];
+			# Skipping player since we have noe hash 
+			return 0;
 		}
-	
+			
 		# Convert timestamp to seconds	
 		$matches[1] = $this->ts2seconds($matches[1]); 
 
 		# Is the player allready in the game?
-		if($this->playerInGame('handle', $matches[3], $gid)) {
-			return 0;
-		} else {
+		if(!$this->playerInGame('handle', $matches[3], $gid)) {
 			database::getInstance()->sqlResult("INSERT INTO players (gid, ts, hash, handle)
 				VALUES(\"$gid\", \"$matches[1]\", \"$matches[2]\", \"$matches[3]\")");
-		}		
+		}	
+		
+		# Create a profile for the player
+		$this->makePlayerProfile($matches[2]);
 	}
 	/* Add team to a player ($matches: [1] timestamp [2] hash [3] team [4] handle)
 	--------------------------------------------------------------------------------------------------------*/
 	public function addTeamMember($matches, $gid) {
+		# Skip if the player if no hash exists
+		if(strlen($matches[2]) > 0) {
+			return 0;
+		}
 		# Convert timestamp to seconds	
 		$matches[1] = $this->ts2seconds($matches[1]);
 		

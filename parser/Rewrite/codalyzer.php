@@ -1,5 +1,5 @@
 <?php
-ini_set("memory_limit","1020M");
+ini_set("memory_limit","1024M");
 $start = microtime(true);
 require_once('classes.php');
 

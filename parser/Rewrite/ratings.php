@@ -5,7 +5,7 @@ require_once('toolbox.php');
 class rating extends toolbox {
 	public function eloRating($gid) {
 		$result = database::getInstance()->sqlResult(
-			"SELECT k_hash, c_hash FROM kills WHERE gid=\"$gid\" ORDER BY id");
+			"SELECT killerID AS k_hash, corpseID AS c_hash FROM kills WHERE gid=\"$gid\" ORDER BY id");
 		
 		$scores = array();
 		while($row = mysql_fetch_assoc($result)) {

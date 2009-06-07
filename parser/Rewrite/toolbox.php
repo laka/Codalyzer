@@ -23,6 +23,13 @@ class toolbox {
 		return mysql_num_rows($result);
 	}
 	
+	# Returns a players profile ID
+	public function getPlayerID($hash) {
+		$row = database::getInstance()->singleRow(
+			"SELECT id FROM profiles WHERE hash=\"$hash\"");
+		return $row[id];
+	}
+	
 	/* Convert functions
 	--------------------------------------------------------------------------------------------------------*/
 
@@ -111,7 +118,7 @@ class toolbox {
 		$result = database::getInstance()->sqlResult(
 			"SELECT id FROM alias WHERE owner=\"$owner\" AND alias=\"$alias\"");
 		if(mysql_num_rows($result) == 0) {
-			echo "Couldn't find $alias ($owner) in game $gid\n";
+			#echo "Couldn't find $alias ($owner) in game $gid\n";
 			database::getInstance()->sqlResult(
 				"INSERT INTO alias (owner, alias) VALUES(\"$owner\", \"$alias\")");
 		}
@@ -256,7 +263,7 @@ class toolbox {
 	public function cleanUpGames($gid) {
 		$row = database::getInstance()->singleRow(
 			"SELECT id, 
-				(SELECT COUNT(*) FROM kills WHERE gid=a.id AND killer!=corpse) AS kills, 
+				(SELECT COUNT(*) FROM kills WHERE gid=a.id AND killerID!=corpseID) AS kills, 
 				(SELECT COUNT(*) FROM players WHERE gid=a.id) AS players 
 			FROM games AS a WHERE id=\"$gid\"");
 		

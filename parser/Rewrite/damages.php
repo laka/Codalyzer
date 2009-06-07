@@ -36,6 +36,10 @@ class damage extends toolbox {
 			$matches[6] = $matches[3];
 		}
 		
+		# Get player IDs
+		$hitmanID = $this->getPlayerID($matches[5]);
+		$woundedID = $this->getPlayerID($matches[2]);
+		
 		# Assign teams to players unless the game is running a modification
 		if($this->gameData('mods', $gid) == 'none') {
 			$this->addTeamMember($matches[4], $matches[3], $gid);	
@@ -50,9 +54,9 @@ class damage extends toolbox {
 		}
 			
 		database::getInstance()->sqlResult(
-			"INSERT INTO hits (gid, ts, hitman, h_hash, h_team, wounded, w_hash, w_team, damage, weapon, mods, location)
-			VALUES(\"$gid\", \"$matches[1]\", \"$matches[7]\", \"$matches[5]\", \"$matches[6]\", \"$matches[4]\", 
-					\"$matches[2]\", \"$matches[3]\", \"$matches[9]\", \"$matches[8]\", \"$matches[10]\", \"$matches[11]\")");
+			"INSERT INTO hits (gid, ts, hitmanID, h_team, woundedID, w_team, damage, weapon, mods, location)
+			VALUES(\"$gid\", \"$matches[1]\", \"$hitmanID\", \"$matches[6]\", \"$woundedID\", 
+				\"$matches[3]\", \"$matches[9]\", \"$matches[8]\", \"$matches[10]\", \"$matches[11]\")");
 	}
 	
 	/* Add a kill 
@@ -84,6 +88,10 @@ class damage extends toolbox {
 			$matches[6] = $matches[3];
 		}		
 		
+		# Get player IDs
+		$killerID = $this->getPlayerID($matches[5]);
+		$corpseID = $this->getPlayerID($matches[2]);
+		
 		# Convert mods to weapons 
 		$matches[8] = $this->weaponMods($matches[8], $matches[10]);
 		
@@ -95,9 +103,9 @@ class damage extends toolbox {
 		}
 		
 		database::getInstance()->sqlResult(
-			"INSERT INTO kills (gid, ts, killer, k_hash, k_team, corpse, c_hash, c_team, damage, weapon, mods, location)
-			VALUES(\"$gid\", \"$matches[1]\", \"$matches[7]\", \"$matches[5]\", \"$matches[6]\", \"$matches[4]\", 
-					\"$matches[2]\", \"$matches[3]\", \"$matches[9]\", \"$matches[8]\", \"$matches[10]\", \"$matches[11]\")");
+			"INSERT INTO kills (gid, ts, killerID, k_team, corpseID, c_team, damage, weapon, mods, location)
+			VALUES(\"$gid\", \"$matches[1]\", \"$killerID\", \"$matches[6]\", \"$corpseID\", 
+				\"$matches[3]\", \"$matches[9]\", \"$matches[8]\", \"$matches[10]\", \"$matches[11]\")");
 	} 
 }
 
