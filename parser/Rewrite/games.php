@@ -91,7 +91,7 @@ class game extends toolbox {
 	/* Add team to a player ($matches: [1] timestamp [2] hash [3] team [4] handle)
 	--------------------------------------------------------------------------------------------------------*/
 	public function addTeamMember($matches, $gid) {
-		# Skip if the player if no hash exists
+		# Skip the player if no hash exists
 		if(strlen($matches[2]) > 0) {
 			return 0;
 		}

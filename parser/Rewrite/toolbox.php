@@ -30,6 +30,20 @@ class toolbox {
 		return $row[id];
 	}
 	
+	# Returns a players hash 
+	public function getPlayerHash($id) {
+		$row = database::getInstance()->singleRow(
+			"SELECT hash FROM profiles WHERE id=\"$id\"");
+		return $row[hash];
+	}
+	
+	# Returns a players handle
+	public function getPlayerHandle($id) {
+		$row = database::getInstance()->singleRow(
+			"SELECT handle FROM profiles WHERE id=\"$id\"");
+		return $row[handle];
+	}
+	
 	/* Convert functions
 	--------------------------------------------------------------------------------------------------------*/
 
@@ -185,26 +199,29 @@ class toolbox {
 	
 	# Sum all kills of a player
 	public function sumPlayerKills($puid) {
+		$puid = $this->getPlayerID($puid);
 		$row = database::getInstance()->singleRow(
-			"SELECT COUNT(*) AS sum FROM kills WHERE k_hash=\"$puid\" AND c_hash!=\"$puid\"");
+			"SELECT COUNT(*) AS sum FROM kills WHERE killerID=\"$puid\" AND corpseID!=\"$puid\"");
 		database::getInstance()->sqlResult(
-			"UPDATE profiles SET kills=\"$row[sum]\" WHERE hash=\"$puid\"");
+			"UPDATE profiles SET kills=\"$row[sum]\" WHERE id=\"$puid\"");
 	}
 	
 	# Sum all deaths of a player
 	public function sumPlayerDeaths($puid) {
+		$puid = $this->getPlayerID($puid);
 		$row = database::getInstance()->singleRow(
-			"SELECT COUNT(*) AS sum FROM kills WHERE c_hash=\"$puid\" AND k_hash!=\"$puid\"");
+			"SELECT COUNT(*) AS sum FROM kills WHERE corpseID=\"$puid\" AND killerID!=\"$puid\"");
 		database::getInstance()->sqlResult(
-			"UPDATE profiles SET deaths=\"$row[sum]\" WHERE hash=\"$puid\"");
+			"UPDATE profiles SET deaths=\"$row[sum]\" WHERE id=\"$puid\"");
 	}
 	
 	# Sum all suicides of a player
 	public function sumPlayerSuicides($puid) {
+		$puid = $this->getPlayerID($puid);
 		$row = database::getInstance()->singleRow(
-			"SELECT COUNT(*) AS sum FROM kills WHERE k_hash=\"$puid\" AND c_hash=\"$puid\"");
+			"SELECT COUNT(*) AS sum FROM kills WHERE killerID=\"$puid\" AND corpseID=\"$puid\"");
 		database::getInstance()->sqlResult(
-			"UPDATE profiles SET suicides=\"$row[sum]\" WHERE hash=\"$puid\"");
+			"UPDATE profiles SET suicides=\"$row[sum]\" WHERE id=\"$puid\"");
 	}
 	
 	# Sum all games of a player
