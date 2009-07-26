@@ -28,7 +28,7 @@ class loopwrap extends toolbox {
 	}
 	public function playersLoop() {
 		$result = database::getInstance()->sqlResult(
-			"SELECT DISTINCT hash AS puid FROM players ORDER BY id ASC");
+			"SELECT DISTINCT hash AS puid FROM profiles ORDER BY id ASC");
 		
 		while($row = mysql_fetch_assoc($result)) {
 			# Add stats to the profile

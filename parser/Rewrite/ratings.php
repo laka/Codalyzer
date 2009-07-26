@@ -24,10 +24,9 @@ class rating extends toolbox {
 			}
 		}
 		while(list($key, $value) = each($scores)) {
-			$key = $this->getPlayerHash($key);
 			$value = round($value, 2);
 			database::getInstance()->sqlResult(
-				"UPDATE players SET elo=\"$value\" WHERE hash=\"$key\" AND gid=\"$gid\"");
+				"UPDATE players SET elo=\"$value\" WHERE playerID=\"$key\" AND gid=\"$gid\"");
 		}
 	}
 }

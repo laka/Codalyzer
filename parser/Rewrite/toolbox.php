@@ -24,21 +24,21 @@ class toolbox {
 	}
 	
 	# Returns a players profile ID
-	public function getPlayerID($hash) {
+	public function getPlayerIDByHash($hash) {
 		$row = database::getInstance()->singleRow(
 			"SELECT id FROM profiles WHERE hash=\"$hash\"");
 		return $row[id];
 	}
 	
 	# Returns a players hash 
-	public function getPlayerHash($id) {
+	public function getPlayerHashByID($id) {
 		$row = database::getInstance()->singleRow(
 			"SELECT hash FROM profiles WHERE id=\"$id\"");
 		return $row[hash];
 	}
 	
 	# Returns a players handle
-	public function getPlayerHandle($id) {
+	public function getPlayerHandleByID($id) {
 		$row = database::getInstance()->singleRow(
 			"SELECT handle FROM profiles WHERE id=\"$id\"");
 		return $row[handle];
@@ -69,6 +69,13 @@ class toolbox {
 		$row = database::getInstance()->singleRow(
 			"SELECT id FROM games ORDER BY id DESC LIMIT 1");
 		return $row['id'];
+	}
+	
+	# Returns the last game id in the games-table
+	public function nextPlayerID() {
+		$row = database::getInstance()->singleRow(
+			"SELECT id FROM profiles ORDER BY id DESC LIMIT 1");
+		return ++$row[id];
 	}
 	
 	# Returns a sanitized string
@@ -149,9 +156,10 @@ class toolbox {
 	
 	# Add all aliases of a player
 	public function getEveryAlias($puid) {
+		$playerID = $this->getPlayerIDByHash($puid);
 		$most_used = $this->mostUsedHandle($puid);
 		$result = database::getInstance()->sqlResult(
-			"SELECT DISTINCT handle AS alias FROM players WHERE hash=\"$puid\" AND handle != \"$most_used\" ORDER BY id");
+			"SELECT DISTINCT handle AS alias FROM players WHERE playerID=\"$playerID\" AND handle != \"$most_used\" ORDER BY id");
 		
 		while($row = mysql_fetch_assoc($result)) {
 			$this->addNewAlias($row['alias'], $puid, '');
@@ -159,13 +167,14 @@ class toolbox {
 	}
 	
 	# Create a player profile
-	public function makePlayerProfile($puid) {
+	public function makePlayerProfile($puid, $player) {
 		$result = database::getInstance()->sqlResult(
 			"SELECT id FROM profiles WHERE hash=\"$puid\"");
 		if(mysql_num_rows($result)) {
 			$this->setMostUsedHandle($puid);
 		} else {
 			$handle = $this->mostUsedHandle($puid);
+			if(strlen($handle) == 0) { $handle = $player; }
 			database::getInstance()->sqlResult(
 				"INSERT INTO profiles (handle, hash) VALUES(\"$handle\", \"$puid\")");
 		}
@@ -189,9 +198,11 @@ class toolbox {
 	
 	# Fetch the players most used alias based on hash
 	public function mostUsedHandle($puid) {
+		$playerID = $this->getPlayerIDByHash($puid);
 		$row = database::getInstance()->singleRow(
-			"SELECT handle, COUNT(handle) AS num FROM players WHERE hash=\"$puid\" GROUP BY handle ORDER BY num DESC LIMIT 1");
-		return $row['handle'];
+			"SELECT handle, COUNT(handle) AS num FROM players WHERE playerID=\"$playerID\" GROUP BY handle ORDER BY num DESC LIMIT 1");
+		
+		return $row[handle];
 	}
 	
 	/* Player stats functions
@@ -199,7 +210,7 @@ class toolbox {
 	
 	# Sum all kills of a player
 	public function sumPlayerKills($puid) {
-		$puid = $this->getPlayerID($puid);
+		$puid = $this->getPlayerIDByHash($puid);
 		$row = database::getInstance()->singleRow(
 			"SELECT COUNT(*) AS sum FROM kills WHERE killerID=\"$puid\" AND corpseID!=\"$puid\"");
 		database::getInstance()->sqlResult(
@@ -208,7 +219,7 @@ class toolbox {
 	
 	# Sum all deaths of a player
 	public function sumPlayerDeaths($puid) {
-		$puid = $this->getPlayerID($puid);
+		$puid = $this->getPlayerIDByHash($puid);
 		$row = database::getInstance()->singleRow(
 			"SELECT COUNT(*) AS sum FROM kills WHERE corpseID=\"$puid\" AND killerID!=\"$puid\"");
 		database::getInstance()->sqlResult(
@@ -217,7 +228,7 @@ class toolbox {
 	
 	# Sum all suicides of a player
 	public function sumPlayerSuicides($puid) {
-		$puid = $this->getPlayerID($puid);
+		$puid = $this->getPlayerIDByHash($puid);
 		$row = database::getInstance()->singleRow(
 			"SELECT COUNT(*) AS sum FROM kills WHERE killerID=\"$puid\" AND corpseID=\"$puid\"");
 		database::getInstance()->sqlResult(
@@ -226,16 +237,18 @@ class toolbox {
 	
 	# Sum all games of a player
 	public function sumPlayerGames($puid) {
+		$puid = $this->getPlayerIDByHash($puid);
 		$row = database::getInstance()->singleRow(
-			"SELECT COUNT(DISTINCT gid) AS sum FROM players WHERE hash=\"$puid\"");
+			"SELECT COUNT(DISTINCT gid) AS sum FROM players WHERE playerID=\"$puid\"");
 		database::getInstance()->sqlResult(
-			"UPDATE profiles SET games=\"$row[sum]\" WHERE hash=\"$puid\"");
+			"UPDATE profiles SET games=\"$row[sum]\" WHERE playerID=\"$puid\"");
 	}
 	
 	# Get a players last ELO-rating
 	public function getPlayerElo($puid, $method) {
+		$puid = $this->getPlayerIDByHash($puid);
 		$row = database::getInstance()->singleRow(
-			"SELECT elo FROM players WHERE hash=\"$puid\" AND elo IS NOT NULL ORDER BY id DESC LIMIT 1");
+			"SELECT elo FROM players WHERE playerID=\"$puid\" AND elo IS NOT NULL ORDER BY id DESC LIMIT 1");
 		
 		$elo = ($row[elo]) ? $row[elo] : 1000;
 		
@@ -243,7 +256,7 @@ class toolbox {
 			return $elo;
 		} else {
 			database::getInstance()->sqlResult(
-				"UPDATE profiles SET elo=\"$elo\" WHERE hash=\"$puid\"");
+				"UPDATE profiles SET elo=\"$elo\" WHERE playerID=\"$puid\"");
 		}
 	}
 	

@@ -78,21 +78,26 @@ class game extends toolbox {
 			
 		# Convert timestamp to seconds	
 		$matches[1] = $this->ts2seconds($matches[1]); 
-
-		# Is the player allready in the game?
-		if(!$this->playerInGame('handle', $matches[3], $gid)) {
-			database::getInstance()->sqlResult("INSERT INTO players (gid, ts, hash, handle)
-				VALUES(\"$gid\", \"$matches[1]\", \"$matches[2]\", \"$matches[3]\")");
-		}	
 		
 		# Create a profile for the player
-		$this->makePlayerProfile($matches[2]);
+		$this->makePlayerProfile($matches[2], $matches[3]);
+		
+		# Get player ID
+		$playerID = $this->getPlayerIDByHash($matches[2]);
+		
+		# Is the player allready in the game?
+		if(!$this->playerInGame('handle', $matches[3], $gid)) {
+			database::getInstance()->sqlResult("INSERT INTO players (gid, ts, playerID, handle)
+				VALUES(\"$gid\", \"$matches[1]\", \"$playerID\", \"$matches[3]\")");
+		}	
 	}
+	
 	/* Add team to a player ($matches: [1] timestamp [2] hash [3] team [4] handle)
 	--------------------------------------------------------------------------------------------------------*/
 	public function addTeamMember($matches, $gid) {
+		
 		# Skip the player if no hash exists
-		if(strlen($matches[2]) > 0) {
+		if(strlen($matches[2]) < 8) {
 			return 0;
 		}
 		# Convert timestamp to seconds	
@@ -100,7 +105,7 @@ class game extends toolbox {
 		
 		# Leaving 8 last chars of the hash
 		$matches[2] = substr($matches[2], -8);
-		
+
 		# We don't need to assign new teams if the game allready is running
 		if($this->gameData('rcount', $gid) > 5) {
 			return 0;

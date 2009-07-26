@@ -12,19 +12,25 @@ class handler extends toolbox {
 		$matches[1] = $this->ts2seconds($matches[1]); 
 		
 		# Leaving 8 last chars of the hash
-			$matches[2] = substr($matches[2], -8);
+		$matches[2] = substr($matches[2], -8);
 		
-		database::getInstance()->sqlResult("INSERT INTO quotes (gid, ts, hash, handle, quote) 
-			VALUES(\"$gid\", \"$matches[1]\", \"$matches[2]\", \"$matches[3]\", \"$matches[4]\")");
+		# Fetch player ID
+		$playerID = $this->getPlayerIDByHash($matches[2]);
+		
+		database::getInstance()->sqlResult("INSERT INTO quotes (gid, ts, playerID, quote) 
+			VALUES(\"$gid\", \"$matches[1]\", \"$playerID\", \"$matches[4]\")");
 	}
 	public function addPlayerAction($matches, $gid) {
 		# Convert timestamp to seconds	
 		$matches[1] = $this->ts2seconds($matches[1]); 
 		
+		# Fetch player ID
+		$playerID = $this->getPlayerIDByHash($matches[3]);
+		
 		$matches[3] = preg_replace('/axis;|allies;/','',$matches[3]);
 		
-		database::getInstance()->sqlResult("INSERT INTO actions (gid, ts, action, hash, handle) 
-			VALUES(\"$gid\", \"$matches[1]\", \"$matches[2]\", \"$matches[3]\", \"$matches[4]\")");
+		database::getInstance()->sqlResult("INSERT INTO actions (gid, ts, action, playerID) 
+			VALUES(\"$gid\", \"$matches[1]\", \"$matches[2]\", \"$playerID\")");
 	}
 	public function addTeamScore($matches, $gid) {
 		$highscore = max($matches[2], $matches[3]);

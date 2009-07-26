@@ -37,8 +37,8 @@ class damage extends toolbox {
 		}
 		
 		# Get player IDs
-		$hitmanID = $this->getPlayerID($matches[5]);
-		$woundedID = $this->getPlayerID($matches[2]);
+		$hitmanID = $this->getPlayerIDByHash($matches[5]);
+		$woundedID = $this->getPlayerIDByHash($matches[2]);
 		
 		# Assign teams to players unless the game is running a modification
 		if($this->gameData('mods', $gid) == 'none') {
@@ -89,8 +89,8 @@ class damage extends toolbox {
 		}		
 		
 		# Get player IDs
-		$killerID = $this->getPlayerID($matches[5]);
-		$corpseID = $this->getPlayerID($matches[2]);
+		$killerID = $this->getPlayerIDByHash($matches[5]);
+		$corpseID = $this->getPlayerIDByHash($matches[2]);
 		
 		# Convert mods to weapons 
 		$matches[8] = $this->weaponMods($matches[8], $matches[10]);
