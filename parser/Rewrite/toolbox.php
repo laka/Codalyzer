@@ -336,9 +336,9 @@ class toolbox {
 	# Adjust game duration (start/stop)
 	public function adjustGameDuration($gid, $limit) {
 		$start = database::getInstance()->singleRow(
-			"SELECT ts FROM kills WHERE killer!=corpse AND gid=\"$gid\" ORDER BY id ASC LIMIT $limit,1");
+			"SELECT ts FROM kills WHERE killerID!=corpseID AND gid=\"$gid\" ORDER BY id ASC LIMIT $limit,1");
 		$stop = database::getInstance()->singleRow(
-			"SELECT ts FROM kills WHERE killer!=corpse AND gid=\"$gid\" ORDER BY id DESC LIMIT $limit,1");
+			"SELECT ts FROM kills WHERE killerID!=corpseID AND gid=\"$gid\" ORDER BY id DESC LIMIT $limit,1");
 		
 		$duration = round(($stop[ts] - $start[ts])/60);
 		

@@ -10,6 +10,7 @@ require_once('damages.php');
 require_once('handlers.php');
 require_once('loopwrap.php');
 require_once('parser.php');
+require_once('streaks.php');
 
 $db = database::getInstance();
 
