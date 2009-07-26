@@ -1,4 +1,5 @@
 <?php
+
 class logfile {
 	private $logfile, $numlines, $path, $proto, $size;
 

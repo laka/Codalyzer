@@ -275,6 +275,18 @@ class toolbox {
 		database::getInstance()->sqlResult("TRUNCATE TABLE profiles");
 	}
 	
+	# Optimize tables
+	public function optimizeTables($limit) {
+		database::getInstance()->sqlResult("OPTIMIZE TABLE games");
+		database::getInstance()->sqlResult("OPTIMIZE TABLE players");
+		database::getInstance()->sqlResult("OPTIMIZE TABLE kills");
+		database::getInstance()->sqlResult("OPTIMIZE TABLE hits");
+		database::getInstance()->sqlResult("OPTIMIZE TABLE quotes");
+		database::getInstance()->sqlResult("OPTIMIZE TABLE alias");
+		database::getInstance()->sqlResult("OPTIMIZE TABLE actions");
+		database::getInstance()->sqlResult("OPTIMIZE TABLE profiles");
+	}
+	
 	/* Cleanup functions
 	--------------------------------------------------------------------------------------------------------*/
 	
