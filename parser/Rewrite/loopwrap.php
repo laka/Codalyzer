@@ -2,12 +2,14 @@
 
 require_once('toolbox.php');
 require_once('ratings.php');
+require_once('streaks.php');
 
 class loopwrap extends toolbox {
-	private $db, $rating;
+	private $db, $rating, $streaks;
 	
 	public function __construct() {
 		$this->db = database::getInstance();
+		$this->streaks = new streaks();
 		$this->rating = new rating();
 	}
 	public function gamesLoop() {
@@ -21,6 +23,10 @@ class loopwrap extends toolbox {
 			}
 			# Run our ELO-rating system
 			$this->rating->eloRating($row['id']);
+			
+			# Measure kill and death streaks
+			$this->streaks->killStreak($row['id']);
+			$this->streaks->deathStreak($row['id']);
 			
 			# Fix start&stop times
 			$this->adjustGameDuration($row['id'], 0);
