@@ -241,7 +241,7 @@ class toolbox {
 		$row = database::getInstance()->singleRow(
 			"SELECT COUNT(DISTINCT gid) AS sum FROM players WHERE playerID=\"$puid\"");
 		database::getInstance()->sqlResult(
-			"UPDATE profiles SET games=\"$row[sum]\" WHERE playerID=\"$puid\"");
+			"UPDATE profiles SET games=\"$row[sum]\" WHERE id=\"$puid\"");
 	}
 	
 	# Get a players last ELO-rating
@@ -256,7 +256,7 @@ class toolbox {
 			return $elo;
 		} else {
 			database::getInstance()->sqlResult(
-				"UPDATE profiles SET elo=\"$elo\" WHERE playerID=\"$puid\"");
+				"UPDATE profiles SET elo=\"$elo\" WHERE id=\"$puid\"");
 		}
 	}
 	
