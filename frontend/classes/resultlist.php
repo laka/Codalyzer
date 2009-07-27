@@ -56,22 +56,13 @@ class resultlist extends orderedtable {
 		$result = database::getInstance()->sqlResult($sql);
         // For modes with no teams
 		if(!$this->teams){
-            if(!DISTINGUISH_BY_HASH){
-                $this->query = "SELECT handle, IFNULL(elo,(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1)) as elo,
-                        (SELECT COUNT('') FROM kills WHERE killer=p.handle AND gid=p.gid AND killer != corpse) AS kills,
-                        (SELECT COUNT('') FROM kills WHERE corpse=p.handle AND gid=p.gid AND killer != corpse) AS deaths,
-                        (SELECT COUNT('') FROM kills WHERE corpse=p.handle AND killer = corpse AND gid=p.gid) AS suicides,
-                        IFNULL(elo-IFNULL((SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1),1000),0) as elodiff
-                        FROM players as p WHERE gid={$this->gid}";
-            } else {
-                $this->query = "SELECT handle, hash, IFNULL(elo,(SELECT elo FROM players WHERE hash=p.hash AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1)) as elo,
-                        (SELECT id FROM profiles WHERE hash=p.hash LIMIT 1) AS id,
-                        (SELECT COUNT('') FROM kills WHERE k_hash=p.hash AND gid=p.gid AND k_hash != c_hash) AS kills,
-                        (SELECT COUNT('') FROM kills WHERE c_hash=p.hash AND gid=p.gid AND k_hash != c_hash) AS deaths,
-                        (SELECT COUNT('') FROM kills WHERE c_hash=p.hash AND k_hash = c_hash AND gid=p.gid) AS suicides,
-                        IFNULL(elo-IFNULL((SELECT elo FROM players WHERE hash=p.hash AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1),1000),0) as elodiff
-                        FROM players as p WHERE gid={$this->gid}";
-            }            
+            $this->query = "SELECT playerID, handle, IFNULL(elo,(SELECT elo FROM players WHERE playerID=p.playerID AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1)) as elo,
+                                    (SELECT COUNT('') FROM kills WHERE killerID=p.playerID AND gid=p.gid AND killerID != corpseID) AS kills,
+                                    (SELECT COUNT('') FROM kills WHERE corpseID=p.playerID AND gid=p.gid AND killerID != corpseID) AS deaths,
+                                    (SELECT COUNT('') FROM kills WHERE corpseID=p.playerID AND killerID = corpseID AND gid=p.gid) AS suicides,
+                                    IFNULL(elo-IFNULL((SELECT elo FROM players WHERE playerID=p.playerID AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1),1000),0) as elodiff
+                                    FROM players as p WHERE gid={$this->gid}";
+
 			$thiscoldata =       array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "40%", 'totalstring', URL_BASE .'mode=profile&amp;h='),
                                        'kills' 	    =>  array (array('kills' => 1, 'suicides' => 0, 'deaths' => 0), $this->lang['abb_kills'], "12%","sum"),
 								       'deaths' 	=>  array (array('deaths' => 1, 'sucides' => 0, 'kills' => 0), $this->lang['abb_deaths'], "12%","sum"),
@@ -79,39 +70,22 @@ class resultlist extends orderedtable {
 									   'elo' 		=>  array (array('elo' => 1), $this->lang['th_elo'], "12%", "avg"),
                                        'elodiff'    =>  array (array('elodiff' => 1), "+", "15%", "sum", '', '0')
 									   );
-            if(DISTINGUISH_BY_HASH){
-                $thiscoldata['handle'][4] .= "*id*";
-            }
+            $thiscoldata['handle'][4] .= "*playerID*";
             $this->setColumnData($thiscoldata);
-            
             
 		} else {
             if($this->teamdata){
-                if(!DISTINGUISH_BY_HASH){
-                    $teamdataquery = "(SELECT COUNT('') FROM kills WHERE killer=p.handle AND killer != corpse AND k_team = c_team AND gid=p.gid) AS teamkills,";
-                } else {
-                    $teamdataquery = "(SELECT COUNT('') FROM kills WHERE k_hash=p.hash AND k_hash != c_hash  AND k_team = c_team AND gid=p.gid) AS teamkills,";                
-                }
+                $teamdataquery = "(SELECT COUNT('') FROM kills WHERE killerID=p.playerID AND killerID != corpseID  AND k_team = c_team AND gid=p.gid) AS teamkills,";                
             }
             
-            if(!DISTINGUISH_BY_HASH){            
-                $this->query = "SELECT handle, IFNULL(elo,(SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1)) as elo,
-                        (SELECT COUNT('') FROM kills WHERE killer=p.handle AND gid=p.gid) AS kills,
-                        (SELECT COUNT('') FROM kills WHERE corpse=p.handle AND gid=p.gid) AS deaths,
-                        (SELECT COUNT('') FROM kills WHERE corpse=p.handle AND killer = corpse AND gid=p.gid) AS suicides, $teamdataquery
-                        (SELECT COUNT('') FROM actions WHERE handle=p.handle AND gid=p.gid) AS actions,
-                        IFNULL(elo-IFNULL((SELECT elo FROM players WHERE handle=p.handle AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1),1000),0) as elodiff
-                        FROM players as p WHERE gid={$this->gid} AND team='$team'";
-            } else {
-                $this->query = "SELECT handle, hash, IFNULL(elo,(SELECT elo FROM players WHERE hash=p.hash AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1)) as elo,
-                        (SELECT id FROM profiles WHERE hash=p.hash LIMIT 1) AS id,
-                        (SELECT COUNT('') FROM kills WHERE k_hash=p.hash AND gid=p.gid) AS kills,
-                        (SELECT COUNT('') FROM kills WHERE c_hash=p.hash AND gid=p.gid) AS deaths,
-                        (SELECT COUNT('') FROM kills WHERE c_hash=p.hash AND k_hash = c_hash AND gid=p.gid) AS suicides, $teamdataquery
-                        (SELECT COUNT('') FROM actions WHERE hash=p.hash AND gid=p.gid) AS actions,
-                        IFNULL(elo-IFNULL((SELECT elo FROM players WHERE hash=p.hash AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1),1000),0) as elodiff
-                        FROM players as p WHERE gid={$this->gid} AND team='$team'";
-            }
+            $this->query = "SELECT playerID, handle, IFNULL(elo,(SELECT elo FROM players WHERE playerID=p.playerID AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1)) as elo,
+                    (SELECT COUNT('') FROM kills WHERE killerID=p.playerID AND gid=p.gid AND killerID != corpseID) AS kills,
+                    (SELECT COUNT('') FROM kills WHERE corpseID=p.playerID AND gid=p.gid AND killerID != corpseID) AS deaths,
+                    (SELECT COUNT('') FROM kills WHERE corpseID=p.playerID AND killerID = corpseID AND gid=p.gid) AS suicides, $teamdataquery
+                    (SELECT COUNT('') FROM actions WHERE playerID=p.playerID AND gid=p.gid) AS actions,
+                    IFNULL(elo-IFNULL((SELECT elo FROM players WHERE playerID=p.playerID AND gid<{$this->gid} AND elo IS NOT NULL ORDER BY gid DESC LIMIT 1),1000),0) as elodiff
+                    FROM players as p WHERE gid={$this->gid} AND team='$team'";     
+
             // for mods where teamdata is logged for each kill
             if($this->teamdata){
                $thiscoldata =     array('handle' 	=>  array (array('handle' => 1), $this->lang['th_player'], "28%", 'totalstring', URL_BASE .'mode=profile&amp;h='),
@@ -123,9 +97,7 @@ class resultlist extends orderedtable {
                                         'elo' 		=>  array (array('elo' => 1), $this->lang['th_elo'], "12%", "avg"),
                                         'elodiff'   =>  array (array('elodiff' => 1), "+", "15%", "sum", '', '0')
                                         );
-                if(DISTINGUISH_BY_HASH){
-                    $thiscoldata['handle'][4] .= "*id*";
-                }
+                $thiscoldata['handle'][4] .= "*playerID*";
                 $this->setColumnData($thiscoldata);
             } else {
                 // for mods where teamdata is not logged for each kill (teamkills are ignored)   
@@ -147,9 +119,7 @@ class resultlist extends orderedtable {
                                             'elodiff'   =>  array (array('elodiff' => 1), "+", "13%", "sum", '', '0')
                                             );
                 }
-                if(DISTINGUISH_BY_HASH){
-                    $thiscoldata['handle'][4] .= "*id*";
-                }
+                $thiscoldata['handle'][4] .= "*playerID*";
                 $this->setColumnData($thiscoldata);
             }
 		}	

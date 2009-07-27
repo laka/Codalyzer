@@ -9,21 +9,14 @@
 if(strlen($_GET['h']) > 0){
     // gets data from the profiles, players and streak tables
     $id = $db->sqlQuote($_GET['h']);
-    if(!DISTINGUISH_BY_HASH){
-        $sql = "SELECT *, ROUND((kills/(deaths+1)),2) as kpd,
-                (SELECT elo FROM players WHERE handle = '$id' ORDER BY gid DESC LIMIT 1) AS elo, 
-                (SELECT elo FROM players WHERE handle = '$id' ORDER BY gid DESC LIMIT 1,1) AS prevelo,
-                (SELECT streak FROM streaks WHERE handle = '$id' AND type='kill' ORDER BY streak DESC LIMIT 1) as killstreak,
-                (SELECT streak FROM streaks WHERE handle = '$id' AND type='death' ORDER BY streak DESC LIMIT 1) as deathstreak
-                FROM profiles where handle='$id' LIMIT 1";
-    } else {
-        $sql = "SELECT *, ROUND((kills/(deaths+1)),2) as kpd,
-            (SELECT elo FROM players WHERE hash = profiles.hash ORDER BY gid DESC LIMIT 1) AS elo, 
-            (SELECT elo FROM players WHERE hash = profiles.hash ORDER BY gid DESC LIMIT 1,1) AS prevelo,
-            (SELECT streak FROM streaks WHERE hash = profiles.hash AND type='kill' ORDER BY streak DESC LIMIT 1) as killstreak,
-            (SELECT streak FROM streaks WHERE hash = profiles.hash AND type='death' ORDER BY streak DESC LIMIT 1) as deathstreak
-            FROM profiles where id='$id' LIMIT 1";  
-    }
+    
+    $sql = "SELECT *, ROUND((kills/(deaths+1)),2) as kpd,
+        (SELECT elo FROM players WHERE playerID = profiles.id ORDER BY gid DESC LIMIT 1) AS elo, 
+        (SELECT elo FROM players WHERE playerID = profiles.id ORDER BY gid DESC LIMIT 1,1) AS prevelo,
+        (SELECT streak FROM streaks WHERE playerID = profiles.id AND type='kill' ORDER BY streak DESC LIMIT 1) as killstreak,
+        (SELECT streak FROM streaks WHERE playerID = profiles.id AND type='death' ORDER BY streak DESC LIMIT 1) as deathstreak
+        FROM profiles WHERE id='$id' LIMIT 1";  
+
     $data = $db->singleRow ($sql);
     $handle = $db->sqlQuote($data['handle']);
     
@@ -66,20 +59,14 @@ if(strlen($_GET['h']) > 0){
         // AWARDS SHOULD BE HERE
         
         // EASIEST PREY - WORST ENEMY - UGLY NESTED TABLES, SHOULD MAYBE BE DIVs
-        // THE ONLY DIFFERENCE BETWEEN THESE TWO IS THE ORDER..
 
         echo "<table width=\"100%\">\n<tr>\n<td valign=\"top\" width=\"50%\">";
         echo "<h2>" . $lang['tt_easiestpreys'] . "</h2>";
-            if(!DISTINGUISH_BY_HASH){
-                $query = "SELECT corpse, COUNT('') AS killcount, d.deathcount, round(COUNT('')*100/". $data['kills'] .",2) as percentage, (COUNT('')/d.deathcount) AS ratio
-                          FROM kills AS k LEFT JOIN (SELECT killer AS mm, COUNT('')  AS deathcount FROM kills WHERE corpse = '". $handle ."' GROUP BY killer) AS d 
-                          ON k.corpse = d.mm WHERE k.killer = '". $handle ."' GROUP BY corpse HAVING percentage > 0.4";
-            } else {
-                $query = "SELECT d.handle as corpse, c_hash, d.id, COUNT('') AS killcount, d.deathcount, round(COUNT('')*100/". $data['kills'] .",2) as percentage, (COUNT('')/d.deathcount) AS ratio FROM kills as k
-                          LEFT JOIN (SELECT k_hash, profiles.handle, profiles.id, COUNT('') AS deathcount FROM kills LEFT JOIN profiles ON k_hash = profiles.hash WHERE c_hash='". $data['hash'] ."' GROUP BY k_hash) as d 
-                          ON d.k_hash = c_hash  WHERE k.k_hash = '". $data['hash'] ."' GROUP BY c_hash HAVING percentage > 0.4";
-            }   
-            
+	  
+			$query = "SELECT k.corpseID, d.handle as corpse, d.deathcount, round(COUNT('')*100/". $data['kills'] .",2) as percentage, (COUNT('')/d.deathcount) AS ratio, COUNT('') AS killcount FROM kills as k 
+					  LEFT JOIN (SELECT killerID, profiles.handle, COUNT('') AS deathcount FROM kills LEFT JOIN profiles ON killerID=profiles.id WHERE corpseID=". $data['id'] ." GROUP BY killerID
+					  ) as d ON d.killerID=k.corpseID WHERE k.killerID=". $data['id'] ." GROUP BY k.corpseID HAVING percentage > 0.4";
+
             $easiestprey = new orderedtable($query, 1);
             $easiestprey->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($id));
             $easiestprey->setUrlVars(array('mode', 'h'));
@@ -88,30 +75,21 @@ if(strlen($_GET['h']) > 0){
             $easiestprey->setLimit('15');
             $easiestprey->setWidth('100%');
             $easiestprey->setClass('summary');
-            $preycoldata =            array('corpse' => array (array('corpse' => 1), $lang['th_player'], "40%", 0, URL_BASE . "mode=profile&amp;h="),
+            $preycoldata =            array('corpse' => array (array('corpse' => 1), $lang['th_player'], "40%", 0, URL_BASE . "mode=profile&amp;h=*corpseID*"),
                                             'ratio' => array (array('ratio' => 1, 'killcount' => 1), $lang['abb_kpd'], "15%"),
                                             'killcount' => array (array('killcount' => 1, 'deathcount' => 0), $lang['abb_kills'], "15%"),
                                             'deathcount' => array (array('deathcount' => 1, 'killcount' => 0), $lang['abb_deaths'], "15%"),
                                             'percentage' => array (array('percentage' => 1, 'killcount' => 1), $lang['abb_percentage'], "15%")                                                
                                        );
-            // uses the hash in the url instead of the handle, if DISTINGUISH_BY_HASH is set.
-            if(DISTINGUISH_BY_HASH){
-                $preycoldata['corpse'][4] .= "*id*";
-            }
+
             $easiestprey->setColumndata($preycoldata);
             $easiestprey->printTable();	
             
         echo "</td>\n<td valign=\"top\" width=\"50%\">\n";
-        echo "<h2>" . $lang['tt_worstenemies'] . "</h2>";
-            if(!DISTINGUISH_BY_HASH){
-                $query = "SELECT corpse, COUNT('') AS killcount, d.deathcount, round(COUNT('')*100/". $data['kills'] .",2) as percentage, (COUNT('')/d.deathcount) AS ratio
-                          FROM kills AS k LEFT JOIN (SELECT killer AS mm, COUNT('')  AS deathcount FROM kills WHERE corpse = '". $handle ."' GROUP BY killer) AS d 
-                          ON k.corpse = d.mm WHERE k.killer = '". $handle ."' GROUP BY corpse HAVING percentage > 0.4";
-            } else {
-                $query = "SELECT d.handle as corpse, c_hash, d.id, COUNT('') AS killcount, d.deathcount, round(COUNT('')*100/". $data['kills'] .",2) as percentage, (COUNT('')/d.deathcount) AS ratio FROM kills as k
-                          LEFT JOIN (SELECT k_hash, profiles.handle, profiles.id, COUNT('') AS deathcount FROM kills LEFT JOIN profiles ON k_hash = profiles.hash WHERE c_hash='". $data['hash'] ."' GROUP BY k_hash) as d 
-                          ON d.k_hash = c_hash  WHERE k.k_hash = '". $data['hash'] ."' GROUP BY c_hash HAVING percentage > 0.4";
-            }   
+        echo "<h2>" . $lang['tt_worstenemies'] . "</h2>"; 
+			$query = "SELECT killerID, k.handle as killer, COUNT('') AS deathcount, k.killcount, (k.killcount/COUNT('')) as ratio, ROUND(COUNT('')*100/". $data['deaths'] .",2) as percentage FROM kills as d
+                      LEFT JOIN (SELECT corpseID, profiles.handle, COUNT('') AS killcount FROM kills LEFT JOIN profiles ON corpseID=profiles.id WHERE killerID='". $data['id'] ."' GROUP BY corpseID
+                      ) as k ON d.killerID=k.corpseID WHERE d.corpseID='". $data['id'] ."' GROUP BY killerID HAVING percentage > 0.4";
 
             $worstenemy = new orderedtable($query, 1);
             $worstenemy->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($id));
@@ -121,16 +99,12 @@ if(strlen($_GET['h']) > 0){
             $worstenemy->setLimit('15');
             $worstenemy->setWidth('100%');
             $worstenemy->setClass('summary');
-            $enemycoldata =           array('corpse' => array (array('corpse' => 1), $lang['th_player'], "40%", 0, URL_BASE . "mode=profile&amp;h="),
+            $enemycoldata =           array('killer' => array (array('killer' => 1), $lang['th_player'], "40%", 0, URL_BASE . "mode=profile&amp;h=*killerID*"),
                                             'ratio' => array (array('ratio' => 1, 'killcount' => 1), $lang['abb_kpd'], "15%"),
-                                            'deathcount' => array (array('deathcount' => 1, 'killcount' => 0), $lang['abb_kills'], "15%"),
-                                            'killcount' => array (array('killcount' => 1, 'deathcount' => 0), $lang['abb_deaths'], "15%"),
+                                            'killcount' => array (array('killcount' => 1, 'deathcount' => 0), $lang['abb_kills'], "15%"),
+                                            'deathcount' => array (array('deathcount' => 1, 'killcount' => 0), $lang['abb_deaths'], "15%"),
                                             'percentage' => array (array('percentage' => 1, 'killcount' => 1), $lang['abb_percentage'], "15%")                                                
                                        );		
-            // uses the hash in the url instead of the handle, if DISTINGUISH_BY_HASH is set.
-            if(DISTINGUISH_BY_HASH){
-                $enemycoldata['corpse'][4] .= "*id*";
-            }
             $worstenemy->setColumndata($enemycoldata);                       
             $worstenemy->printTable();       
         echo "</tr>\n</table>";
@@ -138,13 +112,10 @@ if(strlen($_GET['h']) > 0){
         // FAVORITE WEAPON - MOST COMMON DEATH
         echo "<table width=\"100%\">\n<tr>\n<td valign=\"top\" width=\"50%\">";
         echo "<h2>" . $lang['tt_favoriteweapons'] . "</h2>";
-            if(!DISTINGUISH_BY_HASH){
-                $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as k, round(count('')*100/{$data['kills']},2) as percentage
-                          FROM weapons, kills, games WHERE kills.weapon=weapons.name AND kills.gid=games.id AND games.version=weapons.version AND killer='$handle' AND corpse != '$handle' GROUP BY weapon";
-            } else {
-                $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as k, round(count('')*100/{$data['kills']},2) as percentage
-                          FROM weapons, kills, games WHERE kills.weapon=weapons.name AND kills.gid=games.id AND games.version=weapons.version AND k_hash='". $data['hash'] ."' AND c_hash != '". $data['hash'] ."' GROUP BY weapon";            
-            }
+
+            $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as k, round(count('')*100/{$data['kills']},2) as percentage
+                      FROM weapons, kills, games WHERE kills.weapon=weapons.name AND kills.gid=games.id AND games.version=weapons.version AND killerID='". $data['id'] ."' AND corpseID != '". $data['id'] ."' GROUP BY weapon";            
+
             $favoriteweapon = new orderedtable($query, 1);
             $favoriteweapon->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($id));
             $favoriteweapon->setUrlVars(array('mode', 'h'));
@@ -162,13 +133,9 @@ if(strlen($_GET['h']) > 0){
             
         echo "</td>\n<td valign=\"top\">\n";  
         echo "<h2>" . $lang['tt_frequentdeaths'] . "</h2>";
-            if(!DISTINGUISH_BY_HASH){
-                $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as d, round(count('')*100/{$data['deaths']},2) as percentage
-                        FROM weapons, kills WHERE kills.weapon=weapons.name AND corpse='$handle' AND killer != '$handle' GROUP BY weapon";
-            } else {
-                $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as d, round(count('')*100/{$data['deaths']},2) as percentage
-                        FROM weapons, kills WHERE kills.weapon=weapons.name AND c_hash='". $data['hash'] ."' AND k_hash != '". $data['hash'] ."' GROUP BY weapon";            
-            }
+
+            $query = "SELECT weapon, attachments, full, CONCAT_WS(' with ', full, attachments) as weaponfull, mother, weapons.id, COUNT('') as d, round(count('')*100/{$data['deaths']},2) as percentage
+                    FROM weapons, kills WHERE kills.weapon=weapons.name AND corpseID='". $data['id'] ."' AND killerID != '". $data['id'] ."' GROUP BY weapon";            
 
             $frequentdeath = new orderedtable($query, 1);
             $frequentdeath->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($id));
@@ -190,11 +157,8 @@ if(strlen($_GET['h']) > 0){
         echo "<table width=\"100%\">\n<tr>\n<td valign=\"top\" width=\"50%\">";
         echo "<h2>" . $lang['tt_randomquotes'] . "</h2>";
             
-            if(!DISTINGUISH_BY_HASH){
-                $query = "SELECT quote, gid FROM quotes WHERE (handle='$handle' AND length(quote)>5)";
-            } else {
-                $query = "SELECT quote, gid FROM quotes WHERE (hash='". $data['hash'] ."' AND length(quote)>5)";
-            }
+            $query = "SELECT quote, gid FROM quotes WHERE (playerID='". $data['id'] ."' AND length(quote)>5)";
+            
             $randomchat = new orderedtable($query, 0);
             $randomchat->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($id));
             $randomchat->setUrlVars(array('mode', 'h'));
@@ -211,11 +175,8 @@ if(strlen($_GET['h']) > 0){
         echo "</td>\n<td valign=\"top\">\n";  
         echo "<h2>" . $lang['tt_lastgames'] . "</h2>";
         
-            if(!DISTINGUISH_BY_HASH){
-                $query = "SELECT gid, map, type FROM players, games WHERE handle='$handle' AND players.gid=games.id";
-            } else {
-                $query = "SELECT gid, map, type FROM players, games WHERE hash='". $data['hash'] ."' AND players.gid=games.id";
-            }
+            $query = "SELECT gid, map, type FROM players, games WHERE playerID='". $data['id'] ."' AND players.gid=games.id";
+
             $lastgames = new orderedtable($query, 0);
             $lastgames->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($id));
             $lastgames->setUrlVars(array('mode', 'h'));
@@ -238,13 +199,8 @@ if(strlen($_GET['h']) > 0){
         echo "<table width=\"100%\">\n<tr>\n<td valign=\"top\" width=\"50%\">";
         echo "<h2>" . $lang['tt_brightestmom'] . "</h2>";
             mysql_query("SET@prev=1000");
-            if(!DISTINGUISH_BY_HASH){
-                $query = "SELECT gid, elo, (elo-previous) as elochange FROM(
-                          SELECT *, @prev as previous, @prev:=elo FROM players WHERE handle = '$handle' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";
-            } else {
-                $query = "SELECT gid, elo, (elo-previous) as elochange FROM(
-                          SELECT *, @prev as previous, @prev:=elo FROM players WHERE hash = '". $data['hash'] ."' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";            
-            }
+            $query = "SELECT gid, @prev as previous, (elo-@prev) as elochange, @prev:=elo as elo FROM players WHERE playerID = '". $data['id'] ."' AND elo IS NOT NULL";
+
             $brightest = new orderedtable($query);
             $brightest->setUrl("?mode=profile&amp;h=".urlencode($id));
             $brightest->setUrlVars(array('mode', 'h'));
@@ -263,13 +219,9 @@ if(strlen($_GET['h']) > 0){
         echo "</td>\n<td valign=\"top\">\n";  
         echo "<h2>" . $lang['tt_darkestmoments'] . "</h2>";
             mysql_query("SET@prev=1000");
-            if(!DISTINGUISH_BY_HASH){
-                $query = "SELECT gid, elo, (elo-previous) as elochange FROM(
-                          SELECT *, @prev as previous, @prev:=elo FROM players WHERE handle = '$handle' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";
-            } else {
-                $query = "SELECT gid, elo, (elo-previous) as elochange FROM(
-                          SELECT *, @prev as previous, @prev:=elo FROM players WHERE hash = '". $data['hash'] ."' AND elo IS NOT NULL ORDER BY gid ASC) as allchanges";            
-            }
+
+            $query = "SELECT gid, @prev as previous, (elo-@prev) as elochange, @prev:=elo as elo FROM players WHERE playerID = '". $data['id'] ."' AND elo IS NOT NULL";
+
             $darkest = new orderedtable($query);
             $darkest->setUrl(URL_BASE . "mode=profile&amp;h=".urlencode($id));
             $darkest->setUrlVars(array('mode', 'h'));

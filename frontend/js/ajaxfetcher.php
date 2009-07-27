@@ -34,12 +34,12 @@ document.getElementById('weapon').onchange = function (){
 	user_input = wp_select.options[wp_select.selectedIndex].value
 
 	xmlhttp.open("GET", "<?php echo FRONTEND_URL; ?>/inc/hitfetcher.php?h=<?php echo $uid; ?>&w=" + user_input, true);
-	
+
 	xmlhttp.onreadystatechange=function() {
 		if (xmlhttp.readyState==4) {
 			eval(xmlhttp.responseText)
 			if(hits.length > 0){
-				document.getElementById('hitdiagram').src = 'graphs/hitgraph.php?h=<?php echo $uid; ?>&t=' + hits;
+				document.getElementById('hitdiagram').src = '<?php echo FRONTEND_URL; ?>/graphs/hitgraph.php?h=<?php echo $uid; ?>&t=' + hits;
 				var hittable = document.getElementById("hittable")
 				var hitarray = hits.split(",");
 				var antallrader = hittable.rows.length;

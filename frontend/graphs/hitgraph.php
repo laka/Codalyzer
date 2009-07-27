@@ -10,7 +10,7 @@ include '../../config.php';
 include '../classes/graph.php';
 include '../inc/header.php';
 
-//header ('Content-type: image/png');
+header ('Content-type: image/png');
 
 // validates $_GET-input
 if(strlen($_GET['h']) > 0){

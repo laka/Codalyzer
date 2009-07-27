@@ -14,11 +14,8 @@ header ('Content-type: image/png');
 
 // validates the given user id
 if($db->isPlayer($_GET['h']) > 0){
-    if(!DISTINGUISH_BY_HASH){
-        $sql = "SELECT gid, elo FROM players WHERE handle='{$_GET['h']}' AND elo IS NOT NULL ORDER BY gid ASC";
-    } else {
-        $sql = "SELECT gid, players.elo FROM players, profiles WHERE players.hash=profiles.hash AND profiles.id={$_GET['h']} AND players.elo IS NOT NULL ORDER BY gid ASC";
-    }
+    $sql = "SELECT gid, players.elo FROM players, profiles WHERE players.playerID=profiles.id AND profiles.id={$_GET['h']} AND players.elo IS NOT NULL ORDER BY gid ASC";
+    
     $result = $db->sqlResult($sql);
     while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
         $elod[] = $row['gid'];		

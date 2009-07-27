@@ -76,53 +76,36 @@ if(is_numeric($_GET['w'])){
             // WHO HAS THE MOST KILLS WITH THIS WEAPON?                    
             echo "<h2>" . $lang['tt_mostkillswith'] . " " . $row['full'] . "</h2>";
             
-            if(!DISTINGUISH_BY_HASH){
-                $sql = "SELECT handle, COUNT('') as killcount, (COUNT('')/profiles.kills*100) AS percentage FROM kills, games, profiles
-                        WHERE killer != corpse AND kills.gid = games.id AND games.version='". $row['version'] ."' AND ($weaponsql) AND profiles.handle=kills.killer GROUP BY killer";
-            } else {
-                $sql = "SELECT profiles.id, handle, hash, COUNT('') as killcount, (COUNT('')/profiles.kills*100) AS percentage FROM kills, games, profiles
-                        WHERE k_hash != c_hash AND kills.gid = games.id AND games.version='". $row['version'] ."' AND ($weaponsql) AND profiles.hash=k_hash GROUP BY k_hash";
-            }
+            $sql = "SELECT profiles.id, handle, COUNT('') as killcount, (COUNT('')/profiles.kills*100) AS percentage FROM kills, games, profiles
+                    WHERE killerID != corpseID AND kills.gid = games.id AND games.version='". $row['version'] ."' AND ($weaponsql) AND profiles.id=killerID GROUP BY killerID";
 
             $mostkillswith = new orderedtable($sql, 1);               
             $mostkillswith->setClass('summary');
             $mostkillswith->setUrl(URL_BASE . 'mode=weapon&w=' . $weaponid);		 
             $mostkillswith->setLimit(20);  
             $mostkillswith->setOrderBy('killcount');
-            $mostkillswithcoldata =       array('handle' 		=> array (array('killer' => 1), $lang['th_player'], "30%", 0, URL_BASE . "mode=profile&amp;h="),
+            $mostkillswithcoldata =       array('handle' 		=> array (array('killer' => 1), $lang['th_player'], "30%", 0, URL_BASE . "mode=profile&amp;h=*id*"),
                                                 'killcount' 	=> array (array('killcount' => 1, 'percentage' => 1), $lang['th_kills'], "30%"),
                                                 'percentage' 	=> array (array('percentage' => 1), $lang['th_percentage'], "30%")
                                                 );	
-            if(DISTINGUISH_BY_HASH){
-                $mostkillswithcoldata['handle'][4] .= "*id*";
-            }
             $mostkillswith->setColumnData($mostkillswithcoldata);                
             $mostkillswith->printTable();
 
             // WHO HAS THE MOST DEATHS WITH THIS WEAPON?                    
             echo "<h2>" . $lang['tt_mostdeathsby'] . " " . $row['full'] . "</h2>";
             
-
-            if(!DISTINGUISH_BY_HASH){
-                $sql = "SELECT handle, COUNT('') as deathcount, (COUNT('')/profiles.deaths*100) AS percentage FROM kills, games, profiles
-                        WHERE killer != corpse AND kills.gid = games.id AND games.version='". $row['version'] ."' AND ($weaponsql) AND profiles.handle=kills.corpse GROUP BY corpse";
-            } else {
-                $sql = "SELECT profiles.id, handle, hash, COUNT('') as deathcount, (COUNT('')/profiles.deaths*100) AS percentage FROM kills, games, profiles
-                        WHERE k_hash != c_hash AND kills.gid = games.id AND games.version='". $row['version'] ."' AND ($weaponsql) AND profiles.hash=c_hash GROUP BY c_hash";
-            }
+            $sql = "SELECT profiles.id, handle, COUNT('') as deathcount, (COUNT('')/profiles.deaths*100) AS percentage FROM kills, games, profiles
+                    WHERE killerID != corpseID AND kills.gid = games.id AND games.version='". $row['version'] ."' AND ($weaponsql) AND profiles.id=corpseID GROUP BY corpseID";
 
             $mostdeathsby = new orderedtable($sql, 1);               
             $mostdeathsby->setClass('summary');
             $mostdeathsby->setUrl(URL_BASE . 'mode=weapon&w=' . $weaponid);		 
             $mostdeathsby->setLimit(20);  
             $mostdeathsby->setOrderBy('deathcount');
-            $mostdeathsbycoldata =        array('handle' 		=> array (array('corpse' => 1), $lang['th_player'], "30%", 0, URL_BASE . "mode=profile&amp;h="),
+            $mostdeathsbycoldata =        array('handle' 		=> array (array('corpse' => 1), $lang['th_player'], "30%", 0, URL_BASE . "mode=profile&amp;h=*id*"),
                                                 'deathcount' 	=> array (array('deathcount' => 1, 'percentage' => 1), $lang['th_deaths'], "30%"),
                                                 'percentage' 	=> array (array('percentage' => 1), $lang['th_percentage'], "30%")
                                                 );	
-            if(DISTINGUISH_BY_HASH){
-                $mostdeathsbycoldata['handle'][4] .= "*id*";
-            }
             $mostdeathsby->setColumnData($mostdeathsbycoldata);                
             $mostdeathsby->printTable();     
         }

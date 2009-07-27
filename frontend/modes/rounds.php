@@ -6,11 +6,9 @@
 	**************************************************************
 */	
 	echo '<h1>' . $lang['h_rounds'] .'</h1>';
-    if(!DISTINGUISH_BY_HASH){
-        $query 	= "SELECT id, map, type, ROUND((stop-start)/60) AS duration, (SELECT COUNT(DISTINCT handle) FROM players WHERE players.gid = games.id) AS players FROM games";
-    } else {
-        $query 	= "SELECT id, map, type, ROUND((stop-start)/60) AS duration, (SELECT COUNT(DISTINCT hash) FROM players WHERE players.gid = games.id) AS players FROM games";        
-    }
+    
+    $query = "SELECT id, map, type, ROUND((stop-start)/60) AS duration, (SELECT COUNT(DISTINCT playerID) FROM players WHERE players.gid = games.id) AS players FROM games";
+
 	$rounds = new orderedtable($query, 1);
     
 	$rounds->setClass('summary');

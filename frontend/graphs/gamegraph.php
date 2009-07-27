@@ -10,7 +10,7 @@ include '../../config.php';
 include '../classes/graph.php';
 include '../inc/header.php';
 
-header ('Content-type: image/png');
+//header ('Content-type: image/png');
 
 $colors = array('f0c04c', 'e4e4e4', '6077c3', 'da6060', '9cd69a', '88b822', 'ff00c0', 'ff0000', '22ffee');
 
@@ -57,25 +57,19 @@ if($_GET['gid']){
         }     
 
 		// looks up the 10 best players from this game
-        if(!DISTINGUISH_BY_HASH){
-            $sql = "SELECT killer FROM kills WHERE gid = '$gid' AND killer != '' AND killer != corpse GROUP BY killer ORDER BY count('') DESC LIMIT 10";
-        } else {
-            $sql = "SELECT k_hash, handle as killer FROM kills JOIN (SELECT hash, handle FROM players WHERE gid='$gid') as handles ON k_hash=handles.hash 
-                    WHERE gid = '$gid' AND k_hash != '' AND k_hash != c_hash GROUP BY k_hash ORDER BY COUNT('') DESC LIMIT 10";                        
-        }
+        $sql = "SELECT killerID, handle FROM profiles, kills WHERE gid = '$gid' AND killerID != '' AND killerID != corpseID AND killerID = profiles.id
+                GROUP BY killerID ORDER BY COUNT('') DESC LIMIT 10";
+
 		$res = $db->sqlResult($sql);
 		
 		$i = 0;
 		// loops through the player list
 		while($line = mysql_fetch_assoc($res)){
-			$graphdata[$i][0] = $line['killer'];
+			$graphdata[$i][0] = $line['handle'];
 			$graphdata[$i][1] = $colors[$i];
 
-            if(!DISTINGUISH_BY_HASH){
-                $sql = "SELECT ts FROM kills WHERE killer =  '" . $db->sqlQuote($line['killer']) . "' AND gid='$gid' AND killer != corpse $teamsql ORDER BY ts asc";
-            } else {
-                $sql = "SELECT ts FROM kills WHERE k_hash =  '" . $db->sqlQuote($line['k_hash']) . "' AND gid='$gid' AND k_hash != c_hash $teamsql ORDER BY ts asc";                        
-            }
+            $sql = "SELECT ts FROM kills WHERE killerID =  '" . $db->sqlQuote($line['killerID']) . "' AND gid='$gid' AND killerID != corpseID $teamsql ORDER BY ts ASC";                        
+
 			$playerres = $db->sqlResult($sql);
 			$a = 0;
 			// makes start point for the graphs (in the origin)

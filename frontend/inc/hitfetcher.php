@@ -21,15 +21,9 @@ if(is_numeric($uid) && is_numeric($wid)){
         $whsql = '';
     }
 
-    if(!DISTINGUISHED_BY_HASH){
-        $sql = "SELECT SUM(num) AS antall, location FROM (SELECT location, COUNT('') AS num FROM kills, weapons, profiles WHERE profiles.id=$uid AND killer = profiles.handle $wksql
-                GROUP BY location UNION SELECT location, COUNT('') AS num FROM hits, weapons, profiles WHERE profiles.id=$uid AND
-                hitman=profiles.handle $whsql GROUP BY location) AS tabeller GROUP BY location ORDER BY antall DESC";	
-    } else {
-        $sql = "SELECT SUM(num) AS antall, location FROM (SELECT location, COUNT('') AS num FROM kills, weapons, profiles WHERE profiles.id=$uid AND k_hash = profiles.hash $wksql 
-                GROUP BY location UNION SELECT location, COUNT('') AS num FROM hits, weapons, profiles WHERE profiles.id=$uid AND
-                h_hash=profiles.hash $whsql GROUP BY location) AS tabeller GROUP BY location ORDER BY antall DESC";	
-    }
+    $sql = "SELECT SUM(num) AS antall, location FROM (SELECT location, COUNT('') AS num FROM kills, weapons, profiles WHERE profiles.id=$uid $wksql 
+            GROUP BY location UNION SELECT location, COUNT('') AS num FROM hits, weapons, profiles WHERE profiles.id=$uid AND
+            hitmanID=profiles.id $whsql GROUP BY location) AS tabeller GROUP BY location ORDER BY antall DESC";	
 
     $result = mysql_query($sql);
     while($row = mysql_fetch_assoc($result)){
@@ -38,6 +32,6 @@ if(is_numeric($uid) && is_numeric($wid)){
     }
 }
 
-echo "hits = '$hits';";
-echo "total = '$total';";
+echo "hits='$hits';\n";
+echo "total='$total';\n";
 ?>

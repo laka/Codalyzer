@@ -8,26 +8,15 @@
 if(strlen($_GET['h']) > 0){
     // validates input from $_GET
     $getid = $db->sqlQuote($_GET['h']);
-    if(!DISTINGUISH_BY_HASH){
-        $sql = "SELECT id, handle FROM profiles where handle='$getid' LIMIT 1";
-    } else {
-        $sql = "SELECT id, hash FROM profiles where id='$getid' LIMIT 1";  
-    }
+    $sql = "SELECT id FROM profiles where id='$getid' LIMIT 1";  
     $data = $db->singleRow ($sql);
     
     if(is_numeric($data['id'])){        
         $uid = $db->sqlQuote($data['id']);
         
         // a list of all weapons this player has used
-        if(!DISTINGUISH_BY_HASH){
-            $handle = $db->sqlQuote($data['handle']); 
-            $query = "SELECT mother, (SELECT full FROM weapons WHERE id=w.mother) as weaponfull FROM weapons as w, kills WHERE killer='$handle'
-                      AND corpse != '$handle' AND w.name=kills.weapon GROUP BY mother";
-        } else {
-            $hash = $db->sqlQuote($data['hash']);  
-            $query = "SELECT mother, (SELECT full FROM weapons WHERE id=w.mother) as weaponfull FROM weapons as w, kills WHERE k_hash='$hash' 
-                      AND c_hash != '$hash' AND w.name=kills.weapon GROUP BY mother";
-        }
+        $query = "SELECT mother, (SELECT full FROM weapons WHERE id=w.mother) as weaponfull FROM weapons as w, kills WHERE killerID='$uid' 
+                  AND corpseID != '$uid' AND w.name=kills.weapon GROUP BY mother";
 
         $result = $db->sqlResult($query);
         
@@ -40,14 +29,9 @@ if(strlen($_GET['h']) > 0){
         echo "</select></form>";
 
         // initial table values ( all weapons)
-        if(!DISTINGUISH_BY_HASH){
-            $sql = "SELECT SUM(num) AS antall, location FROM (SELECT location, COUNT('') AS num FROM kills WHERE killer = '$handle' GROUP BY location UNION 
-                    SELECT location, COUNT('')  AS num FROM hits WHERE hitman = '$handle' GROUP BY location) AS tabeller GROUP BY location ORDER BY antall DESC";
-        } else {
-            $sql = "SELECT SUM(num) AS antall, location FROM (SELECT location, COUNT('') AS num FROM kills WHERE k_hash = '$hash' GROUP BY location UNION 
-                    SELECT location, COUNT('')  AS num FROM hits WHERE h_hash = '$hash' GROUP BY location) AS tabeller GROUP BY location ORDER BY antall DESC";        
-        }
-        
+        $sql = "SELECT SUM(num) AS antall, location FROM (SELECT location, COUNT('') AS num FROM kills WHERE killerID = '$uid' GROUP BY location UNION 
+                SELECT location, COUNT('')  AS num FROM hits WHERE hitmanID = '$uid' GROUP BY location) AS tabeller GROUP BY location ORDER BY antall DESC";        
+    
         $hitpoint_result = mysql_query($sql);	
 
         // creates a query string for the graph, and prepares the data for the table
