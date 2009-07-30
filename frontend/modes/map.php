@@ -14,22 +14,12 @@ if(strlen($_GET['m']) > 0){
             $mapname = $_GET['m'];
             echo "<h1>". $lang['h_map'] . ": " . $mapname . "</h1>";  
             
-            // NEW, EXPERIMENTAL:
-            if(!DISTINGUISH_BY_HASH){
-            $query = "SELECT profiles.handle, d.d, COUNT('') AS k, (COUNT('')/d.d) as ratio, d.gamesplayed, (COUNT('')/gamesplayed) as kpg FROM kills, games, profiles 
-                     JOIN (SELECT profiles.handle, COUNT('') AS d, numplayedtable.gamesplayed FROM kills, games, profiles 
-                     JOIN (SELECT profiles.handle, COUNT('') as gamesplayed FROM profiles, players, games WHERE profiles.handle=players.handle AND games.id=players.gid 
-                     AND games.map='". $mapname ."' GROUP BY profiles.handle) AS numplayedtable ON profiles.handle = numplayedtable.handle WHERE profiles.handle=kills.corpse 
-                     AND kills.gid=games.id AND games.map='". $mapname ."' GROUP BY profiles.handle) AS d ON profiles.handle=d.handle WHERE profiles.handle=kills.killer AND 
-                     kills.gid=games.id AND games.map='". $mapname ."' AND kills.killer != kills.corpse AND gamesplayed>1 GROUP BY profiles.handle";
-            } else {
-                $query = "SELECT profiles.id, profiles.hash, profiles.handle, d.d, COUNT('') AS k, (COUNT('')/d.d) as ratio, d.gamesplayed, (COUNT('')/gamesplayed) as kpg FROM kills, games, profiles 
-                         JOIN (SELECT profiles.hash, COUNT('') AS d, numplayedtable.gamesplayed FROM kills, games, profiles 
-                         JOIN (SELECT profiles.hash, COUNT('') as gamesplayed FROM profiles, players, games WHERE profiles.hash=players.hash AND games.id=players.gid 
-                         AND games.map='". $mapname ."' GROUP BY profiles.hash) AS numplayedtable ON profiles.hash = numplayedtable.hash WHERE profiles.hash=kills.c_hash 
-                         AND kills.gid=games.id AND games.map='". $mapname ."' GROUP BY profiles.hash) AS d ON profiles.hash=d.hash WHERE profiles.hash=kills.k_hash AND 
-                         kills.gid=games.id AND games.map='". $mapname ."' AND kills.k_hash != kills.c_hash AND gamesplayed>0 GROUP BY profiles.hash";
-            }
+			$query = "SELECT profiles.id, profiles.handle, d.d, COUNT('') AS k, (COUNT('')/d.d) as ratio, d.gamesplayed, (COUNT('')/gamesplayed) as kpg FROM kills, games, profiles 
+					  JOIN (SELECT profiles.id, COUNT('') AS d, numplayedtable.gamesplayed FROM kills, games, profiles JOIN 
+					  (SELECT profiles.id, COUNT('') as gamesplayed FROM profiles, players, games WHERE profiles.id=players.playerID AND games.id=players.gid AND 
+					  games.map='". $mapname ."' GROUP BY profiles.id) AS numplayedtable ON profiles.id = numplayedtable.id WHERE profiles.id=kills.corpseID AND kills.gid=games.id 
+					  AND games.map='". $mapname ."' GROUP BY profiles.id) AS d ON profiles.id=d.id WHERE profiles.id=kills.killerID AND kills.gid=games.id 
+					  AND games.map='". $mapname ."' AND kills.killerID != kills.corpseID AND gamesplayed>0 GROUP BY profiles.id";
 
             $mapstats = new orderedtable($query, 1);               
             $mapstats->setClass('summary');
