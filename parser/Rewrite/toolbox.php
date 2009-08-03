@@ -273,6 +273,7 @@ class toolbox {
 		database::getInstance()->sqlResult("TRUNCATE TABLE alias");
 		database::getInstance()->sqlResult("TRUNCATE TABLE actions");
 		database::getInstance()->sqlResult("TRUNCATE TABLE profiles");
+		database::getInstance()->sqlResult("TRUNCATE TABLE streaks");
 	}
 	
 	# Optimize tables
@@ -285,6 +286,7 @@ class toolbox {
 		database::getInstance()->sqlResult("OPTIMIZE TABLE alias");
 		database::getInstance()->sqlResult("OPTIMIZE TABLE actions");
 		database::getInstance()->sqlResult("OPTIMIZE TABLE profiles");
+		database::getInstance()->sqlResult("OPTIMIZE TABLE streaks");
 	}
 	
 	/* Cleanup functions
