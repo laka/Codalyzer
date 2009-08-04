@@ -8,53 +8,55 @@ class streaks extends toolbox {
 		$this->db = database::getInstance();
 	}
 	
-	public function killStreak($gid) {
-		echo "-- COLLECTING STREAKS IN GAME $gid\n";
+	public function killDeathStreak($gid) {
+		#echo "-- COLLECTING STREAKS IN GAME $gid\n";
 		$pids = database::getInstance()->sqlResult(
 			"SELECT DISTINCT playerID AS player FROM players WHERE gid=\"$gid\"");
 		
 		while($pid = mysql_fetch_assoc($pids)) {
 			$kills = 0;
 			$deaths = 0;
+			$lines = 0;
 			$player = $this->getPlayerHandleByID($pid[player]);
-			echo "Checking kill streak for <$player>\n";
+			#echo "Checking kill streak for <$player>\n";
 			$killz = database::getInstance()->sqlResult(
 				"SELECT killerID AS killer, corpseID AS corpse FROM kills WHERE gid=\"$gid\"");
 			
 			while($players = mysql_fetch_assoc($killz)) {
+				$lines++;
 				$rows = $this->rowCount($gid);
 				
 				if($pid[player] == $players[killer] && $pid[player] != $players[corpse]) {
 					$kills++;
-					echo "\tHe KILLED somebody\n";
-					$current_deaths = $this->getPlayerStreak($pid[player], 'death');
-					if(is_numeric($current_deaths)) { 
-						if($current_deaths < $kills) {
-							database::getInstance()->sqlResult(
-								"UPDATE streaks SET streak=\"$deaths\", gid=\"$gid\" WHERE playerID=\"$pid[player]\" AND type=\"death\"");
-						}
-					} else {
-						database::getInstance()->sqlResult(
-							"INSERT INTO streaks (gid, type, playerID, streak) VALUES(\"$gid\", \"death\", \"$pid[player]\", \"$deaths\")");
-					}
+					#echo "\tHe KILLED somebody, streak ended. Landed on $deaths\n";
+					$this->setStreak($deaths, $gid, $pid[player], 'death');
 					$deaths = 0;
 				}
 				if($pid[player] == $players[corpse]) {
 					$deaths++;
-					echo "\tHe DIED, streak ended. Landed on $kills\n";
-					$current_kills = $this->getPlayerStreak($pid[player], 'kill');
-					if(is_numeric($current_kills)) { 
-						if($current_kills < $kills) {
-							database::getInstance()->sqlResult(
-								"UPDATE streaks SET streak=\"$kills\", gid=\"$gid\" WHERE playerID=\"$pid[player]\" AND type=\"kill\"");
-						}
-					} else {
-						database::getInstance()->sqlResult(
-							"INSERT INTO streaks (gid, type, playerID, streak) VALUES(\"$gid\", \"kill\", \"$pid[player]\", \"$kills\")");
-					}
+					#echo "\tHe DIED, streak ended. Landed on $kills\n";
+					$this->setStreak($kills, $gid, $pid[player], 'kill');
 					$kills = 0;
 				}
+				if($lines == $rows) {
+					#echo "\t\tGame over, streaks updated ($kills/$deaths, $gid, $pid[player])\n";
+					$this->setStreak($kills, $gid, $pid[player], 'kill');
+					$this->setStreak($deaths, $gid, $pid[player], 'death');
+				}
 			}
+		}
+	}
+	
+	private function setStreak($streak, $gid, $pid, $type) {
+		$current = $this->getPlayerStreak($pid, $type);
+		if(is_numeric($current)) {
+			if($current < $streak) {
+				database::getInstance()->sqlResult(
+					"UPDATE streaks SET streak=\"$streak\", gid=\"$gid\" WHERE playerID=\"$pid\" AND type=\"$type\"");
+			}
+		} else {
+			database::getInstance()->sqlResult(
+				"INSERT INTO streaks (gid, type, playerID, streak) VALUES(\"$gid\", \"$type\", \"$pid\", \"$streak\")");
 		}
 	}
 	

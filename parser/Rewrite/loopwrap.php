@@ -25,8 +25,7 @@ class loopwrap extends toolbox {
 			$this->rating->eloRating($row['id']);
 			
 			# Measure kill and death streaks
-			$this->streaks->killStreak($row['id']);
-			$this->streaks->deathStreak($row['id']);
+			$this->streaks->killDeathStreak($row['id']);
 			
 			# Fix start&stop times
 			$this->adjustGameDuration($row['id'], 0);
