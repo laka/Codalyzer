@@ -71,13 +71,6 @@ class toolbox {
 		return $row['id'];
 	}
 	
-	# Returns the last game id in the games-table
-	public function nextPlayerID() {
-		$row = database::getInstance()->singleRow(
-			"SELECT id FROM profiles ORDER BY id DESC LIMIT 1");
-		return ++$row[id];
-	}
-	
 	# Returns a sanitized string
 	public function sanitizeString($input) {
 		$input = preg_replace('/MOD_/','',$input);
@@ -106,23 +99,6 @@ class toolbox {
 	
 	/* Handle functions
 	--------------------------------------------------------------------------------------------------------*/
-
-	# Change the handle of a player
-	public function setNewHandle($handle, $hash, $gid) {
-		$row = database::getInstance()->singleRow(
-			"SELECT handle AS old_handle FROM players WHERE hash=\"$hash\" AND gid=\"$gid\"");
-		
-			database::getInstance()->sqlResult(
-				"UPDATE players SET handle=\"$handle\" WHERE hash=\"$hash\" AND gid=\"$gid\"");
-			database::getInstance()->sqlResult(
-				"UPDATE kills SET killer=\"$handle\" WHERE killer=\"$row[old_handle]\" AND gid=\"$gid\"");
-			database::getInstance()->sqlResult(
-				"UPDATE kills SET corpse=\"$handle\" WHERE corpse=\"$row[old_handle]\" AND gid=\"$gid\"");
-			database::getInstance()->sqlResult(
-				"UPDATE hits SET hitman=\"$handle\" WHERE hitman=\"$row[old_handle]\" AND gid=\"$gid\"");
-			database::getInstance()->sqlResult(
-				"UPDATE hits SET wounded=\"$handle\" WHERE wounded=\"$row[old_handle]\" AND gid=\"$gid\"");
-	}
 	
 	# Put the player on the team parsed from damage hits or kills
 	public function addTeamMember($handle, $team, $gid) {
@@ -135,11 +111,14 @@ class toolbox {
 	
 	# Add aliases ($owner = hash)
 	public function addNewAlias($alias, $owner, $gid) {
+		if(strlen($alias) < 2) {
+			$this->addWarning('addNewAlias', 'missing alias', "$owner (gid: $gid)");
+			return 0;
+		}
 		$alias = database::getInstance()->sqlQuote($alias);
 		$result = database::getInstance()->sqlResult(
 			"SELECT id FROM alias WHERE owner=\"$owner\" AND alias=\"$alias\"");
 		if(mysql_num_rows($result) == 0) {
-			#echo "Couldn't find $alias ($owner) in game $gid\n";
 			database::getInstance()->sqlResult(
 				"INSERT INTO alias (owner, alias) VALUES(\"$owner\", \"$alias\")");
 		}
@@ -174,7 +153,9 @@ class toolbox {
 			$this->setMostUsedHandle($puid);
 		} else {
 			$handle = $this->mostUsedHandle($puid);
-			if(strlen($handle) == 0) { $handle = $player; }
+			if(strlen($handle) == 0) { 
+				$handle = $player; 
+			}
 			database::getInstance()->sqlResult(
 				"INSERT INTO profiles (handle, hash) VALUES(\"$handle\", \"$puid\")");
 		}
@@ -274,6 +255,7 @@ class toolbox {
 		database::getInstance()->sqlResult("TRUNCATE TABLE actions");
 		database::getInstance()->sqlResult("TRUNCATE TABLE profiles");
 		database::getInstance()->sqlResult("TRUNCATE TABLE streaks");
+		database::getInstance()->sqlResult("TRUNCATE TABLE warnings");
 	}
 	
 	# Optimize tables
@@ -295,11 +277,12 @@ class toolbox {
 	# Delete profiles with 0 k&d and games <= 1
 	public function cleanUpProfiles() {
 		$result = database::getInstance()->sqlResult(
-			"SELECT hash FROM profiles WHERE (kills=0 OR deaths=0) AND games <= 1");
+			"SELECT id FROM profiles WHERE (kills=0 OR deaths=0) AND games <= 1");
 		
 		while($row = mysql_fetch_assoc($result)) {
-			database::getInstance()->sqlResult("DELETE FROM profiles WHERE hash=\"$row[hash]\"");
-			database::getInstance()->sqlResult("DELETE FROM players WHERE hash=\"$row[hash]\"");
+			$this->addWarning('cleanUpProfiles', 'player dropped', $row[id]);
+			database::getInstance()->sqlResult("DELETE FROM profiles WHERE id=\"$row[id]\"");
+			database::getInstance()->sqlResult("DELETE FROM players WHERE playerID=\"$row[id]\"");
 		}
 	}
 	
@@ -311,16 +294,12 @@ class toolbox {
 				(SELECT COUNT(*) FROM players WHERE gid=a.id) AS players 
 			FROM games AS a WHERE id=\"$gid\"");
 		
-		$allies = database::getInstance()->sqlResult(
-			"SELECT id FROM players WHERE gid=\"153\" AND team=\"allies\"");
-		
-		$axis = database::getInstance()->sqlResult(
-			"SELECT id FROM players WHERE gid=\"153\" AND team=\"axis\"");
-		
 		if($row[kills] < 5) {
+			$this->addWarning('cleanUpGames', 'game dropped', $gid);
 			$this->dropGame($gid);
 		} 
 		elseif($row[players] <= 1) {
+			$this->addWarning('cleanUpGames', 'game dropped', $gid);
 			$this->dropGame($gid);
 		}
 	}
@@ -348,10 +327,27 @@ class toolbox {
 		if($duration > 60) {
 			++$limit;
 			$this->adjustGameDuration($gid, $limit);
+			$this->addWarning('adjustGameDuration', 'max duration', $gid);
+		} elseif($duration < 2) {
+			$this->dropGame($gid);
 		} else {
 			database::getInstance()->sqlResult(
 				"UPDATE games SET start=\"$start[ts]\", stop=\"$stop[ts]\" WHERE id=\"$gid\"");
 		}
+	}
+	
+	/* Error handling
+	--------------------------------------------------------------------------------------------------------*/
+	
+	# Report warnings 
+	public function addWarning($via, $warning, $dump) {
+		database::getInstance()->sqlResult(
+			"INSERT INTO warnings (ts, via, warning, dump) VALUES(NOW(), \"$via\(\)\", \"$warning\", \"$dump\")");
+	}
+	
+	# Simple die function
+	public function dieYoung($msg, $scope) {
+		exit("$msg\n");
 	}
 }
 

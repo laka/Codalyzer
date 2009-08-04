@@ -7,6 +7,8 @@ class handler extends toolbox {
 	public function __construct() {
 		$this->db = database::getInstance();
 	}
+	
+	# Add chat messages
 	public function addQuote($matches, $gid) {
 		# Convert timestamp to seconds	
 		$matches[1] = $this->ts2seconds($matches[1]); 
@@ -20,6 +22,8 @@ class handler extends toolbox {
 		database::getInstance()->sqlResult("INSERT INTO quotes (gid, ts, playerID, quote) 
 			VALUES(\"$gid\", \"$matches[1]\", \"$playerID\", \"$matches[4]\")");
 	}
+	
+	# Add a player action like bomb plating
 	public function addPlayerAction($matches, $gid) {
 		# Convert timestamp to seconds	
 		$matches[1] = $this->ts2seconds($matches[1]); 
@@ -32,6 +36,8 @@ class handler extends toolbox {
 		database::getInstance()->sqlResult("INSERT INTO actions (gid, ts, action, playerID) 
 			VALUES(\"$gid\", \"$matches[1]\", \"$matches[2]\", \"$playerID\")");
 	}
+	
+	# Add game result
 	public function addTeamScore($matches, $gid) {
 		$highscore = max($matches[2], $matches[3]);
 		$lowscore = min($matches[2], $matches[3]);
@@ -49,6 +55,8 @@ class handler extends toolbox {
 		
 		$this->addExitGame($gid);
 	}
+	
+	# Add stoppage time for a game
 	public function addGameStopTime($matches, $gid) {
 		# Convert timestamp to seconds	
 		$matches[1] = $this->ts2seconds($matches[1]); 
@@ -56,10 +64,14 @@ class handler extends toolbox {
 		database::getInstance()->sqlResult(
 			"UPDATE games SET stop=\"$matches[1]\" WHERE id=\"$gid\"");
 	}
+	
+	# Mark a game as finished
 	public function addExitGame($gid) {
 		database::getInstance()->sqlResult(
 			"UPDATE games SET finish=\"1\" WHERE id=\"$gid\"");
 	}
+	
+	# Count rounds
 	public function addRoundCount($matches, $gid) {
 		if($matches[1] == '20') {
 			$this->addExitGame($gid);

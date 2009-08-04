@@ -17,7 +17,7 @@ class streaks extends toolbox {
 			$kills = 0;
 			$deaths = 0;
 			$lines = 0;
-			$player = $this->getPlayerHandleByID($pid[player]);
+			#$player = $this->getPlayerHandleByID($pid[player]);
 			#echo "Checking kill streak for <$player>\n";
 			$killz = database::getInstance()->sqlResult(
 				"SELECT killerID AS killer, corpseID AS corpse FROM kills WHERE gid=\"$gid\"");

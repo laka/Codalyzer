@@ -12,6 +12,7 @@ class loopwrap extends toolbox {
 		$this->streaks = new streaks();
 		$this->rating = new rating();
 	}
+	
 	public function gamesLoop() {
 		$result = database::getInstance()->sqlResult(
 			"SELECT id FROM games WHERE parsed != 1 ORDER BY id ASC");
@@ -31,6 +32,7 @@ class loopwrap extends toolbox {
 			$this->adjustGameDuration($row['id'], 0);
 		}
 	}
+	
 	public function playersLoop() {
 		$result = database::getInstance()->sqlResult(
 			"SELECT DISTINCT hash AS puid FROM profiles ORDER BY id ASC");

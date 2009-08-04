@@ -18,7 +18,6 @@ class damage extends toolbox {
 		[11] location
 	--------------------------------------------------------------------------------------------------------*/
 	public function addHit($matches, $gid) {
-		
 		# Convert timestamps to seconds
 		$matches[1] = $this->ts2seconds($matches[1]);
 		

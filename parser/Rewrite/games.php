@@ -36,6 +36,9 @@ class game extends toolbox {
 			$matches[2] = 'none';
 		}
 		
+		if(strlen($matches[3]) < 2) { $this->addWarning('addNewGame', 'unknown gametype', $matches[3]); }
+		if(strlen($matches[5]) < 5) { $this->addWarning('addNewGame', 'unknown map', $matches[5]); }
+		
 		# Translate cod name to game version
 		$matches[4] = $this->getVersion($matches[4]);
 
@@ -52,7 +55,13 @@ class game extends toolbox {
 						return 0;
 				}
 			}
+		} else {
+			$result = database::getInstance()->sqlResult("SELECT id FROM games");
+			if(mysql_num_rows($result)) {
+				$this->dieYoung('INIT ERROR: No GAME ID defined', 'all');
+			}
 		}
+		
 		# If it's a new game - insert the data accordingly
 		database::getInstance()->sqlResult("INSERT INTO games (timeparsed, start, mods, type, version, map)
 			VALUES(NOW(), \"$matches[1]\", \"$matches[2]\", \"$matches[3]\", \"$matches[4]\", \"$matches[5]\")");
@@ -72,10 +81,11 @@ class game extends toolbox {
 				$matches[2] = $pid[1];
 			}
 		} else {
-			# Skipping player since we have noe hash 
+			# Skipping player since we have no hash 
+			$this->addWarning('addNewPlayer', 'missing hash', $matches[3]);
 			return 0;
 		}
-			
+		
 		# Convert timestamp to seconds	
 		$matches[1] = $this->ts2seconds($matches[1]); 
 		
