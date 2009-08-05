@@ -11,6 +11,7 @@ require_once('handlers.php');
 require_once('loopwrap.php');
 require_once('parser.php');
 require_once('streaks.php');
+require_once('awards.php');
 
 $db = database::getInstance();
 
