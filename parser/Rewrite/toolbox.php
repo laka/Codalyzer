@@ -113,12 +113,19 @@ class toolbox {
 	public function addClanTag($hash) {
 		$pid = $this->getPlayerIDByHash($hash);
 		$handle = $this->getPlayerHandleByID($pid);
+		$clan = '';
 		
-		if(preg_match('/(\w+).*?(\w+)$/', $handle, $match)) {
-			$clan = $match[1];
-			database::getInstance()->sqlResult(
-				"UPDATE profiles SET clan=\"$clan\" WHERE id=\"$pid\"");
+		if(preg_match('/^\w+$/', $handle, $lone)) {
+			$clan = 'lone wolf';
+		} else {
+			if(preg_match('/(\w+).*?(\w+)$/', $handle, $match)) {
+				$clan = $match[1];
+			} else {
+				$clan = 'unknown';
+			}
 		}
+		database::getInstance()->sqlResult(
+			"UPDATE profiles SET clan=\"$clan\" WHERE id=\"$pid\"");
 	}
 	
 	# Add aliases ($owner = hash)
