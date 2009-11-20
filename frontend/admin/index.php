@@ -2,53 +2,95 @@
 /*
 	**************************************************************
 	* codalyzer
-	* - Administration section
+	* -  Index page
 	**************************************************************
 */
 
 session_start();
+$start = microtime(true);
 
-include '../classes/config.php';
-$config = new config('../../config.ini');
+include_once '../config.php';
+include_once 'inc/header.php';
 
-include '../classes/authentication.php';
-$login = new authentication('index.php');
+$db = database::getInstance();
 ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
-    <head>
-        <title>codalyzer Admin</title>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8">
-        <link href="style.css" rel="stylesheet" type="text/css">
-
-    </head>
-    
-    <body>
-        <h1>codalyzer Admin</h1>
-        <?php
-            if($login->isAuthorized()){
-                include 'inc/nav.php';
-                switch ($_GET['p']){
-                    case 'parser':
-                        include 'modes/parser.php';
-                        break;
-                    case 'frontend':
-                        include 'modes/frontend.php'; 
-                        break;                        
-                    case 'database':
-                        include 'modes/database.php';
-                        break;                        
-                    case 'users':
-                        include 'modes/users.php';    
-                        break;                                                           
-                    case 'main':
-                    default:
-                        include 'modes/main.php';        
-                        break;                               
-                }
-            } else {
-                $login->printForm('index.php');
-            }
-        ?>
-    </body>
+	<head>
+		<title>Call of Duty 4 - Hall of Fame</title>
+		<meta name="description" content="CoD4-stats">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<link href="style.css" rel="stylesheet" type="text/css">
+	</head>
+	<body>
+		<div id="box">
+            <!-- QUOTE START-->
+			<div id="sitat">
+				<?php include FRONTEND_PATH.'/inc/quote.php'; ?>
+			</div>	
+            <!-- QUOTE END-->
+            
+            <!-- HEADER TEXT START-->
+			<div id="overskrift">
+				<h1><a href="index.php">Codalyzer beta</a></h1>
+			</div>		
+            <!-- HEADER TEXT END-->
+            
+            <!-- HEADER START-->
+			<div id="header">
+				<div id="menu">
+					<?php include FRONTEND_PATH.'/inc/navigation.php'; ?>
+				</div>
+			</div>
+            <!-- HEADER END-->
+            
+            <!-- MAIN CONTENTS START-->
+            <div id="left">
+                <div class="twentymargin">          
+                    <?php include FRONTEND_PATH.'/inc/contents.php'; ?>		
+                </div>
+            </div>
+            <!-- MAIN CONTENTS END-->
+            
+            <!-- RIGHT BAR START -->
+            <div id="right">
+                <div class="tenmargin">
+                    <div class="rightform">
+                        <div class="rightformelement">
+                            <?php	
+                                include FRONTEND_PATH.'/inc/serverselect.php'; 
+                            ?>
+                        </div>
+                        <div class="rightformelement">
+                        <?php	
+                            include FRONTEND_PATH.'/inc/langselect.php'; 
+                        ?>
+                        </div>
+                    </div>
+                    <?php	
+                        include FRONTEND_PATH.'/inc/right.php'; 
+                    ?>
+                </div>
+            </div>        
+            <!-- RIGHT BAR END -->
+  
+            <!-- FOOTER START -->
+			<div id="footer">
+				<div class="footerserver">
+					SERVER.NORSOF.ORG - 94.75.230.52:28960
+				</div>
+				<div class="footertext">
+					<div align="right">
+						<?php
+                        $end = microtime(true);
+                        $totaltime = round($end-$start, 4);
+						echo "GENERATED IN ".$totaltime." SEC";
+						?>
+					</div>
+				</div>					
+			</div>	
+            <!-- FOOTER END -->
+		</div>
+	</body>
 </html>
