@@ -135,7 +135,7 @@ class players {
 	}
 	
 	public function sumKills($hash) {
-		$playerID = $this->getPlayerIDByHash($hash);
+		$playerID = $this->getPlayerID($hash);
 		$row = database::getInstance()->singleRow("
 			SELECT COUNT(*) AS sum FROM kills WHERE killerID=\"$playerID\" AND corpseID!=\"$playerID\"
 		");
@@ -145,27 +145,60 @@ class players {
 	}
 	
 	public function sumDeaths($hash) {
-	
+		$playerID = $this->getPlayerID($hash);
+		$row = database::getInstance()->singleRow("
+			SELECT COUNT(*) AS sum FROM kills WHERE killerID!=\"$playerID\" AND corpseID=\"$playerID\"
+		");
+		database::getInstance()->sqlResult("
+			UPDATE profiles SET deaths=\"$row[sum]\" WHERE id=\"$playerID\"
+		");
 	}
 	
 	public function sumSuicides($hash) {
-	
+		$playerID = $this->getPlayerID($hash);
+		$row = database::getInstance()->singleRow("
+			SELECT COUNT(*) AS sum FROM kills WHERE killerID=\"$playerID\" AND corpseID=\"$playerID\"
+		");
+		database::getInstance()->sqlResult("
+			UPDATE profiles SET suicides=\"$row[sum]\" WHERE id=\"$playerID\"
+		");
 	}
 	
-	public function sumGames($hash) {
-	
-	}
-	
+	public function sumGames($hash) {i
+		$playerID = $this->getPlayerIDByHash($hash);
+		$row = database::getInstance()->singleRow("
+			SELECT COUNT(DISTINCT gid) AS sum FROM players WHERE playerID=\"$playerID\"
+		");
+		database::getInstance()->sqlResult("
+			UPDATE profiles SET games=\"$row[sum]\" WHERE id=\"$playerID\"
+		");	
+
+
 	public function playerELO($hash) {
+		$playerID = $this->getPlayerID($hash);
+		$row = database::getInstance()->singleRow("
+			SELECT elo FROM players WHERE playerID=\"$playerID\" AND elo IS NOT NULL ORDER BY id DESC LIMIT 1
+		");
 		
-	}
-	
+		$elo = ($row[elo]) ? $row[elo] : 1000;
+			
+		database::getInstance()->sqlResult("
+			UPDATE profiles SET elo=\"$elo\" WHERE id=\"$playerID\"
+		");
+	}	
+
 	public function getPlayerID($hash) {
-		
+		$row = database::getInstance()->singleRow("
+			SELECT id FROM profiles WHERE hash=\"$hash\"
+		");
+		return $row[id];		
 	}
 	
-	public function playerInGame($handle) {
-	
+	public function playerInGame($handle, $gid) {
+		$result = database::getInstance()->sqlResult("
+			SELECT id FROM players WHERE handle=\"$handle\" AND gid=\"$gid\"
+		");
+		return mysql_num_rows($result);
 	}
 }
 
