@@ -4,6 +4,7 @@ class players {
 	public function addPlayer($matches, $gid) {
 		$handle = $matches[3];
 		$ts = $this->inSeconds($matches[1]);
+
 		if(strlen($matches[2]) > 8) {
 			$hash = substr($matches[2], -8);
 		} else {
@@ -26,10 +27,7 @@ class players {
 		$team = $matches[2];
 
 		database::getInstance()->sqlResult("
-			UPDATE players 
-			SET team=\"$team\"
-			WHERE handle=\"$handle\"
-			AND gid=\"$gid\"
+			UPDATE players SET team=\"$team\" WHERE handle=\"$handle\" AND gid=\"$gid\"
 		");
 	}
 	
@@ -57,6 +55,7 @@ class players {
 				$clan = 'unknown';
 			}
 		}
+
 		database::getInstance()->sqlResult("
 			UPDATE profiles SET clan=\"$clan\" WHERE id=\"$playerID\"
 		");
@@ -78,11 +77,9 @@ class players {
 		if(strlen($alias) > 0) {
 			$alias = database::getInstance()->sqlQuote($alias);
 			$exist = database::getInstance()->sqlResult("
-				SELECT id
-				FROM alias
-				WHERE owner=\"$owner\"
-				AND alias=\"$alias\"
+				SELECT id FROM alias WHERE owner=\"$owner\" AND alias=\"$alias\"
 			");
+
 			if(mysql_num_rows($exist) == 0) {
 				database::getInstance()->sqlResult("
 					INSERT INTO alias (owner, alias)
@@ -91,18 +88,11 @@ class players {
 			}
 			if(is_numeric($gid)) {
 				$row = database::getInstance()->singleRow("
-					SELECT handle 
-					AS old_handle 
-					FROM players 
-					WHERE hash=\"$owner\" 
-					AND gid=\"$gid\"
+					SELECT handle AS old_handle FROM players WHERE hash=\"$owner\" AND gid=\"$gid\"
 				");
 				
 				database::getInstance()->sqlResult("
-					UPDATE players 
-					SET handle=\"$alias\" 
-					WHERE hash=\"$owner\" 
-					AND gid=\"$gid\"
+					UPDATE players SET handle=\"$alias\" WHERE hash=\"$owner\" AND gid=\"$gid\"
 				");
 				
 				$this->addNewAlias($row[old_handle], $owner, '');
@@ -111,19 +101,47 @@ class players {
 	}
 	
 	public function getEveryAlias($hash) {
-	
+		$playerID = $this->getPlayerID($hash);
+		$aliases = database::getInstance()->sqlResult("
+			SELECT DISTINCT handle AS alias FROM players WHERE playerID=\"$playerID\" ORDER BY id
+		");
+		
+		while($row = mysql_fetch_assoc($aliases)) {
+			$this->addNewAlias($row['alias'], $hash, '');
+		}
 	}
 	
 	public function makeProfile($hash, $handle) {
-	
+		$exists = database::getInstance()->sqlResult("
+			SELECT id FROM profiles WHERE hash=\"$hash\"
+		");
+		if(mysql_num_rows($exists)) {
+			$this->setMostUsedHandle($hash);
+		} else {
+			database::getInstance()->sqlResult("
+				INSERT INTO profiles (handle, hash)
+				VALUES(\"$handle\", \"$hash\")
+			");				
+		}
 	}
 	
 	public function addProfileData($hash) {
-	
+		$this->sumKills($hash);
+		$this->sumDeaths($hash);
+		$this->sumSuicides($hash);
+		$this->sumGames($hash);
+		$this->playerELO($hash);
+		$this->addClanTag($hash);
 	}
 	
 	public function sumKills($hash) {
-	
+		$playerID = $this->getPlayerIDByHash($hash);
+		$row = database::getInstance()->singleRow("
+			SELECT COUNT(*) AS sum FROM kills WHERE killerID=\"$playerID\" AND corpseID!=\"$playerID\"
+		");
+		database::getInstance()->sqlResult("
+			UPDATE profiles SET kills=\"$row[sum]\" WHERE id=\"$playerID\"
+		");
 	}
 	
 	public function sumDeaths($hash) {
