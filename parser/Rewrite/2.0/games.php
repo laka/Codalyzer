@@ -3,15 +3,14 @@ require_once('toolbox.php');
 
 class games extends toolbox {
 	public function addNewRound($matches, $gid) {
-		$ts = $this->inSeconds($matches[1]);
+		$last = $this->lastGameData($gid);
+		$ts   = $this->inSeconds($matches[1]);
 		$type = $matches[2];
-		$map = $matches[3];
+		$map  = $matches[3];
 
-		$lastGame = $this->lastGameData($gid);
-	
 		if(is_numeric($gid)) {
-			if($lastGame['type'] != 'dm') {
-				if($lastGame['type'] == $type && $lastGame['map'] == $map && $lastGame['stop'] == 0) {
+			if($last['type'] != 'dm') {
+				if($last['type'] == $type && $last['map'] == $map && $last['stop'] == 0) {
 					database::getInstance()->sqlResult("UPDATE games SET stop=0 WHERE gid=\"$gid\"");
 					return 0;
 				} 
@@ -19,11 +18,11 @@ class games extends toolbox {
 		} else {
 			$result = database::getInstance()->sqlResult("SELECT id FROM games");
 			if(mysql_num_rows($result)) {
-				$this->reportError('init', 'unknow gid');
+				$this->reportError('init', 'unknow gid', $ts);
 				return 0;
 			}
 		}
-		
+
 		database::getInstance()->sqlResult("
 			INSERT INTO games (start, type, map)
 			VALUES(\"$ts\", \"$type\", \"$map\")");
@@ -31,7 +30,7 @@ class games extends toolbox {
 
 	public function lastGameData($gid) {
 		$row = database::getInstance()->singleRow(
-			"SELECT type, map, stop FROM games WHERE gid=\"$gid\"");
+			"SELECT type, map, stop FROM games WHERE id=\"$gid\"");
 
 		return $row;
 	}

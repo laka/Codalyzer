@@ -6,9 +6,19 @@ class toolbox {
 		return ($t[0]*60 + $t[1]);
 	}
 
-	public function reportError($type, $msg) {
+	public function reportError($type, $msg, $ts) {
 
 	}
+
+	public function chomp($array) {
+		foreach($array as $s) {
+			$s = trim($s);
+			$clean[] = $s;
+		}
+		return $clean; 
+	}
+}
+
 }
 
 ?>

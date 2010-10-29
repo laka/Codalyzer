@@ -9,7 +9,7 @@ class players extends toolbox {
 		if(strlen($matches[2]) > 8) {
 			$hash = substr($matches[2], -8);
 		} else {
-			$this->newWarning('addPlayer', 'NO_HASH', $ts);
+			$this->reportError('addPlayer', 'NO_HASH', $ts);
 		}
 		
 		$this->makeProfile($hash, $handle);
