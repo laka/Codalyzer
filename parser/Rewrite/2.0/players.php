@@ -166,7 +166,7 @@ class players extends toolbox {
 	}
 	
 	public function sumGames($hash) {
-		$playerID = $this->getPlayerIDByHash($hash);
+		$playerID = $this->getPlayerID($hash);
 		$row = database::getInstance()->singleRow("
 			SELECT COUNT(DISTINCT gid) AS sum FROM players WHERE playerID=\"$playerID\"
 		");
@@ -201,6 +201,21 @@ class players extends toolbox {
 		");
 		return mysql_num_rows($result);
 	}
+
+	public function setMostUsedHandle($hash) {
+		$most_used = $this->mostUsedHandle($hash);
+		database::getInstance()->sqlResult(
+			"UPDATE profiles SET handle=\"$most_used\" WHERE hash=\"$hash\"");
+	}
+
+	public function mostUsedHandle($hash) {
+		$playerID = $this->getPlayerID($hash);
+		$row = database::getInstance()->singleRow(
+			"SELECT handle, COUNT(handle) AS num FROM players WHERE playerID=\"$playerID\" GROUP BY handle ORDER BY num DESC LIMIT 1");
+		
+		return $row[handle];
+	}
+
 }
 
 ?>
