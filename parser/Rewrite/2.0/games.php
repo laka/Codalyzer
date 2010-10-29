@@ -1,9 +1,12 @@
 <?php
 
 class games {
-	public function addNewGame($matches, $gid) {
+	public function addNewRound($matches, $gid) {
 		$ts = $this->inSeconds($matches[1]);
-		$lastGame = lastGameData($gid);
+		$type = $matches[2];
+		$map = $matches[3];
+
+		$lastGame = $this->lastGameData($gid);
 	
 		if(is_numeric($gid)) {
 			if($lastGame['type'] != 'dm') {
@@ -27,6 +30,13 @@ class games {
 			"SELECT type, map, stop FROM games WHERE gid=\"$gid\"");
 
 		return $row;
+	}
+
+	public function lastGid() {
+		$row = database::getInstance()->singleRow(
+			"SELECT id FROM games ORDER BY id DESC LIMIT 1");
+
+		return $row['id'];
 	}
 }
 

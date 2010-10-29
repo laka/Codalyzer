@@ -164,7 +164,7 @@ class players {
 		");
 	}
 	
-	public function sumGames($hash) {i
+	public function sumGames($hash) {
 		$playerID = $this->getPlayerIDByHash($hash);
 		$row = database::getInstance()->singleRow("
 			SELECT COUNT(DISTINCT gid) AS sum FROM players WHERE playerID=\"$playerID\"
@@ -172,7 +172,7 @@ class players {
 		database::getInstance()->sqlResult("
 			UPDATE profiles SET games=\"$row[sum]\" WHERE id=\"$playerID\"
 		");	
-
+	}
 
 	public function playerELO($hash) {
 		$playerID = $this->getPlayerID($hash);

@@ -21,8 +21,8 @@ class regex {
 	
 	// Return function name for given regex
 	public function getRegexMethod($regex) {
-		$row = $this->db->singleRow("SELECT ident FROM regexes WHERE id=\"$regex\"");
-		return $row['ident'];
+		$row = $this->db->singleRow("SELECT identifier AS id, class FROM regexes WHERE id=\"$regex\"");
+		return $row;
 	}
 	
 	// Add new regex 

@@ -8,7 +8,7 @@ class database {
 	// Class constructor prevents direct creation of object
 	private function __construct() {
 		require_once('secrets.php');
-		$this->connection = @mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS) 
+		$this->connection = mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS) 
 			or die ('Could not connect to database ');
 
 		mysql_select_db(MYSQL_DB, $this->connection);
