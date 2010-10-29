@@ -17,8 +17,11 @@ class games extends toolbox {
 				} 
 			}
 		} else {
-			$this->reportError('init', 'unknow gid');
-			return 0;
+			$result = database::getInstance()->sqlResult("SELECT id FROM games");
+			if(mysql_num_rows($result)) {
+				$this->reportError('init', 'unknow gid');
+				return 0;
+			}
 		}
 		
 		database::getInstance()->sqlResult("
@@ -38,6 +41,10 @@ class games extends toolbox {
 			"SELECT id FROM games ORDER BY id DESC LIMIT 1");
 
 		return $row['id'];
+	}
+
+	public function gameOver($matches, $gid) {
+
 	}
 }
 

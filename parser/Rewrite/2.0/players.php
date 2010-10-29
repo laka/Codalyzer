@@ -216,6 +216,9 @@ class players extends toolbox {
 		return $row[handle];
 	}
 
+	public function playerQuit($matches, $gid) {
+
+	}
 }
 
 ?>

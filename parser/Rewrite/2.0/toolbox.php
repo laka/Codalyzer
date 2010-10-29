@@ -5,6 +5,10 @@ class toolbox {
 		$t = explode(':', $ts);
 		return ($t[0]*60 + $t[1]);
 	}
+
+	public function reportError($type, $msg) {
+
+	}
 }
 
 ?>
