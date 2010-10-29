@@ -1,6 +1,7 @@
 <?php
+require_once('toolbox.php');
 
-class games {
+class games extends toolbox {
 	public function addNewRound($matches, $gid) {
 		$ts = $this->inSeconds($matches[1]);
 		$type = $matches[2];

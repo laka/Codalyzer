@@ -1,6 +1,7 @@
 <?php
+require_once('toolbox.php');
 
-class players {
+class players extends toolbox {
 	public function addPlayer($matches, $gid) {
 		$handle = $matches[3];
 		$ts = $this->inSeconds($matches[1]);
