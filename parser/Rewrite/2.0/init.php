@@ -2,7 +2,7 @@
 $start = microtime(true);
 require('core.php');
 
-$parser = new parser('games_mp.log', 'all');
+$parser = new parser('xxx', 'all');
 
 $end = microtime(true);
 $total_time = round($end-$start, 4);

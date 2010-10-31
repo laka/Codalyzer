@@ -3,10 +3,12 @@ require_once('toolbox.php');
 
 class games extends toolbox {
 	public function addNewRound($matches, $gid) {
-		$last = $this->lastGameData($gid);
-		$ts   = $this->inSeconds($matches[1]);
-		$type = $matches[2];
-		$map  = $matches[3];
+		$matches = $this->chomp($matches);
+		$round   = $this->lastRound($gid);
+		$last    = $this->lastGameData($gid);
+		$ts      = $this->inSeconds($matches[1]);
+		$type    = $matches[2];
+		$map     = $matches[3];
 
 		if(is_numeric($gid)) {
 			if($last['type'] != 'dm') {
@@ -20,12 +22,19 @@ class games extends toolbox {
 			if(mysql_num_rows($result)) {
 				$this->reportError('init', 'unknow gid', $ts);
 				return 0;
+			} else {
+
 			}
 		}
 
 		database::getInstance()->sqlResult("
 			INSERT INTO games (start, type, map)
 			VALUES(\"$ts\", \"$type\", \"$map\")");
+	
+		$gid = $this->lastGid();
+		database::getInstance()->sqlResult("
+			INSERT INTO rounds (gid, ts, round)
+			VALUES(\"$gid\", \"$ts\", \"$round\")");
 	}
 
 	public function lastGameData($gid) {
@@ -44,6 +53,13 @@ class games extends toolbox {
 
 	public function gameOver($matches, $gid) {
 
+	}
+
+	public function lastRound($gid) {
+		$row = database::getInstance()->singleRow(
+		"SELECT round FROM rounds WHERE gid=\"$gid\" ORDER BY id DESC LIMIT 1");
+	
+		return ++$row['round'];
 	}
 }
 
