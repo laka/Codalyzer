@@ -49,37 +49,39 @@ class games extends toolbox {
 	}
 
 	public function gameOver($matches, $gid) {
-		$stop = $this->inSeconds($matches[1]);
-		$round = database::getInstance()->singleRow(
-			"SELECT round FROM rounds WHERE gid=\"$gid\" ORDER BY id DESC LIMIT 1");
-		$r = $round['round'];
-
-		echo "$gid - $r<br>";
-		$row = database::getInstance()->singleRow(
+		$stop  = $this->inSeconds($matches[1]);
+		$round = $this->currentRound($gid);
+		$start = database::getInstance()->singleRow(
 			"SELECT ts FROM rounds WHERE gid=\"$gid\" AND round=\"$round\"");
-	
 
+		$duration = $stop - $start['ts'];
 
-		echo "$stop - $start<br>";
-		#$duration = ($stop - $start['ts']);
-		
-		echo $duration . "<br>";
+		$kills = database::getInstance()->singleRow(
+			"SELECT COUNT(id) AS c FROM kills WHERE gid=\"$gid\" AND round=\"$round\"");
 
-		database::getInstance()->sqlResult("
-			UPDATE rounds SET duration=\"$duration\" WHERE gid=\"$gid\ AND round=\"$round\"");
-		
+		database::getInstance()->sqlResult(
+			"UPDATE rounds SET duration=\"$duration\", kills=\"$kills[c]\" WHERE gid=\"$gid\" AND round=\"$round\"");				
 	}
 
-	public function lastRound($gid) {
+	public function nextRound($gid) {
 		$row = database::getInstance()->singleRow(
 			"SELECT round FROM rounds WHERE gid=\"$gid\" ORDER BY id DESC LIMIT 1");
 	
 		return ++$row['round'];
 	}
 
+
+	public function currentRound($gid) {
+		$row = database::getInstance()->singleRow(
+			"SELECT round AS c FROM rounds WHERE gid=\"$gid\" ORDER BY id DESC LIMIT 1");
+	
+		return $row['c'];
+	}
+
+
 	public function trackRounds($gid, $ts) {
 		$gid2 = $this->lastGid();	
-		$round   = $this->lastRound($gid2);
+		$round   = $this->nextRound($gid2);
 
 		database::getInstance()->sqlResult("
 			INSERT INTO rounds (gid, ts, round)
