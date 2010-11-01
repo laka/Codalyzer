@@ -8,9 +8,7 @@
 
 session_start();
 
-include '../../classes/config.php';
-$config = new config('../../../config.ini');
-
+include '../../../config.php';
 include '../../classes/database.php';
 include '../../classes/authentication.php';
 

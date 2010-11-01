@@ -7,7 +7,7 @@
 */
 
 if(defined('MYSQL_HOST') && defined('MYSQL_USER') && defined('MYSQL_PASS') && defined('MYSQL_DB')){
-    // fetches config data from the database, we don't use the database-class here, since we aren't able to include it some times without knowing FRONTEND_PATH.
+    // fetches config data from the database, we don't use the database-class here, since we aren't able to include it some times without knowing BASE_PATH.
     $connection = @mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS) or die ('<strong>Error:</strong> Could not connect to the database.');
     mysql_select_db(MYSQL_DB, $connection);
 
@@ -18,16 +18,16 @@ if(defined('MYSQL_HOST') && defined('MYSQL_USER') && defined('MYSQL_PASS') && de
     }
 
     // includes the database class
-    include FRONTEND_PATH . '/classes/database.php';
+    include BASE_PATH . '/shared/database.php';
     $db = database::getInstance();
 
     // includes the orderedtable class
-    include FRONTEND_PATH . '/classes/orderedtable.php';
+    include BASE_PATH . '/frontend/classes/orderedtable.php';
 
     // handles language changes
     if($_POST['language']){
         $_POST['language'] = trim(addslashes($_POST['language']));
-        if(is_file(FRONTEND_PATH . '/lang/lang_' . strtolower($_POST['language']) . '.php')){
+        if(is_file(BASE_PATH . '/frontend/lang/lang_' . strtolower($_POST['language']) . '.php')){
             $_SESSION['language'] = strtolower($_POST['language']);
         }
     } 
@@ -54,10 +54,10 @@ if(defined('MYSQL_HOST') && defined('MYSQL_USER') && defined('MYSQL_PASS') && de
     define("SERVER_QUERY", '('.$serverq.')');
 
     // includes default language if a langauge session does not exist.
-    if(is_file(FRONTEND_PATH . '/lang/lang_' . $_SESSION['language'] . '.php')){
-        include FRONTEND_PATH . '/lang/lang_' . $_SESSION['language'] . '.php';
+    if(is_file(BASE_PATH . '/frontend/lang/lang_' . $_SESSION['language'] . '.php')){
+        include BASE_PATH . '/frontend/lang/lang_' . $_SESSION['language'] . '.php';
     } else {
-        include FRONTEND_PATH . '/lang/lang_' . strtolower(LANGUAGE) . '.php';
+        include BASE_PATH . '/frontend/lang/lang_' . strtolower(LANGUAGE) . '.php';
     }
 
     // defines a url base for all links
