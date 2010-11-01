@@ -3,7 +3,6 @@
 class regex {
 	// Class constructor
 	public function __construct() {
-		require_once('database.php');
 		$this->db = database::getInstance();
 	}
 	
