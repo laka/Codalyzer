@@ -1,4 +1,23 @@
 <?php
+
+class init {
+	public function __construct() {
+
+	}
+
+	public function preParse() {
+
+	}
+
+	public function codalyze() {
+
+	}
+
+	public function postParse() {
+
+	}
+} 
+
 $start = microtime(true);
 require('core.php');
 

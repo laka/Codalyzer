@@ -8,5 +8,6 @@ require_once('players.php');
 require_once('toolbox.php');
 require_once('kills.php');
 require_once('damages.php');
+require_once('loopwrap.php');
 
 ?>

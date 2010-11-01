@@ -12,10 +12,10 @@ class kills extends toolbox {
 		$corpse   = $this->players->getPlayerID(substr($matches[2], -8));
 		$killer   = $this->players->getPlayerID(substr($matches[4], -8));
 		$ts 	  = $this->inSeconds($matches[1]);
-		$damage   = $matches[7];
-		$weapon   = $matches[6];
 		$mod 	  = preg_replace('/MOD_/', '', $matches[8]);
+		$weapon   = $this->weaponAbbr($matches[6], $mod);
 		$location =	$matches[9];
+		$damage   = $matches[7];
 
 		if(empty($killer)) {
 			$killer = $corpse;

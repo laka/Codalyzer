@@ -23,12 +23,9 @@ class players extends toolbox {
 		}
 	}
 	
-	public function addTeam($matches, $gid) {
-		$handle = $matches[1];
-		$team = $matches[2];
-
+	public function addTeamMember($playerID, $team, $gid) {
 		database::getInstance()->sqlResult("
-			UPDATE players SET team=\"$team\" WHERE handle=\"$handle\" AND gid=\"$gid\"
+			UPDATE players SET team=\"$team\" WHERE playerID=\"$playerID\" AND gid=\"$gid\"
 		");
 	}
 	
@@ -63,6 +60,7 @@ class players extends toolbox {
 	}
 	
 	public function addQuote($matches, $gid) {
+		$matches = $this->chomp($matches);
 		$ts = $this->inSeconds($matches[1]);
 		$hash = substr($matches[2], -8);
 		$playerID = $this->getPlayerID($hash);
@@ -131,7 +129,7 @@ class players extends toolbox {
 		$this->sumDeaths($hash);
 		$this->sumSuicides($hash);
 		$this->sumGames($hash);
-		$this->playerELO($hash);
+		#$this->playerELO($hash);
 		$this->addClanTag($hash);
 	}
 	
@@ -193,6 +191,12 @@ class players extends toolbox {
 			SELECT id FROM profiles WHERE hash=\"$hash\"
 		");
 		return $row[id];		
+	}
+
+	public function getPlayerHandle($id) {
+		$row = database::getInstance()->singleRow(
+			"SELECT handle FROM profiles WHERE id=\"$id\"");
+		return $row[handle];
 	}
 	
 	public function playerInGame($handle, $gid) {
