@@ -13,3 +13,28 @@ body {
     float: left;
     width: 200px;
 }
+
+a:link {
+    color: #594F20;
+}
+
+a:visited{
+    color: #A1914A;
+}
+
+.datatable {
+    border-collapse: collapse;
+    width:100%;
+}
+
+
+.datatable th {
+    background-color: #DED897;
+    text-align: left;
+}
+
+.datatable th, .datatable td {
+    border-bottom: 1px black solid;
+    border-top: 1px black solid;
+    padding:5px;
+}
