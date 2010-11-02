@@ -1,6 +1,6 @@
 <?php
 if(@$login->isAuthorized()){
-    echo "<h2>Database</h2>";
+    echo "<h2>System configuration</h2>";
     $updated = FALSE;
     if($_POST['mysqlhost'] && $_POST['mysqluser'] && $_POST['mysqlpassword'] && $_POST['mysqldatabase']){
         // The form has been submitted..
@@ -27,7 +27,8 @@ if(@$login->isAuthorized()){
     if(!$updated){
     ?>
 
-    <form action="?p=database" method="post">
+    <form action="?p=config" method="post">
+        <h3>MySQL connection</h3>
         <p><strong>MySQL host</strong><br />
             <input type="text" name="mysqlhost" size="40" value="<?php echo MYSQL_HOST; ?>">
         </p>
@@ -44,6 +45,14 @@ if(@$login->isAuthorized()){
             <input type="text" name="mysqldatabase" size="40" value="<?php echo MYSQL_DB; ?>">
         </p>       
         
+        <h3>Paths</h3>
+        <p><strong>Frontend path</strong> (Full path to /frontend, e.g /home/2/n/user/www/frontend)<br />
+        <input type="text" size="40" name="path" value="<?php echo FRONTEND_PATH; ?>"></p>
+        
+        <p><strong>Base path</strong> (Full path to /frontend, e.g /home/2/n/user/www/frontend)<br />
+        <input type="text" size="40" name="path" value="<?php echo BASE_PATH; ?>"></p>
+
+        <input type="submit" value="Submit">
         <input type="submit" value="Update">
     </form>
     <?php 

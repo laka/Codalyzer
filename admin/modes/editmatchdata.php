@@ -10,10 +10,10 @@ mysql_select_db('jussimik_codalyzer');
 if(is_numeric($_GET['gid'])){
     $gid = mysql_real_escape_string($_GET['gid']);
     
-    $rounds_sql = "SELECT confirmed, rounds.id, round, kills, duration FROM games,rounds WHERE parsed=0 AND rounds.gid=games.id AND gid=$gid";
+    $rounds_sql = "SELECT rounds.confirmed, rounds.id, round, kills, duration FROM games,rounds WHERE games.confirmed=0 AND rounds.gid=games.id AND gid=$gid";
     $rounds_res = mysql_query($rounds_sql);
 
-    echo '<form action="?p=editmatchdata" method="post"><table width="100%" class="datatable">';
+    echo '<form action="?p=editmatchdata" method="post"><table class="datatable">';
     echo '<input type="hidden" name="gid" value="'.$gid.'">';
    
     // round list
@@ -40,7 +40,7 @@ if(is_numeric($_GET['gid'])){
         echo '<h2>Teams</h2>';
         
         echo '<h3>Axis</h3>';
-        echo '<table width="100%" class="datatable">';
+        echo '<table class="datatable">';
         echo '<tr><th>Player</th><th>Switch team</th></tr>';
         $axis_sql = "select id, playerID, handle from players where team='axis' and gid=$gid";
         $axis_res = mysql_query($axis_sql);
@@ -50,7 +50,7 @@ if(is_numeric($_GET['gid'])){
         echo '</table>';
         
         echo '<h3>Allies</h3>';
-        echo '<table width="100%" border="1">';
+        echo '<table class="datatable">';
         echo '<tr><th>Player</th><th>Switch team</th></tr>';
         $allies_sql = "select id, playerID, handle from players where team='allies' and gid=$gid";
         $allies_res = mysql_query($allies_sql);
