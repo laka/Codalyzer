@@ -5,26 +5,21 @@ class init {
 
 	}
 
-	public function preParse() {
+	public function parse($log) {
+		$parser = new parser($log);
+	}
 
+	public function confirm() {
+		$confirm = new confirm();
 	}
 
 	public function codalyze() {
-
+		$loopwrap = new loopWrap();
 	}
 
-	public function postParse() {
+	public function postWork() {
 
 	}
 } 
 
-$start = microtime(true);
-require('core.php');
-
-$parser = new parser('xxx', 'all');
-
-$end = microtime(true);
-$total_time = round($end-$start, 4);
-
-echo "-- generated in $total_time secs \o/\n";
 ?>

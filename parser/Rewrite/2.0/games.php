@@ -2,6 +2,9 @@
 require_once('toolbox.php');
 
 class games extends toolbox {
+	public function __construct() {
+		$this->db = database::getInstance();
+	}
 	public function addNewRound($matches, $gid) {
 		$matches = $this->chomp($matches);
 		$last    = $this->lastGameData($gid);
@@ -86,6 +89,29 @@ class games extends toolbox {
 		database::getInstance()->sqlResult("
 			INSERT INTO rounds (gid, ts, round)
 			VALUES(\"$gid2\", \"$ts\", \"$round\")");
+	}
+
+	public function dropRounds() {	
+		$result = $this->db->sqlResult(
+			"SELECT gid, round FROM rounds WHERE confirmed=\"0\"");
+
+		while($row = mysql_fetch_assoc($result)) {
+			$this->db->sqlResult("DELETE FROM kills WHERE gid=\"$row[gid]\" AND round=\"$row[round]\"");
+			$this->db->sqlResult("DELETE FROM hits WHERE gid=\"$row[gid]\" AND round=\"$row[round]\"");
+			$this->db->sqlResult("DELETE FROM rounds WHERE gid=\"$row[gid]\" AND round=\"$row[round]\"");
+		} 								
+	}
+
+	public function dropGame($gid) {
+		$this->db->sqlResult("DELETE FROM games WHERE id=\"$gid\"");
+		$this->db->sqlResult("DELETE FROM players WHERE gid=\"$gid\"");
+		$this->db->sqlResult("DELETE FROM kills WHERE gid=\"$gid\"");
+		$this->db->sqlResult("DELETE FROM hits WHERE gid=\"$gid\"");
+		$this->db->sqlResult("DELETE FROM rounds WHERE gid=\"$gid\"");
+	}
+
+	public function confirmRound($gid) {
+		$this->db->sqlResult("DELETE FROM rounds WHERE gid=\"$gid\"");
 	}
 }
 

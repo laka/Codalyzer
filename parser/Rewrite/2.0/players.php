@@ -15,7 +15,7 @@ class players extends toolbox {
 		$this->makeProfile($hash, $handle);
 		$playerID = $this->getPlayerID($hash);
 		
-		if(!$this->playerInGame($handle, $gid)) {
+		if(!$this->playerInGame($playerID, $gid)) {
 			database::getInstance()->sqlResult("
 				INSERT INTO players (gid, ts, playerID, handle)
 				VALUES(\"$gid\", \"$ts\", \"$playerID\", \"$handle\")
@@ -199,9 +199,9 @@ class players extends toolbox {
 		return $row[handle];
 	}
 	
-	public function playerInGame($handle, $gid) {
+	public function playerInGame($playerID, $gid) {
 		$result = database::getInstance()->sqlResult("
-			SELECT id FROM players WHERE handle=\"$handle\" AND gid=\"$gid\"
+			SELECT id FROM players WHERE playerID=\"$playerID\" AND gid=\"$gid\"
 		");
 		return mysql_num_rows($result);
 	}
@@ -221,6 +221,10 @@ class players extends toolbox {
 	}
 
 	public function playerQuit($matches, $gid) {
+
+	}
+
+	public function weaponChange($matches, $gid) {
 
 	}
 }
