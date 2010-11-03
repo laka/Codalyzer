@@ -8,7 +8,7 @@ class loopWrap {
 
 	public function games() {
 		$result = database::getInstance()->sqlResult(
-			"SELECT id FROM games ORDER BY id ASC");
+			"SELECT id FROM games WHERE confirmed=1 ORDER BY id ASC");
 		
 		while($row = mysql_fetch_assoc($result)) {
 			$this->ratings->matchRank($row[id]);

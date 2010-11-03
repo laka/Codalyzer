@@ -36,6 +36,20 @@ class ratings {
 		foreach($kdratio as $player=>$ratio){
 		   	$terningkast = round(3*$ratio + 3*$killsratio[$player],2);
 			$this->db->sqlResult("UPDATE players SET matchrank=\"$terningkast\" WHERE playerID=\"$player\" AND gid=\"$gid\"");
+            
+            // oppdaterer også gjennomsnittsmatchranken hans
+            $ranks_sql = "SELECT matchrank FROM players WHERE playerID =$player ORDER BY gid DESC LIMIT 0, 15";
+            $ranks_result = $this->db->sqlResult($ranks_sql);
+            $den = 0;
+            $coeff = 15;
+            $sum = 0;
+            while($ranks_row = mysql_fetch_assoc($ranks_result)){
+                $sum += $coeff * $ranks_row['matchrank'];
+                $den += $coeff;
+                $coeff--;
+            }
+            $avg = $sum/$den;
+ 			$this->db->sqlResult("UPDATE profiles SET matchrank='$avg' WHERE id='$player'");  
 		}
 	}
 }
