@@ -34,7 +34,20 @@ class games extends toolbox {
 			INSERT INTO games (start, type, map)
 			VALUES(\"$ts\", \"$type\", \"$map\")");
 
+		$this->checkGameFlags($gid);
 		$this->trackRounds($gid, $ts);
+	}
+
+	public function checkGameFlags($gid) {
+		$data = database::getInstance()->singleRow(
+			"SELECT id, 
+				(SELECT COUNT(*) FROM kills WHERE gid=a.id AND killerID!=corpseID) as kills, 
+				(SELECT COUNT(*) FROM players WHERE gid=a.id) AS players 
+			FROM games AS a WHERE id=\"$gid\"");
+
+		if($data[kills] <= 2 || $data[players] <= 1) {
+			$this->db->sqlResult("UPDATE games SET flag=\"e\" WHERE id=\"$gid\"");
+		} 
 	}
 
 	public function lastGameData($gid) {
@@ -52,8 +65,10 @@ class games extends toolbox {
 	}
 
 	public function gameOver($matches, $gid) {
+		$flag = '';
 		$stop  = $this->inSeconds($matches[1]);
 		$round = $this->currentRound($gid);
+		$game    = $this->lastGameData($gid);
 		$start = database::getInstance()->singleRow(
 			"SELECT ts FROM rounds WHERE gid=\"$gid\" AND round=\"$round\"");
 
@@ -62,8 +77,31 @@ class games extends toolbox {
 		$kills = database::getInstance()->singleRow(
 			"SELECT COUNT(id) AS c FROM kills WHERE gid=\"$gid\" AND round=\"$round\"");
 
+		if($game['type'] == 'sd') {
+			if($kills[c] == 0) {
+				$flag = 'e';
+			} elseif($kills[c] > 10) {
+				$flag = 'k';
+			} else {
+				if($round < 3) {
+					if($duration > 150) {
+						$flag = 'w';	
+					} elseif($kills[c] > 10 || $kills[c] <= 1) {
+						$flag = 'w';
+					}
+				} elseif($round > 10 && $round < 15) {
+					if($duration > 150 || $kills[c] == 0) {
+						$flag = 's';
+					}
+				} elseif($round > 22) {
+					if($duration > 150 || $kills[c] <= 1 || $kills[c] > 10) {
+						$flag = 't';
+					}
+				}
+			}
+		}
 		database::getInstance()->sqlResult(
-			"UPDATE rounds SET duration=\"$duration\", kills=\"$kills[c]\" WHERE gid=\"$gid\" AND round=\"$round\"");				
+			"UPDATE rounds SET duration=\"$duration\", kills=\"$kills[c]\", flag=\"$flag\" WHERE gid=\"$gid\" AND round=\"$round\"");
 	}
 
 	public function nextRound($gid) {
@@ -73,14 +111,12 @@ class games extends toolbox {
 		return ++$row['round'];
 	}
 
-
 	public function currentRound($gid) {
 		$row = database::getInstance()->singleRow(
 			"SELECT round AS c FROM rounds WHERE gid=\"$gid\" ORDER BY id DESC LIMIT 1");
 	
 		return $row['c'];
 	}
-
 
 	public function trackRounds($gid, $ts) {
 		$gid2 = $this->lastGid();	
