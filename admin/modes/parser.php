@@ -15,7 +15,7 @@ if(isset($_POST['preparse'])) {
 	$start = microtime(true);
 
 	require_once('parser/2.0/core-withoutdb.php');
-	$p = new parser('parser/2.0/games_mp.log', 'all');
+	$p = new parser('parser/2.0/logfiles/'.LOGFILE.'', 'all');
 
 	$end = microtime(true);
 	$total_time = round($end-$start, 4);
@@ -52,11 +52,12 @@ while($row = mysql_fetch_assoc($result)) {
 
 $data = preg_replace('/,$/','',$data);
 
-echo "<img src=\"http://chart.apis.google.com/chart?chxr=0,0,30&chxt=y&chbh=a&chs=500x150&cht=bvg&chco=A2C180,3D7930&chds=0,30&chd=t1:$data&chdl=Seconds&chtt=Runtime+statistics\" width=\"500\" height=\"150\" alt=\"Runtime statistics\" />";
+echo "<img src=\"http://chart.apis.google.com/chart?chxr=0,0,120&chxt=y&chbh=a&chs=500x150&cht=bvg&chco=A2C180,3D7930&chds=0,120&chd=t1:$data&chdl=Seconds&chtt=Runtime+statistics\" width=\"500\" height=\"150\" alt=\"Runtime statistics\" />";
 
 $result = mysql_query("SELECT (SELECT COUNT(id) FROM games) AS games, (SELECT COUNT(id) FROM profiles) AS players, (SELECT COUNT(id) FROM kills) AS kills, (SELECT COUNT(id) FROM hits) AS hits");
 $row = mysql_fetch_row($result);
 
+echo "<h3>Database statistics</h3>";
 echo "<p><h4>$row[0]</h4> games<h4>$row[1]</h4> players<h4>$row[2]</h4> kills<h4>$row[3]</h4> hits</p>";
 
 } // endif 

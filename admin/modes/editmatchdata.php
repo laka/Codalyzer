@@ -10,7 +10,7 @@ mysql_select_db('jussimik_codalyzer');
 if(is_numeric($_GET['gid'])){
     $gid = mysql_real_escape_string($_GET['gid']);
     
-    $rounds_sql = "SELECT rounds.confirmed, rounds.id, round, kills, duration FROM games,rounds WHERE games.confirmed=0 AND rounds.gid=games.id AND gid=$gid";
+    $rounds_sql = "SELECT rounds.confirmed, rounds.id, rounds.flag, round, kills, duration FROM games,rounds WHERE games.confirmed=0 AND rounds.gid=games.id AND gid=$gid";
     $rounds_res = mysql_query($rounds_sql);
 
     echo '<form action="?p=editmatchdata" method="post"><table class="datatable">';
@@ -19,15 +19,16 @@ if(is_numeric($_GET['gid'])){
     // round list
     echo '<h2>Rounds</h2>';
     
-    echo '<tr><th>Round #</th><th>Duration</th><th>Kills</th><th>Don\'t parse</th></tr>';
+    echo '<tr><th>Round #</th><th>Duration</th><th>Kills</th><th>Don\'t parse</th><th>Flag</th></tr>';
     while($rounds_row = mysql_fetch_assoc($rounds_res)){
+		if(empty($rounds_row['flag'])) { $rounds_row['flag'] = 'OK'; }
         if($rounds_row['confirmed'] == '0'){
             $c = 'checked="checked"';
         }
         echo '<tr>';
-        echo "<tr><td>{$rounds_row['round']}</td><td>{$rounds_row['duration']}</td><td>{$rounds_row['kills']}</td><td><input type=\"checkbox\" name=\"delete[{$rounds_row['id']}]\" $c></td></tr>";
+        echo "<tr><td>{$rounds_row['round']}</td><td>{$rounds_row['duration']}</td><td>{$rounds_row['kills']}</td><td><input type=\"checkbox\" name=\"delete[{$rounds_row['id']}]\" $c></td><td align=\"center\" class=\"{$rounds_row['flag']}\">{$rounds_row['flag']}</td></tr>";
         echo '</tr>';
-        $c = 0;
+        $c = '';
     }
     echo "</table>";
 
@@ -41,7 +42,7 @@ if(is_numeric($_GET['gid'])){
         
         echo '<h3>Axis</h3>';
         echo '<table class="datatable">';
-        echo '<tr><th>Player</th><th>Switch team</th></tr>';
+        echo '<tr><th width="50%">Player</th><th>Switch team</th></tr>';
         $axis_sql = "select id, playerID, handle from players where team='axis' and gid=$gid";
         $axis_res = mysql_query($axis_sql);
         while($axis_row = mysql_fetch_assoc($axis_res)){
@@ -51,7 +52,7 @@ if(is_numeric($_GET['gid'])){
         
         echo '<h3>Allies</h3>';
         echo '<table class="datatable">';
-        echo '<tr><th>Player</th><th>Switch team</th></tr>';
+        echo '<tr><th width="50%">Player</th><th>Switch team</th></tr>';
         $allies_sql = "select id, playerID, handle from players where team='allies' and gid=$gid";
         $allies_res = mysql_query($allies_sql);
         while($allies_row = mysql_fetch_assoc($allies_res)){
