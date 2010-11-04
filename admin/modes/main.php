@@ -31,9 +31,10 @@ if(@$login->isAuthorized()){
 
 	// Parser interaction 
 	if(isset($_POST['run'])) {	
-		require_once('parser/2.0/games.php');
+		require_once('parser/2.0/core-withoutdb.php');
 		$games = new games();
-
+		$looop = new loopWrap();
+	
 		$num_sql = "SELECT id FROM games";
 		$num_result = mysql_query($num_sql) or die("Something went wrong when the rounds table was fetched.");	
 		
@@ -41,16 +42,16 @@ if(@$login->isAuthorized()){
         	if($_POST['confirm'][$num_row['id']]){
 				$SQL = "UPDATE games SET confirmed='1' WHERE id = '{$num_row['id']}'";
             	mysql_query($SQL) or die("Something went wrong when round ".$num_row['id']." was updated");
-				$games->dropRounds();
 				$games->confirmRound($num_row['id']);		
 				header('Location: /jussimik/codalyzer/admin/ ');
         	}
 			if($_POST['drop'][$num_row['id']]){
 				$games->dropGame($num_row['id']);
-				$games->dropRounds();		
 				header('Location: /jussimik/codalyzer/admin/ ');
 			}
     	}
+		$games->dropRounds();
+		$looop->games();
 	}
 }
 
