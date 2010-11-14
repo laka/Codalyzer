@@ -6,18 +6,27 @@ class games extends toolbox {
 		$this->db = database::getInstance();
 	}
 	public function addNewRound($matches, $gid) {
-		$matches = $this->chomp($matches);
-		$last    = $this->lastGameData($gid);
-		$ts      = $this->inSeconds($matches[1]);
-		$type    = $matches[2];
-		$map     = $matches[3];
+		$matches   = $this->chomp($matches);
+		$lastGame  = $this->lastGameData($gid);
+		$lastRound = $this->lastRoundData($gid);
+		$ts        = $this->inSeconds($matches[1]);
+		$type      = $matches[2];
+		$map       = $matches[3];
+		$new 	   = false;
 
 		if(is_numeric($gid)) {
-			if($last['type'] != 'dm') {
-				if($last['type'] == $type && $last['map'] == $map && $last['stop'] == 0) {
-					database::getInstance()->sqlResult("UPDATE games SET stop=0 WHERE gid=\"$gid\"");
-					$this->trackRounds($gid, $ts);
-					return 0;
+			if($lastGame['type'] != 'dm') {
+				if($lastGame['type'] == $type && $lastGame['map'] == $map && $lastGame['stop'] == 0) {
+					if($lastRound['round'] > 22 && $lastRound['duration'] > 150) {
+						if($this->isTwoInOne($gid)) {
+							$new = true;
+						}
+					}
+					if(!$new) {
+						database::getInstance()->sqlResult("UPDATE games SET stop=0 WHERE gid=\"$gid\"");
+						$this->trackRounds($gid, $ts);
+						return 0;
+					}
 				} 
 			}
 		} else {
@@ -42,12 +51,16 @@ class games extends toolbox {
 		$data = database::getInstance()->singleRow(
 			"SELECT id, 
 				(SELECT COUNT(*) FROM kills WHERE gid=a.id AND killerID!=corpseID) as kills, 
-				(SELECT COUNT(*) FROM players WHERE gid=a.id) AS players 
+				(SELECT COUNT(*) FROM players WHERE gid=a.id) AS players,
+				(SELECT COUNT(*) FROM rounds WHERE gid=a.id) AS rounds 
 			FROM games AS a WHERE id=\"$gid\"");
 
 		if($data[kills] <= 2 || $data[players] <= 1) {
-			$this->db->sqlResult("UPDATE games SET flag=\"e\" WHERE id=\"$gid\"");
-		} 
+			#$this->db->sqlResult("UPDATE games SET flag=\"e\" WHERE id=\"$gid\"");
+			$this->dropGame($gid);
+		} elseif($data[rounds] > 30) {
+			$this->db->sqlResult("UPDATE games SET flag=\"d\" WHERE id=\"$gid\"");
+		}
 	}
 
 	public function lastGameData($gid) {
@@ -55,6 +68,41 @@ class games extends toolbox {
 			"SELECT type, map, stop FROM games WHERE id=\"$gid\"");
 
 		return $row;
+	}
+
+	public function lastRoundData($gid) {
+		$row = database::getInstance()->singleRow(
+			"SELECT ts, round, kills, duration FROM rounds WHERE gid=\"$gid\" ORDER BY id DESC LIMIT 1");
+
+		return $row;
+	}
+
+	public function isTwoInOne($gid) {
+		$first = database::getInstance()->singleRow(
+			"SELECT ts FROM players WHERE gid=\"$gid\" ORDER BY id ASC LIMIT 1");
+
+		$last = database::getInstance()->singleRow(
+			"SELECT ts FROM players WHERE gid=\"$gid\" ORDER BY id DESC LIMIT 1");
+
+		if(($last['ts'] - $first['ts']) > 600) {
+			$this->deletePlayer($first['ts'], $gid, 'b');
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	public function deletePlayer($ts, $gid, $cause) {
+		if($cause == 'b') {
+			$last = database::getInstance()->singleRow(
+				"SELECT id, ts FROM players WHERE gid=\"$gid\" ORDER BY id DESC LIMIT 1");
+		
+			if(($last['ts'] - $ts) > 600) {
+				database::getInstance()->sqlResult(
+					"DELETE FROM players WHERE id=\"$last[id]\"");
+				$this->deletePlayer($ts, $gid, 'b');
+			}
+		}
 	}
 
 	public function lastGid() {
@@ -100,6 +148,7 @@ class games extends toolbox {
 				}
 			}
 		}
+
 		database::getInstance()->sqlResult(
 			"UPDATE rounds SET duration=\"$duration\", kills=\"$kills[c]\", flag=\"$flag\" WHERE gid=\"$gid\" AND round=\"$round\"");
 	}
